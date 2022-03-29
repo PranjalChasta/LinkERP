@@ -1,0 +1,430 @@
+<h1>Sales Order</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>SOP</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">SOP Order</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit' || Mode=='Copy' "><a>{{Mode}} SOP Order</a>
+    </li>
+  </ol>
+</nav>
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+
+<form [formGroup]="SopOrderForm" name="SopOrderForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div #sectionNeedToScroll></div>
+  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Sop Order Form
+              <div class="add-row">
+
+
+                <button (click)="AddNewSopOrder()" class="btn add-btn mb-1" type="button">Add Sop
+                  Order</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative" >
+              <div class="ag-theme-balham" style="width: 100%; height:550px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" (OnActionClick)="OnActionClick($event)" [Currentpage]="this.Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="PageSize"
+                  (OnPageSizeChange)="OnPageSizeChange($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' || Mode=='Copy'">
+
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="SOPOrder"}'
+          data-toggle="tab" (click)="AccessTab='SOPOrder'" role="tab">Sop order</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="SOPOrderDetail"}'
+          data-toggle="tab" (click)="AccessTab='SOPOrderDetail'" role="tab">Sop Order Detail</a>
+        <!--   <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="PurchaseApprovalLogic"}'
+          data-toggle="tab" (click)="AccessTab='PurchaseApprovalLogic'" role="tab">Approval Logs</a>  -->
+      </div>
+    </nav>
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='SOPOrder'">
+      <div class="card-header">
+        {{Mode}} Sales Order
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <!-- Vendor ID -->
+                <div class="col-12 col-md-3" *ngIf="Mode=='Edit'">
+                  <div class="form-group">
+                    <label class="col-form-label">Sales Order No</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="SalesOrderNo">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">Quotation</label>
+                    <select class="form-control" formControlName="QuotationID">
+                      <option value="-1">--Select PriceScheme--</option>
+                      <option *ngFor="let quotation of QuotationList" [value]="quotation.id">
+                        {{quotation.quotationNo}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Debtor<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" (change)="onDebtorChange($event.target.value)"
+                      formControlName="DebtorID"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.DebtorID.errors?.notEqual}">
+                      <option value="-1">--Select Debtor--</option>
+                      <option *ngFor="let debtor of DebtorList" [value]="debtor.id"  >
+                        {{debtor.debtorCode}}-{{debtor.debtorAccountName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.DebtorID.errors?.notEqual">
+                      Please select Debtor
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Warehouse<span class="mandatoryFieldColor">*</span></label>
+
+                    <select class="form-control" formControlName="WarehouseID"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.WarehouseID.errors?.notEqual}">
+                      <option value="-1">--Select Warehouse--</option>
+                      <option *ngFor="let warehouse of WarehouseList" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} - {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.WarehouseID.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Debtor Contact Name</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="DebtorContactName">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">TransactionDate</label>
+
+                    <app-date-time-picker formControlName="TransactionDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">CustomerOrderNo</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="CustomerOrderNo">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">InvoiceNotes1</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="InvoiceNotes1">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">InvoiceNotes2</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="InvoiceNotes2">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">Invoice Total</label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber formControlName="InvoiceTotal">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">SalesOrderType</label>
+                    <select class="form-control" formControlName="SalesOrderType">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select SalesOrderType--</option>
+                      <option *ngFor="let salesOrderType of SalesOrderTypeList" [value]="salesOrderType.id">
+                        {{salesOrderType.name}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+               
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Expected Delivery Date</label>
+                    <app-date-time-picker formControlName="ExpectedDeliveryDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">PriceScheme</label>
+                    <select class="form-control" formControlName="PriceSchemeID">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select PriceScheme--</option>
+                      <option *ngFor="let priceworkflow of PriceWorkflowList"
+                        [value]="priceworkflow.priceWorkflowOptionsId">
+                        {{priceworkflow.priceWorkflowCode}} - {{priceworkflow.priceWorkflowName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">SalesPerson</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="SalesPerson">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Company</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="Company">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Address1</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="Address1">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Address2</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="Address2">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Address3</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="Address3">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Address4</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="Address4">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">PostCode</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="PostCode">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Phone</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="Phone">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Fax</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="Fax">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Email</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="Email">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Contact Name</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="ContactName">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Credit NoteSalesOrder</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="CreditNoteSalesOrderID">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">CreditReason</label>
+                    <!-- <input class="form-control" type="text" maxlength="50" formControlName="CreditReasonID"> -->
+                    <select class="form-control" formControlName="CreditReasonID">
+                      <option value="-1">--Select Credit Reason--</option>
+                      <option *ngFor="let creditReason of CreditReason" [value]="creditReason.id">
+                        {{creditReason.creditReasonDescription}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">SDCInvoiceNumber</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="SDCInvoiceNumber">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">SDC Reprint InvoiceNumber</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="SDCReprintInvoiceNumber">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">SDCDateTime</label>
+
+                    <app-date-time-picker formControlName="SDCDateTime" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">SDCInvoiceCounter</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="SDCInvoiceCounter">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">SDCVerificationURL</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="SDCVerificationURL">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Shift</label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="ShiftID">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Printed" id="Printed">
+                      <label class="custom-control-label" for="Printed">Printed</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Emailed" id="Emailed">
+                      <label class="custom-control-label" for="Emailed">Emailed</label> </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="CreditNote" id="CreditNote">
+                      <label class="custom-control-label" for="CreditNote">CreditNote</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="CreditIntoStock"
+                        id="CreditIntoStock">
+                      <label class="custom-control-label" for="CreditIntoStock">CreditIntoStock</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="TaxIntegrationStatus"
+                        id="TaxIntegrationStatus">
+                      <label class="custom-control-label" for="TaxIntegrationStatus">Tax Integration Status</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button *ngIf="Mode=='Edit'" class="btn add-btn mr-1" type="button"
+              (click)="Email(email)">Email</button>
+              <button *ngIf="Mode=='Edit'" class="btn add-btn mr-1" type="button"
+              (click)="CopySopOrder()">Copy Sop Order</button>
+              <button class="btn add-btn mr-1" *ngIf="Mode=='Edit'"  type="button"  (click)="ProcessSalesOrder()" >Process Sales Order</button>
+              <button class="btn add-btn mr-1" type="submit">Save</button>
+              <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div *ngIf="Mode=='Edit' && AccessTab=='SOPOrderDetail'">
+    <app-sop-order-detail *ngIf="Mode=='Edit'" (Cancel)="Cancel()" [OrderMainID]="this.SelectedSopOrderID"
+      [WarehouseID]="this.WareHouseId" [SelctedDebtorID]="SelctedDebtorID" [OrderStatus]="this.OrderStatus"
+      [SalesOredertype]="this.SopOrderForm.get('SalesOrderType').value"
+      [SalesOrderTypeList]="this.SalesOrderTypeList">
+    </app-sop-order-detail>
+  </div>
+</form>
+
+
+<ng-template #email>
+  <div class="modal-content" id="myModal" role="dialog">
+    <div class="modal-body">
+      <a style="float: right;" type="button" data-dismiss="modal"  (click)="closePopUp()" class="close-modal">X</a>
+      <div class="table-responsive table-padd">
+        <div class="card-body pb-0">
+          <form [formGroup]="SopOrderEmailForm" name="SopOrderEmailForm" class="Form-Horizontal">
+            <div class="row">
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">From</label>
+                  <input class="form-control" formControlName="FromEmail" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.FromEmail.errors}">
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">To</label>
+                  <input class="form-control" formControlName="ToEmail" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.ToEmail.errors}">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">Subject</label>
+                  <input class="form-control" formControlName="Subject" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.Subject.errors}">
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">Message Body</label>
+                  <textarea class="form-control" formControlName="MessageBody" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.MessageBody.errors}"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="button" (click)="SendEmail()">Ok</button>
+              <button class="btn btn-danger" data-dismiss="modal" type="button"  #closeBtn (click)="closePopUp()">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

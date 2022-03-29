@@ -1,0 +1,147 @@
+<form [formGroup]="RoleForm" name="RoleForm" (ngSubmit)="OnAccept()" class="Form-Horizontal">
+  <h1>Role <span *ngIf="Mode == 'Edit'">({{RoleForm.get('RoleCode').value}} - {{RoleForm.get('RoleName').value}})</span></h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Role</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Role</a></li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              User Role Maintenance
+              <div class="add-row">
+                <button (click)="AddNew()"  type="button" [disabled]="!this.write_Access"  class="btn add-btn mb-1">Add Role</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true" (OnActionClick)="OnActionClick($event)"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [paginationPageSize]="PageSize" (OnPageSizeChange)="OnPageSizeChange($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <!--id="nav-tabContent"-->
+        <div class="tab-pane fade show active">
+          <!--id="tab1" role="tabpanel"-->
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label">Role Code <span class="mandatoryFieldColor">*</span></label>
+                  <input class="form-control" 
+                         [ngClass]="{ 'is-invalid': submitted && f.RoleCode.errors}" type="text" formControlName="RoleCode"
+                         maxlength="50">
+                  <!-- <input class="form-control" *ngIf=readonly [ngClass]="{ 'is-invalid': submitted && f.RoleCode.errors}"
+                         type="text" formControlName="RoleCode" maxlength="50" readonly> -->
+                  <div class="errorlbl" *ngIf="submitted && f.RoleCode.errors">Please enter role code</div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label">Role Name <span class="mandatoryFieldColor">*</span></label>
+                  <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.RoleName.errors}" type="text"
+                         formControlName="RoleName" maxlength="255">
+                  <div class="errorlbl" *ngIf="submitted && f.RoleName.errors">Please enter role name</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-0" *ngIf="Mode=='Edit'">
+              <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                  <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Organisation"}' data-toggle="tab"
+                     (click)="AccessTab='Organisation'" role="tab">Organisations</a>
+                  <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Modules"}' data-toggle="tab"
+                     (click)="AccessTab='Modules'" role="tab">Modules</a>
+                  <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="MenuAccess"}' data-toggle="tab"
+                     (click)="AccessTab='MenuAccess'" role="tab">Menu Access</a>
+                     <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Warehouse"}' data-toggle="tab"
+                     (click)="AccessTab='Warehouse'" role="tab">Warehouse Access</a>
+                  <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+                     (click)="AccessTab='Notes'" role="tab">Notes</a>
+                  <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+                     (click)="AccessTab='Attachments'" role="tab">Documents</a>
+                </div>
+              </nav>
+            </div>
+            <div *ngIf="Mode=='Edit' && AccessTab=='Organisation'">
+              <app-role-company-access [RoleID]="RoleID" [Companies]="Organisations" (DeleteCompanyrole)="DeleteCompany($event)"
+                                       [RoleCompanyAccess]="RoleCompanyAccess" [tempCompanies]="TempOrganisations"
+                                       (CompaniesValueChange)="CompaniesChange($event)"
+                                       (TempCompaniesValueChange)="TempCompaniesChange($event)"
+                                       (RoleCompanyAccessValueChange)="RoleCompanyAccessChange($event)"
+                                       [DeletedRoleCompanyAccess]="DeletedRoleCompanyAccess"
+                                       (DeletedRoleCompanyAccessValueChange)="DeletedRoleCompanyAccessValueChange($event)"
+                                       [write_Access]="this.write_Access" [IsActive]="IsActive" [delete_Access]="this.delete_Access">
+              </app-role-company-access>
+            </div>
+            <div *ngIf="Mode=='Edit' && AccessTab=='Modules'">
+              <app-role-module-access [RoleID]="RoleID" [Modules]="Modules" [RoleModuleAccess]="RoleModuleAccess"
+                                      [AllModules]="AllModules" (ModulesValueChange)="ModulesValueChange($event)"
+                                      (AllModulesValueChange)="AllModulesValueChange($event)"
+                                      (RoleModuleAccessValueChange)="RoleModuleAccessValueChange($event)" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access"
+                                      (DeleteModuleId)="OnDeleteModuleId($event)" [IsActive]="IsActive"></app-role-module-access>
+            </div>
+            <div *ngIf="Mode=='Edit' && AccessTab=='MenuAccess'">
+              <app-role-menu-access [RoleID]="RoleID" [Modules]="MenuAccessModules" [RoleMenuAccess]="RoleMenuAccess"
+                                    [SelectedModule]="SelectedModule" [SelectedRoleMenuAccess]="SelectedRoleMenuAccess"
+                                    (ModulesChange)="ModulesChange($event)" (RoleMenuAccessChange)="RoleMenuAccessChange($event)"
+                                    (SelectedModuleChange)="SelectedModuleChange($event)"
+                                    (SelectedRoleMenuAccessChange)="SelectedRoleMenuAccessChange($event)"
+                                   >
+              </app-role-menu-access>
+            </div>
+            <div *ngIf="Mode=='Edit' && AccessTab=='Warehouse'">
+              <app-role-warehouse-access [RoleID]="RoleID"
+              [AllWarehouse]="AllWarehouse"
+              [Warehouse]="Warehouse" [RoleWarehouseAccess]="RoleWarehouseAccess"
+              (WarehouseValueChange)="WarehouseChange($event)"
+              (AllWarehouseValueChange)="AllWarehouseValueChange($event)"
+              (RoleWarehouseAccessValueChange)="RoleWarehouseAccessValueChange($event)"
+              (DeleteWarehouseId)="OnDeleteWarehouseId($event)" [IsActive]="IsActive" [delete_Access]="this.delete_Access"
+             >
+
+              </app-role-warehouse-access>
+            </div>
+            <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+              <app-general-notes [RecID]="RoleID" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+              </app-general-notes>
+            </div>
+            <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+              <app-attachment-files [RecID]="RoleID" [HeaderNames]="this.HeaderNames" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+              </app-attachment-files>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group text-center" *ngIf="AccessTab != 'Attachments' && AccessTab !='Notes'">
+      <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive" (click)="SaveAction='Save'">Save</button>
+      <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive" (click)="SaveAction='SaveNClose'">Save & Close</button>
+      <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+    </div>
+    <div *ngIf="!this.IsActive" style="text-align: center;">
+      <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

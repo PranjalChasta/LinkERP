@@ -1,0 +1,139 @@
+<h1>Tax Code <span *ngIf="Mode == 'Edit'">({{TaxCodeForm.get('TaxCode').value}} - {{TaxCodeForm.get('TaxCodeName').value}})</span> </h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Tax Code</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Tax Code</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="TaxCodeForm" name="TaxCodeForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Tax Code
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add Tax Code</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true" [Currentpage]="this.Currentpage"
+                (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [IsExport]="true"  [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="taxcode"}' data-toggle="tab"
+           (click)="AccessTab='taxcode'" role="tab">Tax Code</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="details"}'
+           data-toggle="tab" (click)="AccessTab='details'" role="tab">Details</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='taxcode'">
+      <div class="card-header">
+        {{Mode}} Tax Code
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Tax Code <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control"  placeholder="" [ngClass]="{ 'is-invalid': this.Submitted && f.TaxCode.errors}" type="text"
+                           formControlName="TaxCode" maxlength="50">
+                    <!-- <input class="form-control" *ngIf="addreadonly" placeholder="" [ngClass]="{ 'is-invalid': this.Submitted && f.TaxCode.errors}" type="text"
+                           formControlName="TaxCode" maxlength="50" readonly> -->
+                    <div class="errorlbl" *ngIf="this.Submitted && f.TaxCode.errors">  Please enter tax code</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; TaxCode Name</label>
+                    <input class="form-control" placeholder=" " type="text" formControlName="TaxCodeName"  maxlength="255">
+                  </div>
+                </div>
+                <div class="form-border">
+                  <h3 class="form-heading">Percentage/Value</h3>
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                    </div>
+                    <div class="onoffswitchPerFlag">
+                      <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                             id="myonoffswitchPerFlag" formControlName="PercentageFlag">
+                      <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                        <span class="onoffswitchPerFlag-inner"></span>
+                        <span class="onoffswitchPerFlag-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-border">
+                  <h3 class="form-heading">Inclusive/Exclusive</h3>
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                    </div>
+                    <div class="onoffswitchIncFlag">
+                      <input type="checkbox" name="onoffswitchIncFlag" class="onoffswitchIncFlag-checkbox"
+                             id="myonoffswitch" formControlName="TaxInclusiveExclusiveFlag">
+                      <label class="onoffswitchIncFlag-label" for="myonoffswitch">
+                        <span class="onoffswitchIncFlag-inner"></span>
+                        <span class="onoffswitchIncFlag-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>   
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedTaxcodeID" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access"  [IsActive]="IsActive" >
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='details'">
+      <app-tax-code-details [TaxCodeID]="this.SelectedTaxcodeID" [IsTaxcodeActive]="this.IsTaxcodeActive" [SelectedTaxcode]="SelectedTaxcode" [isActive]="IsActive">
+      </app-tax-code-details>
+    </div>
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedTaxcodeID"
+                            [HeaderNames]="this.HeaderNames" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access"  [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+  <!-- <pre>{{ InventoryForm.valid | json }}<br/>{{ InventoryForm.value | json }}</pre> -->
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

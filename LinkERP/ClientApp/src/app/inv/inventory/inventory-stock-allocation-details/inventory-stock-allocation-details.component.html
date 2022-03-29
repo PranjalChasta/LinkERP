@@ -1,0 +1,168 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryStockAllocationDetailsForm" name="InventoryStockAllocationDetailsForm" (ngSubmit)="onSave()"
+  class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory Allocation
+              <div class="add-row" *ngIf="this.InventryID">
+                <button (click)="Back()" class="btn add-btn mb-1">Back</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [IsColumnsToFit]="false" [paginationPageSize]="this.PageSize"
+                  [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+
+
+    <div class="card-header">
+      {{Mode}} Inventory Stock-Allocation-Details
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> WareHouse Name <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.WareHouseName.errors}"
+                    formControlName="WareHouseName" (change)="onWareHouseChange($event.target.value)">
+                    <option value="-1">--Select WareHouse Name--</option>
+                    <option *ngFor="let warehouse of WareHouse " [value]="warehouse.id">
+                      {{warehouse.wareHouseName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.WareHouseName.errors?.notEqual">
+                    Please select WareHouse
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> BinName <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" formControlName="BinName"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.BinName.errors}">
+                    <option value="-1">--Select BinName--</option>
+                    <option *ngFor="let wareHouseBin  of WareHouseBins" [value]="wareHouseBin.id">
+                      {{wareHouseBin.binName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.BinName.errors?.notEqual">
+                    Please select BinName
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product Style Matrix Column</label>
+                  <select class="form-control" formControlName="ProductStyleMatrixColumn">
+                    <option value="-1">--Select Product Name--</option>
+                    <option *ngFor="let product of ProductStyleMatrixDetail" [value]="product.id">
+                      {{product.styleMatrixDetailCode}} - {{product.styleMatrixDetailName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product Style Matrix Row</label>
+                  <select class="form-control" formControlName="ProductStyleMatrixRow">
+                    <option value="-1">--Select Product Name--</option>
+                    <option *ngFor="let product of ProductStyleMatrixDetail" [value]="product.id">
+                      {{product.styleMatrixDetailCode}} - {{product.styleMatrixDetailName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> SerialNo <span class="mandatoryFieldColor">*</span> </label>
+                  <input class="form-control textarea" maxlength="50" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.SerialNo.errors}" formControlName="SerialNo">
+                  <div class="errorlbl" *ngIf="this.submitted && f.SerialNo.errors"> Please enter SerialNo</div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> TransactionDateIn </label>
+                  <!--<input *ngIf="!read" class="form-control" type="text" bsDatepicker
+         [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+         formControlName="TransactionDateIn">
+  <input *ngIf="read" class="form-control" placeholder="" type="text" bsDatepicker
+         [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+         formControlName="TransactionDateIn" readonly>-->
+                  <app-date-time-picker formControlName="TransactionDateIn" [showTimePicker]="false">
+                  </app-date-time-picker>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> ExpiryDate </label>
+                  <!--<input *ngIf="!read" class="form-control" placeholder="" type="text" bsDatepicker
+         [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+         formControlName="ExpiryDate">
+  <input *ngIf="read" class="form-control" placeholder="" type="text" bsDatepicker
+         [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+         formControlName="ExpiryDate" readonly>-->
+                  <app-date-time-picker formControlName="ExpiryDate" [showTimePicker]="false"></app-date-time-picker>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Quantity <span class="mandatoryFieldColor">*</span></label>
+                  <input class="form-control text-right" placeholder="" type="number" min="0" step="0.00"
+                    OnlyNumber="true" [ngClass]="{ 'is-invalid': this.submitted && f.Quantity.errors}"
+                    formControlName="Quantity">
+                  <div class="errorlbl" *ngIf="this.submitted && f.Quantity.errors"> Please enter quantity</div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> CostIn <span class="mandatoryFieldColor">*</span> </label>
+                  <input class="form-control text-right" placeholder="" type="number" min="0" step="0.00"
+                    OnlyNumber="true" [ngClass]="{ 'is-invalid': this.submitted && f.CostIn.errors}" type="text"
+                    OnlyNumber="true" formControlName="CostIn">
+                  <div class="errorlbl" *ngIf="this.submitted && f.CostIn.errors"> Please enter CostIn</div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> SourceReference <span class="mandatoryFieldColor">*</span> </label>
+                  <input class="form-control textarea" maxlength="255" placeholder=""
+                    [ngClass]="{ 'is-invalid': this.submitted && f.SourceReference.errors}" type="text"
+                    formControlName="SourceReference">
+                  <div class="errorlbl" *ngIf="this.submitted && f.SourceReference.errors"> Please enter SourceReference
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="form-group text-center">
+            <!-- <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access" >Save</button> -->
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>

@@ -1,0 +1,60 @@
+  <div class="card-header">
+    Landed Cost Stock Booked In
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div *ngIf="displayStockList" class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Order No</th>
+                  <th>Product No</th>
+                  <th>Description</th>
+                  <th>Book In Number</th>
+                  <th>Serial No</th>
+                  <th>Bin Location</th>
+                  <th>Quantity</th>
+                  <th>Cost In</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let stock of stockBookedIn; let i = index">
+                  <td style="width: 100px;">
+                    {{stock.purchaseOrderNumber}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{stock.productNo}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{stock.description}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{stock.bookingNumber}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{stock.serialNo}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{WarehouseLocation}}
+                  </td>
+                  <td style="width: 100px;text-align: right;">
+                    {{stock.quantity | number :'1.2-2'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{stock.costIn | number :'1.4-4'}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div *ngIf="displayStockList" class="form-group text-center">
+            <!-- <button class="btn add-btn mr-1" type="submit">Close Order</button> -->
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

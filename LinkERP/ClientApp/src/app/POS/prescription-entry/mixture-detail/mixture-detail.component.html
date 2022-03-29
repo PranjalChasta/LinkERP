@@ -1,0 +1,123 @@
+<!-- <div class="modal-content">
+  <div class="modal-body"> -->
+    <div class="card">
+      <div class="card-header">
+        Mixtures
+      </div>
+      <div class="card-body position-relative">
+        <div class="row">
+          <div class="col-12 col-md-4">
+            <div class="form-group">
+              <label class="col-form-label">Medication</label>
+              <product-search [ModuleName]="'Medications'" [Action]="this.Action" (change)="onMedChange($event)">
+              </product-search>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label class="col-form-label">Description</label>
+              <input type="text" class="form-control" [(ngModel)]="ProductName" />
+            </div>
+          </div>
+          <div class="col-12 col-md-2">
+            <div class="form-group">
+              <label class="col-form-label">Quantity</label>
+              <input type="text" class="form-control" value="0" [(ngModel)]="Quantity" />
+            </div>
+          </div>
+          <!-- <div class="col-12 col-md-4">
+            <div class="form-group">
+              <label class="w-100"></label>
+              <button class="btn add-btn sml-btn" type="button" (click)="SearchProduct()">Search</button>
+            </div>
+          </div> -->
+          <!-- <div class="col-12 col-md-3">
+            <div class="form-group">
+              <label class="col-form-label">Quantity</label>
+              <input type="text" class="form-control" />
+            </div>
+          </div> -->
+          <div class="col-12 col-md-12">
+            <div class="form-group text-right">
+              <br />
+              <button class="btn add-btn mr-1" type="button" (click)="Clear()">
+                Clear
+              </button>
+              <button class="btn add-btn mr-1" type="button"
+                (click)="AddMixture(this.ID,ProductCode,ProductName,Quantity,Total,unitPrice)">Add
+                To Mixture</button>
+            </div>
+          </div>
+          <div class="col-12 col-md-12" style="max-height: 300px;overflow:scroll;">
+            <div class="row">
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Select</th>
+                      <th>ID</th>
+                      <th>Description</th>
+                      <th>Quantity</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="Selecting" *ngFor="let product of ProductDetails; let i = index">
+                      <td>
+                        <input name="selectId" type="checkbox" value="{{product.productID}}"
+                          (change)="onCheckbxChange(product.id,$event)">
+                      </td>
+                      <td>{{product.productCode}}</td>
+                      <td>{{product.productName}}</td>
+                      <td>{{product.quantity}}</td>
+                      <td>{{product.total}}</td>
+                    </tr>
+                    <!-- <tr ngIf="!isClicked" class="Selecting" *ngFor="let product of ProductDetails; let i = index">
+                      <td>
+                        <input name="selectId" type="checkbox" value="{{product.id}}"
+                          (change)="onCheckbxChange(product.productId,$event)">
+                      </td>
+                      <td>{{product.productCode}}</td>
+                      <td>{{product.productName}}</td>
+                      <td>{{product.quantity}}</td>
+                      <td>{{product.total}}</td>
+                    </tr> -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <!-- <div class="form-group text-center"> -->
+            <label class="col-form-label">Total Quantity</label>
+            <input type="text" value="0" class="form-control" disabled [(ngModel)]="TotalQuantity" />
+            <!-- <label class="col-form-label">Mixture Price</label>
+              <input type="text" class="form-control" [disabled] /> -->
+            <!-- </div> -->
+          </div>
+          <div class="col-12 col-md-6">
+            <!-- <div class="form-group text-center"> -->
+            <!-- <label class="col-form-label">Total Quantity</label>
+              <input type="text" class="form-control" [disabled] /> -->
+            <label class="col-form-label">Mixture Price</label>
+            <input type="text" value="0.00" class="form-control" disabled [(ngModel)]="TotalPrice" />
+            <!-- </div> -->
+          </div>
+
+          <div class="col-12 col-md-12">
+            <br />
+            <div class="form-group text-right">
+              <button class="btn add-btn mr-1" type="button" (click)="DeleteMixture(ProductDetails)">
+                Delete Mixture
+              </button>
+              <button class="btn add-btn mr-1" type="button" (click)="SaveMixture(ProductDetails)">Save + Close</button>
+              <button class="btn add-btn mr-1" type="button" (click)="Close()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--<a style="float: right;" data-dismiss="modal" #closeBtn (click)="Close()" class="close-modal">X</a>-->
+
+  <!-- </div>
+</div> -->

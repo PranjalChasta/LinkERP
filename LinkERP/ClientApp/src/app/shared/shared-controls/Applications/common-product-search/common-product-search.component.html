@@ -1,0 +1,73 @@
+<div class="input-group mr-2">
+  <input type="text" class="form-control" [(ngModel)]="ProductDetails" readonly>
+  <!--<button type="button" (click)="OpenSearch(products)">...</button>-->
+  <div class="input-group-append">
+    <button class="btn btn-outline-secondary" type="button" (click)="OpenSearch(products)"
+            style="border-radius: 0px 4px 4px 0px; padding: .28rem .5rem; min-width: 42px;">
+      <i class="fa fa-caret-down"></i>
+    </button>
+  </div>
+</div>
+<ng-template #productSearchBox>
+  <div class="modal-content">
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-header">
+          Product Search 321
+        </div>
+        <div class="card-body position-relative">
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">Search</label>
+                <input type="text" class="form-control" [(ngModel)]="SearchText" />
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="w-100"></label>
+                <button class="btn add-btn sml-btn" type="button" (click)="SearchProduct()">Search</button>
+              </div>
+            </div>
+            <div class="col-12 col-md-12" style="max-height: 421px;overflow:scroll;">
+              <div class="row">
+                <div class="table-responsive table-padd">
+                  <table class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>Product Code</th>
+                        <th>Product Name</th>
+                        <th>Bar Code</th>
+                        <th>Vendor SKU</th>
+                        <th>Vendor Bar Code</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="Selecting" *ngFor="let product of Products; let i = index" [ngClass]="{ 'Selected': false}" (click)="SelectProduct(product.id,product.productCode,product.productName,i)">
+                        <td>{{product.productCode}}</td>
+                        <td>{{product.productName}}</td>
+                        <td>{{product.barcode}}</td>
+                        <td>{{product.vendorSKU}}</td>
+                        <td>{{product.vendorBarCode}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-12">
+              <div class="form-group text-center">
+                <!--<button class="btn add-btn mr-1" type="button" (click)="SelectProduct()">
+                  Select Product
+                </button>-->
+                <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--<a style="float: right;" data-dismiss="modal" #closeBtn (click)="Close()" class="close-modal">X</a>-->
+
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,33 @@
+.modal-content {
+    position: relative;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    width:750px;
+    /* height:600px; */
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.2);
+    margin-left: -120px;
+    border-radius: .3rem;
+    outline: 0;
+}
+
+/* product-search {
+  
+    position: relative;
+  }
+  
+  product-search:hover:after {
+    content: attr(data-tooltip);
+    position: top;
+    
+    left: 100%;
+    margin-left: 5px;
+    background: rgba(0,0,0,0.54);
+    padding: 12px;
+    border-radius: 3px;
+  } */

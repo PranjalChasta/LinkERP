@@ -1,0 +1,181 @@
+<form [formGroup]="CountryStateForm" name="CountryStateForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1 *ngIf="Mode != 'City'">{{this.SelectedCountryName}} - State <span *ngIf="Mode == 'Edit'">({{CountryStateForm.get('Code').value}} - {{CountryStateForm.get('Name').value}})</span></h1>
+  <nav aria-label="breadcrumb" *ngIf="Mode != 'City'">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="BacktoCountry()">Country</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">State</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} State</a></li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+  <div class="card" *ngIf="Mode=='List'">
+
+    <!-- <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              State
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1">Add State</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Country</th>
+                        <th width="50" class="text-center">Delete</th>
+                        <th width="70" class="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <tr *ngFor="let countrystate of CountryStates; let i=index;">
+                          <td>{{countrystate.stateCode}}</td>
+                          <td>{{countrystate.name}}</td>
+                          <td>{{countrystate.countryName}}</td>
+                          <td class="text-center"><input type="checkbox" [checked]="countrystate.deleted" (change)="onDeleteChecked(countrystate.stateID)" /></td>
+                          <td class="action-tools">
+                              <a (click)="Edit(countrystate.stateID)"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination-main">
+                <ul class="pagination pagination-md justify-content-end">
+                  <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                  <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <div class="card-header">
+      State
+      <div class="add-row">
+        <button class="btn btn-danger" type="button" (click)="BacktoCountry()">Back</button>  &nbsp;
+        <button (click)="AddNew()" class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access">
+          Add
+          State
+        </button>
+      </div>
+    </div>
+    <div class="card-body position-relative">
+      <div class="ag-theme-balham" style="width: 100%; height:500px;">
+        <app-ag-grid *ngIf="AgLoad"
+                     [ColumnDefs]="this.ColumnDefs"
+                     [RowData]="this.RowData"
+                     [IsSearch]="true"
+                     [IsExport]="true"
+                     [Currentpage]="this.Currentpage"
+                    (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                     [paginationPageSize]="this.PageSize"
+                     (OnPageSizeChange)="OnPageSizeChange($event)"
+                     (OnActionClick)="OnActionClick($event)">
+        </app-ag-grid>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="State"}' data-toggle="tab"
+           (click)="AccessTab='State'" role="tab">State</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+           data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='State'">
+
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <!--id="nav-tabContent"-->
+          <div class="tab-pane fade show active">
+            <!--id="tab1" role="tabpanel"-->
+            <div class="form-border mt-0">
+              <!--<h3 class="form-heading">State Maintenance</h3> -->
+              <div class="row">
+               <!--  <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Country</label>
+                    <select class="form-control" 
+                            [ngClass]="{ 'is-invalid': this.submitted && f.Country.errors?.notEqual}"
+                            formControlName="Country">
+                      <option value="-1">--Select Country--</option>
+                      <option *ngFor="let  countries of Countries" [value]="countries.countryID">
+                        {{countries.countryCode}} - {{countries.name}}
+                      </option>
+                    </select>
+                    
+                    <div class="errorlbl" *ngIf="this.submitted && f.Country.errors?.notEqual">
+                      Please select country
+                    </div>
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label "> Code <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" 
+                           [ngClass]="{ 'is-invalid': this.submitted && f.Code.errors}" placeholder="" formControlName="Code"
+                           type="text" maxlength="50">
+        
+                    <div class="errorlbl" *ngIf="submitted && f.Code.errors">Please enter code</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label "> Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Name.errors}"
+                           placeholder="" formControlName="Name" type="text" maxlength="255">
+                    <div class="errorlbl" *ngIf="submitted && f.Name.errors">Please enter name</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit"
+                      [disabled]="!this.write_Access ||  !this.IsActive">
+                Save
+              </button>
+              <button class="btn add-btn mr-1"  type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedState"  [IsActive]="IsActive"
+                         [write_Access]="this.write_Access" [delete_Access]="this.delete_Access">
+      </app-general-notes>
+    </div>
+
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedState" [HeaderNames]="this.HeaderNames"  [IsActive]="IsActive"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access">
+      </app-attachment-files>
+    </div>
+  </div>
+
+</form>
+<div *ngIf="Mode=='City'">
+  <app-countrystatecity [StateID]="this.SelectedState" [SelectedStateName]="this.SelectedStateName"  [SelectedCountryName]="this.SelectedCountryName" [CountryID]="this.CountryID"  (OnBackToStateClick)="OnBackToStateClick(event)">
+  </app-countrystatecity>
+</div>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

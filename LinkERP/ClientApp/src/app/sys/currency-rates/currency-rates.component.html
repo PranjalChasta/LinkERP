@@ -1,0 +1,167 @@
+<!-- <h1>Exchange Rate <span *ngIf="this.IsEdit">({{ this.SelectedCode }})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Exchange Rate</li>
+  </ol>
+</nav> -->
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="CurrencyRateForm" name="CurrencyRateForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card">
+    <!-- <nav *ngIf="(Mode=='List'|| Mode=='Add')">
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="IsEdit" [ngClass]='{"active": AccessTab=="CurrencyRate"}' data-toggle="tab"
+           (click)="AccessTab='CurrencyRate'" role="tab">Exchange Rate</a>
+        <a class="nav-item nav-link" *ngIf="IsEdit" [ngClass]='{"active":  AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="IsEdit" [ngClass]='{"active":  AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Attachments</a>
+      </div>
+    </nav> -->
+    <div *ngIf="(Mode=='List'|| Mode=='Add') && AccessTab=='CurrencyRate' ">
+      <!--class="card"-->
+      <!-- <div class="card-body pb-0"> -->
+      <div class="card-header">
+        Exchange Rates
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <!--<div class="card">
+
+          </div>-->
+          <div class="card-body pb-0">
+            <!--  <div class="row"> -->
+            <!--   <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label>Currency</label>
+                  <select name="Currency" [ngClass]="{ 'is-invalid': this.submitted && f.CurrencyID.errors}"
+                          class="form-control" (change)="onCurrencyChange($event.target.value)" formControlName="CurrencyID">
+                    <option value="-1">--Select Currency--</option>
+                    <option *ngFor="let currencies of CurrencyList" [value]="currencies.id">
+                      {{currencies.currencyCode}} - {{currencies.currecnyName}}
+                    </option>
+                  </select>
+                </div>
+              </div> -->
+            <!-- <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="card-header ">Short Name</label>
+                <input class="form-control" type="text" formControlName="CurrecnyName">
+              </div>
+            </div> -->
+            <!--  </div> -->
+
+
+            <div class="card-body position-relative">
+              <div class="table-responsive table-padd" style="min-height:350px">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Date Entered</th>
+                      <th>Effective Date</th>
+                      <th>Effective Date End</th>
+                      <th>Transaction Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    <!-- <tr *ngFor="let user of NewRows; let i=index;"> -->
+                    <tr *ngFor="let user of NewRows; let i=index;">
+                      <td>
+                        <!--{{user.DateCreated}}-->
+                        <!--<input class="form-control" placeholder="" formControlName="DateCreated"
+                        [attr.disabled]="true" bsDatepicker
+                        [bsConfig]="{ dateInputFormat: 'MM-dd-YYYY', showWeekNumbers:false }" type="text">-->
+                        <!--<input class="form-control" formControlName="DateCreated" [value]="CurrencyRateForm.get('DateCreated').value | appDate" type="text" disabled>-->
+                        {{CurrencyRateForm.get('DateCreated').value | appDate}}
+                      </td>
+                      <td>
+                        <!--<input class="form-control" formControlName="Effective" bsDatepicker
+                        [bsConfig]="{ dateInputFormat: 'MM/DD/YYYY',showWeekNumbers:false }"
+                        [value]="CurrencyRateForm.get('Effective').value | appDate"
+                        [minDate]="MinEffectiveDate" [maxDate]="MaxEffectiveDate" type="text">-->
+                        <app-date-time-picker formControlName="Effective" [showTimePicker]="false"
+                          [MinDate]="MinEffectiveDate" [MaxDate]="MaxEffectiveDate">
+                        </app-date-time-picker>
+
+                        <!--<div class="input-group">
+                          <input class="form-control" placeholder="yyyy-mm-dd" formControlName="Effective"
+                                 name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker">
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+                          </div>
+                        </div>-->
+                        <!--<input class="form-control" placeholder="yyyy-mm-dd" formControlName="Effective"
+                               name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker">
+                        <div class="input-group-append">
+                          <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+                        </div>-->
+                      </td>
+                      <td>
+
+                        <!--<input class="form-control" formControlName="DateEnd" [value]="CurrencyRateForm.get('DateEnd').value | appDate" type="text" disabled>-->
+                        {{CurrencyRateForm.get('DateEnd').value | appDate}}
+                        <!--<input class="form-control" formControlName="DateEnd" bsDatepicker
+                        [bsConfig]="{ dateInputFormat: 'MM/DD/YYYY',showWeekNumbers:false }"
+                        [value]="CurrencyRateForm.get('DateEnd').value | appDate"
+                        [minDate]="CurrencyRateForm.get('Effective').value" type="text" disabled>-->
+                      </td>
+                      <td>
+                        <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                          formControlName="TransactionRate">
+                      </td>
+                    </tr>
+
+                    <tr *ngFor="let user of CurrencyRate; let i=index;">
+                      <td style="width: 100px;">{{user.dateCreated | appDate}}</td>
+                      <td style="width: 100px;">{{user.effectiveDate | appDate}}</td>
+                      <td style="width: 100px;">{{user.dateEnd | appDate}}</td>
+                      <!-- <td class="text-right" style="width: 100px;">{{user.transactionRate | number: '1.4-4'}}</td> -->
+                      <td style="width: 100px;"><input class="form-control text-right" type="text" [(ngModel)]="user.transactionRate" [ngModelOptions]="{standalone: true}" (change)="transactionrateChange(user, i)"></td>
+                      <!-- <td><input class="form-control" [(ngModel)]="user.transactionRate" type="text"></td> -->
+                    </tr>
+                  </tbody>
+                </table>
+                <!-- <div>a
+                  <button (click)="AddNew()" style="float: right;" class="btn add-btn mb-1" type="submit">Save</button>
+                </div> -->
+              </div>
+            </div>
+            <div>
+            </div>
+            <div class="form-group text-center">
+              <button (click)="AddNew()" [disabled]="!this.write_Access || !this.IsActive" class="btn add-btn mr-1"
+                type="submit">Save</button>
+              <!--<button (click)="ChangeDate()" class="btn add-btn mr-1" type="button">Change Date</button>-->
+              <!--<button class="btn btn-danger" type="button" (click)="Close()">Close</button>-->
+              <button (click)="Back()" class="btn btn-danger" type="button">Close</button>
+            </div>
+          </div>
+
+          <div *ngIf="!Addbutton">
+            <div style="text-align: right;padding-right: 20px;">
+              <button (click)="addnew()" type="submit" [disabled]="!this.write_Access" class="btn add-btn mb-1">
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- </div> -->
+
+      </div>
+    </div>
+    <!-- <div *ngIf="IsEdit && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedCurrencyRateID" [write_Access]="this.write_Access"
+                         [delete_Access]="this.delete_Access">
+      </app-general-notes>
+    </div>
+    <div *ngIf="IsEdit && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedCurrencyRateID" [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access">
+      </app-attachment-files>
+    </div> -->
+  </div>
+
+
+</form>

@@ -1,0 +1,58 @@
+<div class="card-header">
+  <form [formGroup]="BankAccountMappingForm" name="BankAccountMappingForm" (ngSubmit)="onSave()"
+        class="Form-Horizontal">
+    <div class="row">
+      <!-- <ul>
+        <li *ngFor="let bankAccount of BankAccountMappingForm.get('AccountMapping').controls; let i = index;">{{bankAccount.get('ID').value}}</li>
+      </ul> -->
+      <div class="table-responsive table-padd">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Bank Code To</th>
+              <th>Bank Name</th>
+              <th>Mapping Number</th>
+              <th>Status</th>
+              <th width="50px"></th>
+            </tr>
+          </thead>
+          <tbody formArrayName="AccountMapping">
+            <tr *ngFor="let bankAccount of BankAccountMappingForm.get('AccountMapping').controls; let i = index;"
+                [formGroupName]="i">
+              <td>
+                <input class="form-control" formControlName="BankCodeTo" type="text" readonly>
+              </td>
+              <td>
+                <input class="form-control" formControlName="BankName" type="text" readonly>
+              </td>
+              <td>
+                <input class="form-control" formControlName="BankNumber" type="text" maxlength="50">
+              </td>
+              <td><span>{{bankAccount.get('DeleteStatus').value}}</span></td>
+              <td *ngIf="this.delete_Access">
+                <a (click)="Delete(i)"><i class="re fa fa-trash-o"></i></a>
+              </td>
+            </tr>
+          </tbody>
+          <!--<tbody formGroupName="Account">
+             <tr>
+              <td>
+                <input class="form-control" placeholder="Bank Code To" formControlName="BankCode" type="text">
+              </td>
+              <td>
+                <input class="form-control" placeholder="Bank Name" formControlName="BankName" type="text">
+              </td>
+              <td>
+                <input class="form-control" placeholder="Mapping Number" formControlName="BankNumber" type="text">
+              </td>
+               <td>
+                <button class="btn add-btn" type="button" (click)="AddBankAccountMapping()">Add</button>
+              </td>
+            </tr>
+          </tbody>-->
+        </table>
+      </div>
+    </div>
+
+  </form>
+</div>

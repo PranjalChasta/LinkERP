@@ -1,0 +1,156 @@
+<h1>Convert Requisition to Purchase Order</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Convert Requisition to Purchase Order</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<div class="card">
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+         <!--  <form [formGroup]="ConvertRequisitionForm" name="ConvertRequisitionForm" (ngSubmit)="onSave()"
+            class="Form-Horizontal">
+            <div class="card-header">
+              Convert Requisition to Purchase Order
+            </div>
+            <div class="table-responsive table-padd">
+              <table class="table table-bordered table-striped" *ngIf="RowData && RowData.length>0">
+                <thead>
+                  <tr>
+                    <th>Requisition Number</th>
+                    <th>Date Created</th>
+                    <th>ExpectedDeliveryDate</th>
+                    <th>Warehouse Description</th>
+                    <th>Amount</th>
+                    <th>CreatedBy</th>
+                    <th>RequestedBy</th>
+                    <th>Select Vendor</th>
+                    <th>
+                      Select All
+                      <input type="checkbox" (click)="checkAll($event)">
+                    </th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="ApprovedRequisition">
+                  <tr
+                    *ngFor="let approvedRequisition of ConvertRequisitionForm.get('ApprovedRequisition').controls; let i = index"
+                    [formGroupName]="i">
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('RequisitionNumber').value}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('DateCreated').value | date:'MM-dd-yyyy'}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('ExpectedDeliveryDate').value | date:'MM-dd-yyyy'}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('WareHouse').value}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('Amount').value}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('CreatedBy').value}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('RequestedBy').value}}
+                    </td>
+                    <td style="width:350px;">
+                      <select class="form-control" formControlName="Vendor">
+                        <option value="-1">--Select Vendor--</option>
+                        <option *ngFor="let vendor of vendorList" [value]="vendor.id">
+                          {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                        </option>
+                      </select>
+                    </td>
+                    <td style="width: 100px;">
+                      <input type="checkbox" formControlName="SelectRequisition">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="form-group text-center" *ngIf="RowData && RowData.length>0">
+              <button class="btn add-btn mr-1" type="submit">Convert to Purchase Order</button>
+            </div>
+          </form> -->
+
+          <div class="card-body pb-0">
+            <div class="tab-content pt-2 pb-1">
+              <div class="tab-pane fade show active">
+                <div class="form-border mt-0">
+
+                  <div class="row" style="width: 100%;">
+                    <div style="width: 100%;">
+                      <div class="table-responsive table-padd">
+                        <table class="table table-bordered table-striped">
+                          <thead>
+                            <tr>
+
+                              <th>Requisition Number</th>
+                              <th>Date Created</th>
+                              <th>ExpectedDeliveryDate</th>
+                              <th>Warehouse Description</th>
+                              <th>Amount</th>
+                              <th>CreatedBy</th>
+                              <th>RequestedBy</th>
+                              <th> Vendor</th>
+                              <th class="text-center">Select All<input type="checkbox" [(ngModel)]="IsAllSelected"
+                                  [checked]="IsAllSelected" (change)="checkAll($event,'Approved')" /></th>
+
+                              <th
+                                *ngIf="this.IsCreatedBY && (this.RequisitionStatus=='New' ||  this.IsAllReject) && this.RequisitionStatus!='Closed'">
+                                Edit</th>
+                              <th *ngIf="this.IsCreatedBY && this.RequisitionStatus=='New'">Delete</th>
+
+                              <!--<th class="text-center">None <input type="checkbox" (change)="checkAll($event,'NoAccess')" /></th>-->
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let detailslist of RowData; let i = index">
+
+                              <td> {{detailslist.requisitionNumber}}</td>
+                              <td> {{detailslist.dateCreated | date:'dd/MM/yyyy'}}</td>
+                              <td> {{detailslist.expectedDeliveryDate | date:'dd/MM/yyyy'}}</td>
+                              <td> {{detailslist.wareHouseName}}</td>
+                              <td> {{detailslist.amount}}</td>
+                              <td> {{detailslist.createdBY}}</td>
+                              <td> {{detailslist.requestedBY}}</td>
+                              <td style="width:100px;">
+                                {{detailslist.vendor}}
+                                <!-- <input class="form-control text-right"
+                                  [(ngModel)]="detailslist.transferQuantity" (input)="onSearchChange($event.target.value,i)"
+                                  type="text" appTwoDigitDecimaNumber> -->
+                                  <!-- <select class="form-control" [(ngModel)]="detailslist.sendto">
+                                    <option value="-1">--Select Vendor--</option>
+                                    <option *ngFor="let vendor of vendorList" [value]="vendor.id">
+                                      {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                                    </option>
+                                  </select> -->
+                                </td>
+                              <td width="50" class="text-center"><input type="checkbox" [checked]="detailslist.isSelect"  [(ngModel)]="detailslist.isSelect"
+                                  (change)="onOptionSelected(i, $event)" /></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div style="width: 100%;" *ngIf="RowData.length>0">
+                        <button class="btn add-btn mr-1" type="button" (click)="SaveChanges()">Save Changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

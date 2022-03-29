@@ -1,0 +1,82 @@
+<div>
+  <div class="table table-padd" style="overflow-y: scroll;max-height: 400px;height: 400px;">
+    <table *ngIf="ProductStyleMatrixRow && ProductStyleMatrixRow.length>0" class="table table-bordered table-striped"
+      style="width: 100px;float: left;">
+      <thead style="height: 51px;">
+        <tr>
+          <th>{{this.RowName}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of ProductStyleMatrixRow; let i = index">
+          <td>
+            <input [ngClass]="selectedRow[i]?'form-control bold':'form-control'"
+              [(ngModel)]="detailslist.styleMatrixDetailName" (click)="myFunc(detailslist.id,i)" readonly>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="table table-bordered table-striped" *ngIf="Resultlist && Resultlist.length>0" style="width: 700px;">
+      <thead>
+        <tr>
+          <th>{{this.ColumnName}}</th>
+          <th>Product Code</th>
+          <th>Description</th>
+          <th *ngIf="IsuseExpiryDates">Expiry Date</th>
+          <th>Transaction <br />Date</th>
+          <th>Bin</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of this.Resultlist| SearchByPipe:this.SelectedRowID; let i = index; ">
+
+          <td>
+            <input class="form-control" placeholder="columnName" [(ngModel)]="detailslist.styleMatrixDetailName"
+              readonly>
+          </td>
+          <td>{{this.SelectedProductCode}}</td>
+          <td>{{this.SelectedProductDescription}}</td>
+          <td *ngIf="IsuseExpiryDates">
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.expiryDate"></app-date-time-picker>
+          </td>
+          <td>
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.transactionDateIn">
+            </app-date-time-picker>
+          </td>
+          <td>
+            <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option value="null">--Select Bin--</option>
+              <option *ngFor="let binlists of BinList" [value]="binlists.id">
+                {{binlists.binCode}} -- {{binlists.binName}}
+              </option>
+            </select>
+          </td>
+          <!-- <td *ngIf="IsuseExpiryDates">
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.expiryDate"></app-date-time-picker>
+          </td> -->
+          
+       
+          <td>
+            <input class="form-control" [(ngModel)]="detailslist.quantity" type="text" appTwoDigitDecimaNumber
+              (input)="onSearchChange($event.target.value,i)"></td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div style="text-align: center;" *ngIf="ProductStyleMatrixRow && ProductStyleMatrixRow.length==0">
+  <span>{{Msg}}</span>
+</div>
+<div *ngIf="ProductStyleMatrixRow && ProductStyleMatrixRow.length>0" style="text-align: right;padding-right: 80px;">
+  <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+</div>
+<div class="form-group text-center" *ngIf="Resultlist && Resultlist.length>0">
+  <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Save')"
+    [disabled]="this.submitted || this.CurrentStatus!='New'">Save Changes</button>
+  <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Close')"
+    [disabled]="this.submitted || this.CurrentStatus!='New'">Save & Close</button>
+  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+</div>

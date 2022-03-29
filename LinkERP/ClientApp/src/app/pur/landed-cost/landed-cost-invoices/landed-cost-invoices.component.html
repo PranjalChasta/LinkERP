@@ -1,0 +1,115 @@
+<form [formGroup]="LandedCostInvoiceForm" name="LandedCostInvoiceForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card-header">
+    Invoices
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div *ngIf="displayInvoiceList" class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Vendor</th>
+                  <th>Invoice No</th>
+                  <th>Currency</th>
+                  <th>Fx Rate</th>
+                  <th>Exp Home <br>Amount</th>
+                  <th>Exp Fx Amount</th>
+                  <th>Booked In<br> Home Amt</th>
+                  <th>Booked In<br> Fx Amt</th>
+                  <th>Tax Amt</th>
+                  <th>Home Amt Inc.tax</th>
+                  <th>Invoiced</th>
+                  <th>Invoiced Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <th>Due
+                    Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  </th>
+                  <!-- <th>Reference</th>
+                  <th>Remark</th> -->
+                  <th>
+                    Select All
+                    <input type="checkbox" (click)="checkAll($event)">
+                  </th>
+                  <!-- <th>Delete</th> -->
+                </tr>
+              </thead>
+              <tbody formArrayName="Invoice">
+                <tr *ngFor="let invoice of LandedCostInvoiceForm.get('Invoice').controls; let i = index"
+                  [formGroupName]="i">
+                  <td style="width: 100px;">
+                    {{invoice.get('Vendor').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    <input class="form-control" type="text" formControlName="InvoiceNo">
+                  </td>
+                  <td style="width: 100px;">
+                    {{invoice.get('Currency').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    <input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="FxRate">
+                  </td>
+                  <td style="width: 100px;text-align: right;">
+                    {{invoice.get('ExpectedHomeAmount').value | number : '1.4-4' }}
+                  </td>
+                  <td style="width: 100px;text-align: right;">
+                    {{invoice.get('ExpectedFXAmount').value  | number : '1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right;">
+                    {{invoice.get('BookedInHomeAmount').value  | number : '1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right;">
+                    {{invoice.get('BookedInFXAmount').value  | number : '1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right;">
+                    {{invoice.get('TaxAmount').value  | number : '1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right;">
+                    {{invoice.get('HomeAmountIncTax').value  | number : '1.4-4'}}
+                  </td>
+                  <td style="width: 100px;">
+                    <div class="form-group">
+                      <input type="checkbox" style="margin-left: 17px;margin-top: 7px;"
+                        formControlName="Invoiced" />
+                    </div>
+                    <!-- <input class="form-control" type="checkbox" disabled [value]="invoice.get('Invoiced').value"> -->
+                  </td>
+                  <td style="width: 200px;">
+                    <app-date-time-picker formControlName="InvoiceDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </td>
+                  <td style="width: 200px;">
+                    <app-date-time-picker formControlName="DueDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </td>
+                  <!-- <td style="width: 100px;">
+                    {{invoice.get('Reference').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{invoice.get('Remark').value}}
+                  </td> -->
+                  <td style="width: 100px;">
+                    <div class="form-group">
+                      <input type="checkbox" style="margin-left: 17px;margin-top: 7px;"
+                        formControlName="SelectInvoice" />
+                    </div>
+                  </td>
+                  <!-- <td style="width: 100px;" (click)="DeleteInvoice(i,invoice)"><i
+                    class="re fa fa-trash-o"></i></td> -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- <div *ngIf="displayInvoiceList && InvoiceStart" class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit">Submit Invoices</button>
+          </div> -->
+          <div style="margin-top: 13px;" *ngIf="displayInvoiceList" class="form-group text-center">
+            <button [disabled]="this.Status =='Finalise'" class="btn add-btn mr-1" type="submit">Submit
+              Invoices</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

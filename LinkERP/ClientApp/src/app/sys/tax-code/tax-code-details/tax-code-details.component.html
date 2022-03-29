@@ -1,0 +1,79 @@
+
+<form [formGroup]="TaxCodeDetailsForm" name="TaxCodeDetailsForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="TaxCodeDetailsForm" name="TaxCodeDetailsForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card-body p-0" *ngIf="Mode=='Add'|| Mode=='Edit'">
+   
+    <div class="card" *ngIf="Mode=='Add'|| Mode=='Edit'">
+      <div class="card-header">
+        Add Tax Code Detail >> {{this.SelectedTaxcode}}
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Tax Label <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': Submitted && f.TaxLabel.errors}" type="text" formControlName="TaxLabel" maxlength="50">
+                    <div class="errorlbl" *ngIf="Submitted && f.TaxLabel.errors">  Please enter tax label</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Tax Rate <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control"   type="text" 
+                    appFourDigitDecimaNumber  [ngClass]="{ 'is-invalid': this.Submitted && f.TaxAmount.errors}" formControlName="TaxAmount">
+                    <div class="errorlbl" *ngIf="Submitted && f.TaxAmount.errors">Please enter tax rate</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||  !this.isActive">Save</button>
+              <button class="btn add-btn mr-1"  type="button" [disabled]="!this.write_Access ||  !this.isActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.isActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+               Tax code  
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" type="button" [disabled]="!this.write_Access || !this.isActive">Add taxCode detail</button>
+              </div>
+            </div>
+           
+            <div  class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;text-align: left;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs"
+                 [RowData]="this.RowData" [IsSearch]="true"
+                  [Currentpage]="this.Currentpage"
+                (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                [IsEditable]="true"
+                [IsExport]="true" [paginationPageSize]="10" 
+                (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

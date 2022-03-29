@@ -1,0 +1,264 @@
+<form [formGroup]="PurchaseTemplateForm" name="PurchaseTemplateForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1> Purchase Template<span *ngIf="Mode == 'Edit'">({{PurchaseTemplateForm.get('Description').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()"> Purchase Template</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}}  Purchase Template</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+  <div #sectionNeedToScroll></div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Purchase Template
+
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" type="button"  [disabled]="!this.write_Access">Add PurchaseTemplate</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Template"}'
+           data-toggle="tab" (click)="AccessTab='Template'" role="tab">Template</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+  <!--   Mode=='Add' || -->
+  <form [formGroup]="PurchaseTemplateForm" name="PurchaseTemplateForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+    <div *ngIf=" Mode=='Edit' && AccessTab=='Template'">
+      <div class="card-header">
+        {{Mode}} Purchase Template
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Description <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Description.errors}" type="text" formControlName="Description">
+                    <div class="errorlbl" *ngIf="this.submitted && f.Description.errors">  Please enter description</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Attention To<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Attentionto.errors}" type="text" formControlName="Attentionto" maxlength="50">
+                    <div class="errorlbl" *ngIf="this.submitted && f.Attentionto.errors">  Please enter attention to</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Attention Phone<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.AttentionPhone.errors}" type="text" formControlName="AttentionPhone" maxlength="50">
+                    <div class="errorlbl" *ngIf="this.submitted && f.AttentionPhone.errors">  Please enter attention phone</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Vendor.errors?.notEqual}" formControlName="Vendor">
+                      <option value="-1">--Select Vendor--</option>
+                      <option *ngFor="let vendor of vendorslist" [value]="vendor.id">
+                        {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Vendor.errors?.notEqual">
+                      Please select vendor
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Warehouse.errors?.notEqual}" formControlName="Warehouse">
+                      <option value="-1">--Select WareHouse--</option>
+                      <option *ngFor="let wareHouse of WareHouse" [value]="wareHouse.id">
+                        {{wareHouse.wareHouseCode}} - {{wareHouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Warehouse.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor WareHouse<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.VendorWareHouse.errors?.notEqual}" formControlName="VendorWareHouse">
+                      <option value="-1">--Select Vendor WareHouse--</option>
+                      <option *ngFor="let vendorWareHouses of vendorWareHouse" [value]="vendorWareHouses.id">
+                        {{vendorWareHouses.description}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.VendorWareHouse.errors?.notEqual">
+                      Please select vendor warehouse
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||!this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+        <app-purchase-template-detail  *ngIf="Mode=='Edit'" [WareHouseId]="this.WareHouseId" [TemplateID]="this.SelectedTemplateID" [IsParentActive]="IsActive">
+        </app-purchase-template-detail>
+      </div>
+    </div>
+  </form>
+    <div *ngIf="Mode=='Add' && AccessTab=='Template'">
+      <form [formGroup]="TemplateSearchForm" name="TemplateSearchForm" (ngSubmit)="onSearchSave('Save')" class="Form-Horizontal">
+        <div class="card-header">
+          {{Mode}} Purchase Template
+        </div>
+        <div class="card-body pb-0">
+          <div class="tab-content pt-2 pb-1">
+            <div class="tab-pane fade show active">
+              <div class="form-border mt-0">
+                <div class="row">
+
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label class="col-form-label">Vendor<span class="mandatoryFieldColor">*</span></label>
+                      <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && fs.VendorSearch.errors?.notEqual}" formControlName="VendorSearch">
+                        <option value="-1">--Select Vendor--</option>
+                        <option *ngFor="let vendor of vendorslist" [value]="vendor.id">
+                          {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                        </option>
+                      </select>
+                      <div class="errorlbl" *ngIf="this.submitted && fs.VendorSearch.errors?.notEqual">
+                        Please select vendor
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label class="col-form-label">WareHouse<span class="mandatoryFieldColor">*</span></label>
+                      <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && fs.WarehouseSearch.errors?.notEqual}" formControlName="WarehouseSearch">
+                        <option value="-1">--Select WareHouse--</option>
+                        <option *ngFor="let wareHouse of WareHouse" [value]="wareHouse.id">
+                          {{wareHouse.wareHouseCode}} - {{wareHouse.wareHouseName}}
+                        </option>
+                      </select>
+                      <div class="errorlbl" *ngIf="this.submitted && fs.WarehouseSearch.errors?.notEqual">
+                        Please select warehouse
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label class="col-form-label">Vendor WareHouse<span class="mandatoryFieldColor">*</span></label>
+                      <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && fs.VendorSearchWareHouse.errors?.notEqual}" formControlName="VendorSearchWareHouse">
+                        <option value="-1">--Select Vendor WareHouse--</option>
+                        <option *ngFor="let vendorWareHouses of vendorWareHouse" [value]="vendorWareHouses.id">
+                          {{vendorWareHouses.description}}
+                        </option>
+                      </select>
+                      <div class="errorlbl" *ngIf="this.submitted && fs.VendorSearchWareHouse.errors?.notEqual">
+                        Please select vendor warehouse
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label class="col-form-label">Category<span class="mandatoryFieldColor">*</span></label>
+                      <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && fs.Category.errors?.notEqual}" formControlName="Category"
+                              (change)="onCategoryChange($event.target.value)">
+                        <option value="00000000-0000-0000-0000-000000000000">--Select Category Name--</option>
+                        <option *ngFor="let Category of CategoryList" [value]="Category.id">
+                          {{Category.dataCode}} -  {{Category.dataName}}
+                        </option>
+                      </select>
+                      <div class="errorlbl" *ngIf="this.submitted && fs.Category.errors?.notEqual">
+                        Please select category
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label class="col-form-label">Sub Category<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && fs.SubCategory.errors?.notEqual}" formControlName="SubCategory">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select SubCategory Name--</option>
+                      <option *ngFor="let SubCategory of SubCategoryList" [value]="SubCategory.id">
+                        {{SubCategory.dataCode}} - {{SubCategory.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && fs.SubCategory.errors?.notEqual">
+                      Please select sub category
+                    </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group text-center">
+                <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||!this.IsActive">Save</button>
+
+                <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='PurchaseTemplateDetail'">
+      <app-purchase-template-detail [TemplateID]="this.SelectedTemplateID">
+
+      </app-purchase-template-detail>
+    </div>  -->
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedTemplateID" [write_Access]="this.write_Access"
+                         [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedTemplateID"
+                            [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

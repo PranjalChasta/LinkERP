@@ -1,0 +1,145 @@
+<div class="card">
+  <div class="card-header">
+    Payment
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="row">
+          <b>Select Payment Method</b><br />
+          <div class="col-12 col-md-12">
+            <div class="form-group text-center float-left" *ngFor="let tender of tenderTypes; let i=index;">
+              <button class="btn add-btn mr-1" type="button"
+                (click)="OnPayment(paymentmethods,tender.description,tender.id)">
+                {{tender.description}}
+              </button>
+              <br />
+            </div>
+            <!-- <button class="btn add-btn mr-1" type="button" (click)="OnCredit(paymentmethods,'Credit')">Credit</button>
+            <button class="btn add-btn mr-1" type="button" (click)="OnCheque(paymentmethods,'Cheque')">Cheque</button>
+            <button class="btn add-btn mr-1" type="button" (click)="OnCred(paymentmethods, 'Cred')">Cred</button> -->
+          </div>
+        </div>
+        <br />
+        <div class="col-12 col-md-12">
+          <div class="row">
+            <div class="table-responsive table-padd" style="overflow-y:auto;height:200px">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Payment Type</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="Selecting" *ngFor="let payment of PaymentData; let i=index;"
+                    [ngClass]="{ 'Selected': false}">
+                    <td>{{payment.Paymentmode}}</td>
+                    <td>{{payment.Amount}}</td>
+                    <button class="btn add-btn mr-1" type="button" (click)="Deleteindex(payment, i)">Remove</button>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-12 col-md-4">
+            <label class="col-form-label">Sub Total</label>
+            <input name="Subtotal" class="form-control" placeholder="Subtotal" type="text" [(ngModel)]="total"
+              [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="col-form-label">Total Tax</label>
+            <input name="TotalTax" class="form-control" placeholder="Total Tax" type="text" [(ngModel)]="totalTax"
+              [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="col-form-label">Total Due</label>
+            <input name="TotalDue" class="form-control" placeholder="Total Due" type="text" [(ngModel)]="totalDue"
+              [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="col-form-label">Total Discount</label>
+            <input name="TotalDiscount" class="form-control" placeholder="Total Discount" type="text"
+              [(ngModel)]="totalDiscount" [ngModelOptions]="{standalone: true}" [disabled]="false">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="col-form-label">Received</label>
+            <input name="Received" class="form-control" placeholder="Received" type="text" [(ngModel)]="received"
+              [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="col-form-label">Balance Due</label>
+            <input name="BalanceDue" class="form-control" placeholder="Balance Due" type="text" [(ngModel)]="balanceDue"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+        </div>
+        <br />
+        <div class="form-group text-center">
+          <button class="btn add-btn mr-1" type="button" (click)="OnCompletePayment()">
+            Complete
+          </button>
+          <button class="btn btn-danger" type="button" (click)="Close()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #cash>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-cash-payment (Cancel)="closePopUp()">
+      </app-cash-payment>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #credit>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-credit-payment (Cancel)="closePopUp()">
+      </app-credit-payment>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #cheque>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-cheque-payment (Cancel)="closePopUp()">
+      </app-cheque-payment>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #cred>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-cred-payment (Cancel)="closePopUp()">
+      </app-cred-payment>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #paymentmethods>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-payment-methods [PaymentMode]="Paymentmode" [paymentList]="PaymentData"
+        (paymentmodeDetails)="paymentmodeDetails($event)" [TotalAmount]="total" [newPaymentAmount]="received"
+        [selectedTenderID]="tenderID" (Cancel)="closePopUp()">
+      </app-payment-methods>
+    </div>
+  </div>
+</ng-template>
+<!-- <div *ngIf="Mode=='OrderDetail'">
+  <app-sop-order-detail>
+
+  </app-sop-order-detail>
+</div> -->

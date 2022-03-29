@@ -1,0 +1,35 @@
+import { BaseEntity } from "../base-entity";
+export class LBSSOPPrescriptionEntry extends BaseEntity {
+  CompanyID: any;
+  PrescriptionNo: any;
+  LineNo: any;
+  WarehouseID: any;
+  DoctorReferenceNo: any;
+  DoctorID: any;
+  DoctorShortCode:any;
+  DoctorName: any;
+  PatientID: any;
+  PatientName: any;
+  PatientAge: any;
+  MedicationID: any;
+  MedicationName: any;
+  Warning: any;
+  SpecialInstructions: any;
+  Instructions: any;
+  CareInstructions: any;
+  DispensedQuantity: any;
+  UnitPriceOverride: any;
+  UnitPriceTaxInclusive: any;
+  AdminFeesOverride: any;
+  AdminFeesTaxInclusive: any;
+  TotalAmountTaxInclusive: any;
+  Repeats: any;
+  UnitCost: any;
+  TotalCost: any;
+  Status: any;
+  PayByInsurance: any;
+  Insurer: any;
+  TransactionSourceReference: any;
+  DateCreated: any;
+  Deleted: any;
+}

@@ -1,0 +1,10 @@
+.swtch{
+    padding-left: 35px;
+    padding-top: 27px;
+}
+.disabled {
+    color: #adb5bd;
+  }
+  .switchcolor{
+      color: "#007bff";
+  }

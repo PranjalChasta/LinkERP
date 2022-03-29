@@ -1,0 +1,136 @@
+<form [formGroup]="ServerForm" name="ServerForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<!--<h1> Server RelationShip <span *ngIf="Mode == 'Edit'">({{ServerForm.get('Status').value}})</span></h1>-->
+<!--<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>-->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Server RelationShip</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Server RelationShip</a></li>
+  </ol>
+</nav>
+<form [formGroup]="ServerForm" name="ServerForm"
+      (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Server RelationShip
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" type="button">
+                  Add
+                  Server RelationShip
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true"
+                             [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Server RelationShip
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label">Host Server<span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control"
+                          [ngClass]="{ 'is-invalid': this.submitted && f.HostServer.errors?.notEqual}"
+                          formControlName="HostServer">
+                    <option value="-1">--Select Host Server--</option>
+                    <option *ngFor="let host of Servers" [value]="host.id">
+                      {{host.serverName}}
+                    </option>
+                  </select>
+
+                  <div class="errorlbl" *ngIf="this.submitted && f.HostServer.errors?.notEqual">
+                    Please select host server
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label">Destination Server<span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control"
+                          [ngClass]="{ 'is-invalid': this.submitted && f.DestinationServer.errors?.notEqual}"
+                          formControlName="DestinationServer">
+                    <option value="-1">--Select Destination Server--</option>
+                    <option *ngFor="let destination of Servers" [value]="destination.id">
+                      {{destination.serverName}}
+                    </option>
+                  </select>
+
+                  <div class="errorlbl" *ngIf="this.submitted && f.DestinationServer.errors?.notEqual">
+                    Please select destination server
+                  </div>
+                </div>
+              </div>
+              <div class="form-border">
+                <h3 class="form-heading">Parent/Child</h3>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                  </div>
+                  <div class="onoffswitchPerFlag">
+                    <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                           id="myonoffswitchPerFlag" formControlName="RelationshipType">
+                    <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                      <span class="onoffswitchPerFlag-inner"></span>
+                      <span class="onoffswitchPerFlag-switch"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-border">
+                <h3 class="form-heading">New/Active</h3>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                  </div>
+                  <div class="onoffswitchIncFlag">
+                    <input type="checkbox" name="onoffswitchIncFlag" class="onoffswitchIncFlag-checkbox"
+                           id="myonoffswitch" formControlName="Status">
+                    <label class="onoffswitchIncFlag-label" for="myonoffswitch">
+                      <span class="onoffswitchIncFlag-inner"></span>
+                      <span class="onoffswitchIncFlag-switch"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit" [disabled]="!this.IsActive">Save</button>
+            <button class="btn add-btn mr-1" type="button" [disabled]="!this.IsActive" (click)="onSave('Close')">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!this.IsActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<!-- <confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup> -->

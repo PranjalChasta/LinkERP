@@ -1,0 +1,131 @@
+<form [formGroup]="MakeForm" name="MakeForm"  (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1 *ngIf="Mode != 'Price'"> Make <span *ngIf="Mode == 'Edit'">({{MakeForm.get('MakeDescription').value}})</span></h1>
+  <nav aria-label="breadcrumb" *ngIf="Mode != 'Price'">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Inventory</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Make</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode == 'Edit'"><a>{{Mode}} Make</a></li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Make
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add Make</button>
+              </div>
+            </div>
+
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                           [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Make"}'
+        data-toggle="tab" (click)="AccessTab='Make'" role="tab">Make</a>
+
+        <!-- <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="MakeModel"}'
+           data-toggle="tab" (click)="AccessTab='MakeModel'" role="tab">Model</a> -->
+
+        <!-- <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Series"}'
+           data-toggle="tab" (click)="AccessTab='Series'" role="tab">Series</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Engine"}'
+           data-toggle="tab" (click)="AccessTab='Engine'" role="tab">Engine</a> -->
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+           data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Make'">
+      <div class="card-header">
+        {{Mode}} Make
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Description <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="255" [ngClass]="{ 'is-invalid': this.submitted && f.MakeDescription.errors}" type="text" formControlName="MakeDescription">
+                  </div>
+                  <div class="errorlbl" *ngIf="this.submitted && f.MakeDescription.errors">  Please enter description</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group text-center">
+          <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||!this.IsActive">Save</button>
+          <button class="btn add-btn mr-1"  type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+          <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+        </div>
+        <div *ngIf="!this.IsActive" style="text-align: center;">
+          <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+        </div>
+        
+    
+      </div>
+    </div>
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='MakeModel'">
+      <app-make-model *ngIf="Mode=='Edit'"  [MakeID]="this.SelectedMakeID"  (onModeChange)="onModeChange()">
+      </app-make-model>
+    </div> -->
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='Series'">
+      <app-series *ngIf="Mode=='Edit'" [MakeID]="this.SelectedMakeID">
+      </app-series>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Engine'">
+      <app-engine *ngIf="Mode=='Edit'" [MakeID]="this.SelectedMakeID">
+      </app-engine>
+    </div> -->
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedMakeID"
+                         [write_Access]="this.write_Access" 
+                         [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedMakeID" 
+                            [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access"
+                             [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+  <div *ngIf="Mode=='Price'">
+    <app-make-model  [ISParentActive]="IsActive"  [MakeID]="this.SelectedMakeID" [MakeName]="this.MakeName"   (onModeChange)="onModeChange($event)">
+    </app-make-model>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

@@ -1,0 +1,45 @@
+import { BaseEntity } from "../base-entity"
+export class LBSINVInventory extends BaseEntity{
+  CompanyID: any; 
+  ProductCode:any;
+  ProductName :any;
+  CategoryID :any;
+  SubCategoryID :any;
+  UnitOfMeasureID :any;
+  InventoryDefaultCost :any;
+  TaxID :any;
+  Weight :any;
+  Height :any;
+  Width :any;
+  Length:any;
+  PriceGroupID :any;
+  StocktakeCycleID :any;
+  ProductStatus :any;
+  AllowPurchase :boolean;
+  MinimumProfitPercentage :any;
+  ProductStyleMatrixEnabled :any;
+  ProductStyleMatrixColumn :any;
+  ProductStyleMatrixRow :any;
+  UseWareHousePrice :boolean;
+  SerialisedProduct :boolean;
+  BulkItem :boolean;
+  AllowDiscount :boolean;
+  CustomKit :boolean;
+  Websellable :boolean;
+  UseExpiryDates :boolean;
+  DecimalPlaces :any;
+  PrescriptionInstructions :any;
+  PrescriptionSpecialInstructions :any;
+  PrescriptionCareInstructions :any;
+  PrescriptionWarning :any;
+  CategoryName:any;
+  SubCategoryName:any;
+  UOMName:any;
+  ProductGroup:any;
+  ProductGroup2:any;
+  ProductGroup3:any;
+  WarrantyPeriod:any; 
+  WarrantyFrequency:any;
+  WarrantyTerms:any;
+  GiftVoucher:any;
+}

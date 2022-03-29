@@ -1,0 +1,568 @@
+<h1>Purchase Goods Receive Note  <span *ngIf="Mode == 'Edit'"> ({{this.GoodsReceivedNoteForm.get('GRNNo').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Purchase Goods Receive Note</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Purchase
+        Goods Receive Note</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="GoodsReceivedNoteForm" name="GoodsReceivedNoteForm" (ngSubmit)="onSave('Save')"
+  class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Purchase Goods Receive Note
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!write_Access">
+                  Add Goods Receive Note
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="GoodsReceivedNoteCols" [RowData]="GoodsReceivedNotes"
+                  [IsSearch]="true" [IsExport]="true" [paginationPageSize]="PageSize"
+                  (OnPageSizeChange)="OnPageSizeChange($event)" [Currentpage]="Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [IsColumnsToFit]="false"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit' || Mode=='Add'"
+          [ngClass]='{"active": AccessTab=="PurchaseGRN"}' data-toggle="tab" (click)="AccessTab='PurchaseGRN'"
+          role="tab">Purchase GRN</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='PurchaseGRN'">
+      <!-- --  -->
+      <div class="card-header">
+        {{Mode}} Purchase Goods Receive Note
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1"> 
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <div class="form-group" *ngIf="Mode=='Add'">
+                    <label class="col-form-label">Purchase Order</label>
+                    <purchase-order-search formControlName="PurchaseOrderNumber" [PurchaseOrderNumber]="this.GoodsReceivedNoteForm.get('PurchaseOrderNumber').value"
+                                           (OnPurchaseOrderSelectedChanged)="POChanged($event)"></purchase-order-search>
+                  </div>
+                  <div class="form-group" *ngIf="Mode=='Edit'">
+                    <label class="col-form-label">Purchase Order : </label>
+                    <label style="font-size: 14px;"
+                      class="col-form-label"><b>{{this.GoodsReceivedNoteForm.get('PurchaseOrderNumber').value}}</b></label>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" *ngIf="Mode=='Edit'">
+                  <div class="form-group">
+                    <label class="col-form-label">GRN Number : </label>
+                    <!-- <input class="form-control" maxlength="255" formControlName="GRNNo" type="text"> -->
+                    <label style="font-size: 14px;" class="col-form-label"><b>
+                        {{this.GoodsReceivedNoteForm.get('GRNNo').value}} </b> </label>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse</label>
+                    <input class="form-control" maxlength="255" formControlName="WareHouse" type="text" readonly>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor</label>
+                    <input class="form-control" maxlength="255" formControlName="Vendor" type="text" readonly>
+                  </div>
+                </div>
+                <!--<div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor</label>
+                    <numeric-textbox (focus)="onFocus()"
+                                     (blur)="onBlur()"
+                                     (enter)="onEnter()"
+                                     (escape)="onEscape()"
+                                     (ngModelChange)="ngModelChange($event)">
+                    </numeric-textbox>
+                  </div>
+                </div>-->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Supplier Delivery Reference<span
+                        class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="255" formControlName="SupplierDeliveryReference" type="text"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.SupplierDeliveryReference.errors}">
+                  </div>
+                  <div class="errorlbl" *ngIf="this.submitted && f.SupplierDeliveryReference.errors"> Please enter
+                    supplier delivery reference
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Received-Date</label>
+                    <app-date-time-picker formControlName="ReceivedDate" [showTimePicker]="false"
+                      [MinDate]="MinEffectiveDate" [MaxDate]="MaxReceivedDate"></app-date-time-picker>
+                  </div>
+                </div>
+                <!-- <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Auto fill Received Quantity</label>
+                    <input type="checkbox" class="form-control" formControlName="AutoFillReceivedQuantity"
+                      (change)=" AutoFillReceivedQuantity($event.target.checked)">
+                    <label class="custom-control-label" for="AllowPurchase">Auto fill Received Quantity</label>
+                  </div>
+                </div> -->
+                <!-- <div class="form-border"> -->
+                <!-- <h3 class="form-heading">Auto fill Received Quantity</h3> -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Auto fill Received Quantity</label>
+                  </div>
+                  <div class="onoffswitchPerFlag">
+                    <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                      id="myonoffswitchPerFlag" formControlName="AutoFillReceivedQuantity"
+                      (change)=" AutoFillReceivedQuantity($event.target.checked)">
+                    <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                      <span class="onoffswitchPerFlag-inner"></span>
+                      <span class="onoffswitchPerFlag-switch"></span>
+                    </label>
+                  </div>
+                </div>
+                <!-- </div> -->
+                <div class="col-12 col-md-12">
+                  <div class="row" style="padding-left: 10px;padding-top: 10px;">
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <input class="form-control" placeholder="Search by Code, Description, Barcode, Vendor SKU,Vendor Barcode" type="text"
+                          (input)="Search($event.target.value)">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="table-responsive table-padd" style="min-height:200px; overflow-y:auto">
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <th>Order No.</th>
+                          <th>Product Code</th>
+                          <th style="width:150px">Description</th>
+                          <th>Qty Ordered</th>
+                          <th>Total Qty Received </th>
+                          <th>Qty Received</th>
+                          <th>Partial Received</th>
+                          <th>UOM</th>
+                          <th>Classification</th>
+                          <th>Unit Cost</th>
+                          <th>Tax</th>
+                          <th>Total Tax Amount</th>
+                          <!-- <th>Unit Cost Inc Tax</th> -->
+                          <th>Line Total Ex Tax</th>
+                          <th>Line Total Inc Tax</th>
+                          <th>Details</th>
+                        </tr>
+                      </thead>
+                      <tbody formArrayName="PurchaseGRNDetails">
+                        <tr class="Selecting"
+                          *ngFor="let purchaseOrderDetail of PurchaseGRNDetails.controls; let i = index;"
+                          [formGroupName]="i" [ngClass]="{ 'Selected': false}">
+                          <td width="50">{{purchaseOrderDetail.get('PurchaseOrderNumber').value}}</td>
+                          <td width="80">{{purchaseOrderDetail.get('ProductCode').value}}</td>
+                          <td style="width:150px">{{purchaseOrderDetail.get('ProductName').value}}</td>
+                          <td width="50" class="text-right">
+                            {{purchaseOrderDetail.get('OrderedQuantity').value | number:'1.4-4'}}</td>
+                          <td width="50" class="text-right">
+                            {{purchaseOrderDetail.get('TotalReceivedQuantity').value | number:'1.4-4'}}</td>
+                          <td width="80">
+                            <!--<ngx-numeric-textbox name="ReceivedQuantity" [min]="0" [max]="100"
+                                                 [disabled]="false" [decimals]="2" [format]=""
+                                                 [placeholder]=""
+                                                 [rangeValidation]="true"
+                                                 formControlName="ReceivedQuantity"
+                                                 (ngModelChange)="LineCalculation($event, i)" class="text-right form-control">
+                            </ngx-numeric-textbox>-->
+                            <input type="text" appFourDigitDecimaNumber formControlName="ReceivedQuantity"
+                              (ngModelChange)="LineCalculation($event, i)" class="text-right form-control" />
+                          </td>
+
+
+                          <td width="80" class="text-center">
+                            <input type="checkbox" formControlName="PartialReceived" disabled />
+                          </td>
+                          <!--<td width="80"><input type="number" formControlName="ReceivedQuantity" (ngModelChange)="LineCalculation($event, i)" class="text-right form-control" /></td>-->
+                          <td width="80">
+                            <select formControlName="UnitOfMeasure" class="text-right form-control" style="width:80px;"
+                              disabled>
+                              <option value="-1">--UOM--</option>
+                              <option *ngFor="let uom of UOMs" [value]="uom.id">{{uom.uomName}}</option>
+                            </select>
+                          </td>
+                          <td width="80"><input type="text" formControlName="ClassificationID" class="form-control"
+                              style="width:80px;" /></td>
+                          <td width="80" class="text-right">
+                            {{purchaseOrderDetail.get('UnitCost').value | number:'1.2-2'}}</td>
+                          <td width="80">
+                            <select formControlName="TaxID" class="form-control" style="width:80px;" disabled>
+                              <option value="-1">--TAX--</option>
+                              <option *ngFor="let taxCode of TaxCodes" [value]="taxCode.id">{{taxCode.taxCodeName}}
+                              </option>
+                            </select>
+                          </td>
+                          <td width="50" class="text-right">
+                            {{purchaseOrderDetail.get('LineTotalTaxAmount').value | number:'1.2-2'}}</td>
+                          <!-- <td width="50" class="text-right">
+                            {{purchaseOrderDetail.get('UnitCostInclusiveTax').value | number:'1.2-2'}}</td> -->
+                          <td width="50" class="text-right">
+                            {{purchaseOrderDetail.get('LineTotalCostTaxEclusive').value | number:'1.2-2'}}</td>
+                          <td width="50" class="text-right">
+                            {{purchaseOrderDetail.get('LineTotalCostTaxInclusive').value | number:'1.2-2'}}</td>
+                          <td>
+                            <div *ngIf="Mode=='Edit' || Mode=='Add'">
+                              <a (click)="ProductMatrix(serialise,product,other,purchaseOrderDetail.get('OrderedQuantity').value,i)"><i class="bi fa fa-align-justify"
+                                  aria-hidden="true"></i></a>
+
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="table-responsive table-padd">
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <th style="width:20%"></th>
+                          <th style="width:20%">Ex. Amount</th>
+                          <th style="width:20%">Tax Rate</th>
+                          <th style="width:20%">Tax</th>
+                          <th style="width:20%">Inc Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td width="50">Freight</td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber formControlName="Freight"
+                              class="text-right form-control" readonly /></td>
+                          <td width="50"><input type="text" formControlName="FreightTaxName" class="form-control"
+                              readonly />
+                          </td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber formControlName="FreightTaxRate"
+                              class="text-right form-control" readonly /></td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber formControlName="FreightTaxAmount"
+                              class="text-right form-control" readonly /></td>
+                        </tr>
+                        <tr>
+                          <td width="50">Duty</td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber formControlName="Duty"
+                              class="text-right form-control" readonly />
+                          </td>
+                          <td width="50"><input type="text" formControlName="DutyTaxName" readonly
+                              class="form-control" /></td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber readonly
+                              formControlName="DutyTaxRate" class="text-right form-control" /></td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber readonly
+                              formControlName="DutyTaxAmount" class="text-right form-control" /></td>
+                        </tr>
+                        <tr>
+                          <td width="50">Insurance</td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber readonly formControlName="Insurance"
+                              class="text-right form-control" /></td>
+                          <td width="50"><input type="text" readonly formControlName="InsuranceName"
+                              class="form-control" /></td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber readonly
+                              formControlName="InsuranceTaxRate" class="text-right form-control" /></td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber readonly
+                              formControlName="InsuranceTaxAmount" class="text-right form-control" /></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="table-responsive table-padd">
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <th style="width:20%"></th>
+                          <th style="width:20%">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td width="50">Sub Total</td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber
+                              formControlName="TotalExclusiveofTaxHome" class="text-right form-control" readonly /></td>
+                        </tr>
+                        <tr>
+                          <td width="50">Tax</td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber formControlName="TaxTotalHome"
+                              class="text-right form-control" readonly /></td>
+                        </tr>
+                        <tr>
+                          <td width="50">Total</td>
+                          <td width="50"><input type="text" appTwoDigitDecimaNumber
+                              formControlName="TotalInclusiveofTaxHome" class="text-right form-control" readonly /></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <!--<div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Insurance </label>
+                    <input class="form-control text-right" formControlName="Insurance" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Insurance Tax </label>
+                    <input class="form-control" maxlength="255" formControlName="InsuranceTaxID" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Insurance Tax Rate </label>
+                    <input class="form-control text-right" formControlName="InsuranceTaxRate" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Insurance Tax Amount </label>
+                    <input class="form-control text-right" formControlName="InsuranceTaxAmount" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Freight</label>
+                    <input class="form-control text-right" formControlName="Freight" min="0" step="0.00" type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Freight Tax</label>
+                    <input class="form-control" maxlength="20" formControlName="FreightTaxID" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Freight Tax Rate</label>
+                    <input class="form-control text-right" formControlName="FreightTaxRate" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Freight Tax Amount</label>
+                    <input class="form-control text-right" formControlName="FreightTaxAmount" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Duty</label>
+                    <input class="form-control text-right" formControlName="Duty" min="0" step="0.00" type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Duty Tax</label>
+                    <input class="form-control" maxlength="20" formControlName="DutyTaxID" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Duty Tax Rate</label>
+                    <input class="form-control text-right" formControlName="DutyTaxRate" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Duty Tax Amount</label>
+                    <input class="form-control text-right" formControlName="DutyTaxAmount" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Total ExclusiveofTax </label>
+                    <input class="form-control text-right" formControlName="TotalExclusiveofTax" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Tax Total </label>
+                    <input class="form-control text-right" formControlName="TaxTotal" min="0" step="0.00" type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Total InclusiveofTax </label>
+                    <input class="form-control text-right" formControlName="TotalInclusiveofTax" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="onoffswitchPerFlag" *ngIf="Status">
+                      <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                             id="myonoffswitchPerFlag" formControlName="Status">
+                      <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                        <span class="onoffswitchPerFlag-inner"></span>
+                        <span class="onoffswitchPerFlag-switch"></span>
+                      </label>
+                      <div class="errorlbl" *ngIf="submitted && f.Status.errors">Please enter Status</div>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="onoffswitchIncFlag">
+                      <input type="checkbox" name="onoffswitchIncFlag" class="onoffswitchIncFlag-checkbox"
+                             id="onoffswitchIncFlag" formControlName="Invoiced" (click)="switch($event)">
+                      <label class="onoffswitchIncFlag-label" for="onoffswitchIncFlag">
+                        <span class="onoffswitchIncFlag-inner"></span>
+                        <span class="onoffswitchIncFlag-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>-->
+                <!-- <div class="form-border" >
+                  <h3 class="form-heading">Invoiced</h3>
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                    </div>
+                    <div class="onoffswitchIncFlag">
+                      <input type="checkbox" name="onoffswitchIncFlag" class="onoffswitchIncFlag-checkbox"
+                             id="onoffswitchIncFlag" formControlName="Invoiced" (click)="switch($event)">
+                      <label class="onoffswitchIncFlag-label" for="onoffswitchIncFlag">
+                        <span class="onoffswitchIncFlag-inner"></span>
+                        <span class="onoffswitchIncFlag-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div> -->
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch"
+                      [class.disabled]="!GoodsReceivedNoteForm.get('Invoiced').value">
+                      <input type="checkbox" class="custom-control-input" formControlName="Invoiced" id="Invoiced">
+                      <label class="custom-control-label" for="Invoiced">Invoiced</label>
+                    </div>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit"
+                [disabled]="!write_Access || !IsActive || IsClose">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!write_Access || !IsActive || IsClose"
+                (click)="onSave('Close')">Save & Close</button>
+              <button class="btn add-btn mr-1" *ngIf="Mode=='Edit' && selectedStatus!='True'" type="button"
+                (click)="UpdateStatus()">Activate GRN</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+              <button [disabled]="!write_Access || !IsActive || IsInvoiced  || IsReversed"
+                (click)="CreatePurchaseInvoice()" class="btn add-btn mr-1" *ngIf="Mode=='Edit' && IsClose"
+                type="button">Invoice GRN</button>
+              <button class="btn add-btn mr-1" *ngIf="Mode=='Edit' && IsClose" type="button"
+                [disabled]="!write_Access || !IsActive || IsReversed" (click)="ReverseStatus()">Reverse GRN</button>
+            </div>
+            <div *ngIf="!IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+        <!-- <app-purchase-grndetails *ngIf="Mode=='Edit'" [GRNID]="SelectedPurchaseGRNID">
+        </app-purchase-grndetails> -->
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="SelectedPurchaseGRNID" [write_Access]="write_Access" [delete_Access]="delete_Access"
+        [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="SelectedPurchaseGRNID" [HeaderNames]="HeaderNames" [write_Access]="write_Access"
+        [delete_Access]="delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+    <ng-template #product>
+      <div class="modal-content">
+        <div class="modal-body">
+          <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X </a>
+
+          <p>  <b>{{productName}}</b></p>
+          <!--  <app-grn-product-matrix
+           >
+          </app-grn-product-matrix> -->
+          <!-- <app-grn-product-matrix></app-grn-product-matrix> -->
+          <app-goods-recive-productstyle [SelectedQuantityOrderedToCheck]="this.SelectedQuantityOrderedToCheck" [ProductID]="SelectedProductID" [SelecteWareHouseID]="SelecteWareHouseID"
+            [SelectedPurchaseDetail_ID]="SelectedGRNDetailID" [SelectedQuantity]="SelectedQuantity"
+            [SelectedProductCode]="this.selectedProductCode" [SelectedProductDescription]="this.selectedProductDescription"
+            [PurchaseStatus]="New" (OnCancel)="Closenote()" [IsClose]="IsClose"></app-goods-recive-productstyle>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template #serialise>
+      <div class="modal-content">
+        <div class="modal-body">
+          <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X </a>
+
+          <p>  <b>{{productName}}</b></p>
+          <!--  <app-grn-product-matrix
+           >
+          </app-grn-product-matrix> -->
+          <!-- <app-grn-product-matrix></app-grn-product-matrix> -->
+          <app-grn-product-serial [SelectedQuantityOrderedToCheck]="this.SelectedQuantityOrderedToCheck" [ProductID]="SelectedProductID" [SelecteWareHouseID]="SelecteWareHouseID"
+            [SelectedPurchaseDetail_ID]="SelectedGRNDetailID" [SelectedQuantity]="SelectedQuantity"
+            [SelectedProductCode]="this.selectedProductCode" [SelectedProductDescription]="this.selectedProductDescription"
+            [PurchaseStatus]="New" (OnCancel)="Closenote()" [IsClose]="IsClose"></app-grn-product-serial>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template #other>
+      <div class="modal-content">
+        <div class="modal-body">
+          <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X </a>
+
+          <p>  <b>{{productName}}</b></p>
+          <!--  <app-grn-product-matrix
+           >
+          </app-grn-product-matrix> -->
+          <!-- <app-grn-product-matrix></app-grn-product-matrix> -->
+          <app-app-grn-product-other [ProductID]="SelectedProductID" [SelecteWareHouseID]="SelecteWareHouseID"
+            [SelectedPurchaseDetail_ID]="SelectedGRNDetailID" [SelectedQuantity]="SelectedQuantity"
+            [SelectedProductCode]="this.selectedProductCode" [SelectedProductDescription]="this.selectedProductDescription"
+            [PurchaseStatus]="New" (OnCancel)="Closenote()" [SelectedQuantityOrderedToCheck]="this.SelectedQuantityOrderedToCheck" [IsClose]="IsClose"></app-app-grn-product-other>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

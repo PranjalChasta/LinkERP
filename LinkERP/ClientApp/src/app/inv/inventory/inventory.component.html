@@ -1,0 +1,719 @@
+<form [formGroup]="InventoryForm" name="InventoryForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1>Inventory<span *ngIf="Mode == 'Edit'">({{InventoryForm.get('ProductCode').value}} -
+    {{InventoryForm.get('ProductName').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Inventory</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Inventory</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Inventory</a>
+    </li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryForm" name="InventoryForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div #sectionNeedToScroll></div>
+  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-12 col-md-12">
+          <table>
+            <tr>
+              <td style="width:450px;">
+                <input class="form-control"
+                  placeholder="Search by Code, Description, Barcode, Vendor SKU,Vendor Barcode"
+                  (input)="OnchangeSearch()" formControlName="SearchKey">
+              </td>
+              <td style="padding-left: 10px;">
+                <button class="btn add-btn mr-1" type="button" (click)="BindInventoriesBySearchKey()">Search </button>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory
+
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add
+                  Inventory</button>
+              </div>
+
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:550px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [IsColumnsToFit]="false" [paginationPageSize]="this.PageSize"
+                  [Currentpage]="this.Currentpage" [RowIndex]="this.RowIndex"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" (OnPageSizeChange)="OnPageSizeChange($event)"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit' || Mode=='Add'" [ngClass]='{"active": AccessTab=="Inventory"}'
+          data-toggle="tab" (click)="InventoryTabSelected()" role="tab">Inventory</a>
+
+        <!--  <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="InventoryDetails"}'
+           data-toggle="tab" (click)="AccessTab='InventoryDetails'" role="tab">Available Locations</a>  -->
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'"
+          [ngClass]='{"active": AccessTab=="InventoryUnitofMeasureConversions"}' data-toggle="tab"
+          (click)="AccessTab='InventoryUnitofMeasureConversions'" role="tab">Conversions</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="InventoryVendors"}'
+          data-toggle="tab" (click)="AccessTab='InventoryVendors'" role="tab">Vendors</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="InventoryBarCode"}'
+          data-toggle="tab" (click)="AccessTab='InventoryBarCode'" role="tab">Barcode</a>
+
+        <a class="nav-item nav-link" *ngIf="IsProductPrice &&Mode=='Edit'"
+          [ngClass]='{"active": AccessTab=="InventoryProductPrice"}' data-toggle="tab"
+          (click)="AccessTab='InventoryProductPrice'" role="tab">Product Price</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'"
+          [ngClass]='{"active": AccessTab=="InventoryDebtorPrice"}' data-toggle="tab"
+          (click)="AccessTab='InventoryDebtorPrice'" role="tab">Debtor Price</a>
+
+        <!--<a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="InventoryStockAllocationDetails"}'
+           data-toggle="tab" (click)="AccessTab='InventoryStockAllocationDetails'" role="tab">Allocation Details</a>-->
+
+        <a class="nav-item nav-link" *ngIf="IsInventoryKit && Mode=='Edit'"
+          [ngClass]='{"active": AccessTab=="InventoryKit"}' data-toggle="tab" (click)="AccessTab='InventoryKit'"
+          role="tab">Components</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="InventoryAutomative"}'
+          data-toggle="tab" (click)="AccessTab='InventoryAutomative'" role="tab">Automative</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="InventoryPrescription"}'
+          data-toggle="tab" (click)="AccessTab='InventoryPrescription'" role="tab">Prescription</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="InventoryImage"}'
+          data-toggle="tab" (click)="AccessTab='InventoryImage'" role="tab">Image</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="History"}' data-toggle="tab"
+          (click)="AccessTab='History'" role="tab">Transaction History</a>
+        <!-- <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Transfer"}' data-toggle="tab"
+          (click)="AccessTab='Transfer'" role="tab">Transfer</a>
+          <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="StockTake"}' data-toggle="tab"
+          (click)="AccessTab='StockTake'" role="tab">Stock Take</a> -->
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Inventory'">
+
+      <div class="card-header">
+
+        {{Mode}} Inventory
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Code <span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.ProductCode.errors}"
+                      maxlength="50" placeholder="" type="text" formControlName="ProductCode">
+                  </div>
+                  <div class="errorlbl" *ngIf="this.submitted && f.ProductCode.errors"> Please enter product code</div>
+
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.ProductName.errors}"
+                      placeholder="" type="text" formControlName="ProductName">
+                    <div class="errorlbl" *ngIf="this.submitted && f.ProductName.errors"> Please enter product name
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Unit of Measure <span class="mandatoryFieldColor">*</span> </label>
+                    <!--  <input class="form-control" placeholder="Unit of Measure " type="text"
+      formControlName="UnitofMeasure"> -->
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.UnitofMeasure.errors?.notEqual}"
+                      formControlName="UnitofMeasure">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Unit of Measure--</option>
+                      <option *ngFor="let UOM of UOMList" [value]="UOM.id">
+                        {{UOM.dataCode}} - {{UOM.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.UnitofMeasure.errors?.notEqual">
+                      Please select unit of measure
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group ng-invalid">
+                    <!--  <label class="col-form-label">Category </label>
+      <input class="form-control" placeholder="Category " type="text" formControlName="CategoryID"> -->
+                    <label class="col-form-label">Category <span class="mandatoryFieldColor">*</span></label>
+
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.CategoryID.errors?.notEqual}"
+                      formControlName="CategoryID" (change)="onCategoryChanges($event.target.value)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Category Name--</option>
+                      <option *ngFor="let Category of CategoryList" [value]="Category.id">
+                        {{Category.dataCode}} - {{Category.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.CategoryID.errors?.notEqual">
+                      Please select category
+                    </div>
+                  </div>
+
+
+                </div>
+
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Sub Category  <span class="mandatoryFieldColor">*</span></label>
+                    <!--  <input class="form-control" placeholder="Sub Category " type="text" formControlName="SubCategoryID"> -->
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.SubCategoryID.errors?.notEqual}"
+                      formControlName="SubCategoryID">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select SubCategory Name--</option>
+                      <option *ngFor="let SubCategory of SubCategoryList" [value]="SubCategory.id">
+                        {{SubCategory.dataCode}} - {{SubCategory.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.SubCategoryID.errors?.notEqual">
+                      Please select sub category
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Group </label>
+                    <select class="form-control" formControlName="ProductGroup">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Product Group--</option>
+                      <option *ngFor="let productGroup of ProductGroup" [value]="productGroup.id">
+                        {{productGroup.dataCode}} - {{productGroup.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Group 2 </label>
+                    <select class="form-control" formControlName="ProductGroup2">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Product Group--</option>
+                      <option *ngFor="let productGroup of ProductGroup2" [value]="productGroup.id">
+                        {{productGroup.dataCode}} - {{productGroup.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Group 3 </label>
+                    <select class="form-control" formControlName="ProductGroup3">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Product Group--</option>
+                      <option *ngFor="let productGroup of ProductGroup3" [value]="productGroup.id">
+                        {{productGroup.dataCode}} - {{productGroup.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Min Profit Percentage</label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber
+                      formControlName="MinimumProfitPercentage">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Inventory Default Cost <span class="mandatoryFieldColor">*</span></label>
+                    <!-- <input class="form-control" placeholder="Inventory Default Cost" type="text"
+      formControlName="InventoryDefaultCost">
+      <div class="errorlbl" *ngIf="this.submitted && f.InventoryDefaultCost.errors">  Please enter cost</div> -->
+                    <select class="form-control" maxlength="50"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.InventoryDefaultCost.errors?.notEqual }"
+                      formControlName="InventoryDefaultCost">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Default Cost--</option>
+                      <option *ngFor="let defaultCostList of invdefaultCostList" [value]="defaultCostList.value">
+                        {{defaultCostList.name}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.InventoryDefaultCost.errors?.notEqual">
+                      Please select default cost
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Tax<span class="mandatoryFieldColor">*</span></label>
+                    <!-- <input class="form-control" placeholder="TaxID" type="text" formControlName="Tax"> -->
+                    <select class="form-control" formControlName="Tax"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Tax.errors?.notEqual }">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Tax--</option>
+                      <option *ngFor="let tax of TaxcodeList" [value]="tax.id">
+                        {{tax.taxCode}} - {{tax.taxCodeName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Tax.errors?.notEqual">
+                      Please select tax
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Weight</label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber formControlName="Weight">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Height</label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber formControlName="Height">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Width</label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber formControlName="Width">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Length</label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber formControlName="Length">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Price Group </label>
+                    <!-- <input class="form-control" placeholder="Price Group " type="text" formControlName="PriceGroup"> -->
+                    <select class="form-control" formControlName="PriceGroup"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.PriceGroup.errors?.notEqual }">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Price Group--</option>
+                      <option *ngFor="let pricelist of PriceList" [value]="pricelist.id">
+                        {{pricelist.priceClassCode}} - {{pricelist.priceClassName}}
+                      </option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.PriceGroup.errors?.notEqual">
+        Please select priceGroup
+      </div> -->
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Stock Take Cycle <span class="mandatoryFieldColor">*</span> </label>
+                    <!-- <input class="form-control" placeholder="Stock Take Cycle" type="text"
+      formControlName="StockTakeCycle"> -->
+                    <select class="form-control" formControlName="StockTakeCycle"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.StockTakeCycle.errors?.notEqual }">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select StockTake Cycle--</option>
+                      <option *ngFor="let stock of StockList" [value]="stock.id">
+                        {{stock.dataCode}} - {{stock.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.StockTakeCycle.errors?.notEqual">
+                      Please select stock take cycle
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="col-12 col-md-4">
+    <div class="form-group">
+      <label class="col-form-label">Product Status</label>
+      <input class="form-control" placeholder="Product Status" type="text"
+        formControlName="ProductStatus">
+    </div>
+  </div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Status <span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.ProductStatus.errors?.notEqual }" maxlength="50"
+                      formControlName="ProductStatus" (change)="onProductStatusChange($event.target.value)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Product Status--</option>
+                      <option *ngFor="let productStatus of invproductStatusList" [value]="productStatus.value">
+                        {{productStatus.name}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.ProductStatus.errors?.notEqual">
+                      Please select product status
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Style Matrix Column <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="ProductStyleMatrixColumn"
+                      [ngClass]="{ 'is-invalid': this.submitted && IsStyleMatrixColumn }"  (change)="onChangeMatrixColumn($event.target.value)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Product Matrix--</option>
+                      <option *ngFor="let product of ProductStyleMatrix" [value]="product.id">
+                        {{product.styleMatrixCode}} - {{product.styleMatrixName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && IsStyleMatrixColumn">
+                      Please select product style matrix column
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Style Matrix Row <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="ProductStyleMatrixRow"
+                      [ngClass]="{ 'is-invalid': this.submitted && IsStyleMatrixRow }"  (change)="onChangeMatrixRow($event.target.value)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Product Matrix--</option>
+                      <option *ngFor="let product of ProductStyleMatrix" [value]="product.id">
+                        {{product.styleMatrixCode}} - {{product.styleMatrixName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && IsStyleMatrixRow">
+                      Please select product style matrix row
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Decimal Places</label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.DecimalPlaces.errors?.notEqual }"
+                      formControlName="DecimalPlaces">
+                      <option value="0">0</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Warranty Period </label>
+                    <input class="form-control text-right" type="text" OnlyNumber="true"
+                      formControlName="WarrantyPeriod">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Warranty Frequency</label>
+                    <select class="form-control" formControlName="WarrantyFrequency">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Warranty Frequency--</option>
+                      <option *ngFor="let warrantyFrequency of WarrantyFrequency" [value]="warrantyFrequency.id">
+                        {{warrantyFrequency.dataCode}} - {{warrantyFrequency.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+
+                <!--<div class="col-8 col-md-2">
+    <div class="form-group">
+      <label class="col-form-label">Warranty Frequency </label>
+      <input class="form-control" type="text" maxlength="50"
+             formControlName="WarrantyFrequency">
+    </div>
+  </div>-->
+
+
+
+
+                <div class="col-8 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Warranty Terms </label>
+                    <input class="form-control" type="text" formControlName="WarrantyTerms">
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form-border">
+                <!--  <h3 class="form-heading">Discount Section</h3> -->
+                <div class="row" style="color: #007bff;">
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('ProductStyleMatrixEnabled').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="ProductStyleMatrixEnabled"
+                          id="ProductStyleMatrixEnabled" (change)="switchForProductStyleMatrix()">
+                        <label class="custom-control-label" for="ProductStyleMatrixEnabled">
+                          Product Style Matrix
+                        </label>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <div class="form-group">
+                      <!-- <label class="col-form-label">Allow Purchase</label>
+                      <input class="form-control" placeholder="Allow Purchase" type="text" formControlName="AllowPurchase"> -->
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('AllowPurchase').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="AllowPurchase"
+                          id="AllowPurchase">
+                        <label class="custom-control-label" for="AllowPurchase">Allow Purchase</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-2">
+                    <div class="form-group">
+                      <!--  <label class="col-form-label">Serialised Product</label>
+                      <input class="form-control" placeholder="Serialised Product" type="text" formControlName="SerialisedProduct"> -->
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('SerialisedProduct').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="SerialisedProduct"
+                          id="SerialisedProduct" (change)="switchForSerialisedProduct()">
+                        <label class="custom-control-label" for="SerialisedProduct">Serialised Product</label>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="col-12 col-md-2">
+                    <div class="form-group">
+                      <!--   <label class="col-form-label">Bulk Item</label>
+                      <input class="form-control" placeholder="Bulk Item" type="text" formControlName="BulkItem"> -->
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('BulkItem').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="BulkItem" id="BulkItem">
+                        <label class="custom-control-label" for="BulkItem">{{this.BulkFlagCaption}} Item</label>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  <div class="col-12 col-md-2">
+                    <div class="form-group">
+                      <!--  <label class="col-form-label">Allow Discount</label>
+                      <input class="form-control" placeholder="Allow Discount" type="text" formControlName="AllowDiscount"> -->
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('AllowDiscount').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="AllowDiscount"
+                          id="AllowDiscount">
+                        <label class="custom-control-label" for="AllowDiscount">Allow Discount</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <!-- <label class="col-form-label">Use WareHouse Price</label>
+                      <input class="form-control" placeholder="Use WareHouse Price" type="text" formControlName="UseWareHousePrice"> -->
+
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('UseWareHousePrice').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="UseWareHousePrice"
+                          id="UseWareHousePrice">
+                        <label class="custom-control-label" for="UseWareHousePrice">Use WareHouse Price</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <div class="form-group">
+                      <!--   <label class="col-form-label">Custom Kit</label>
+                      <input class="form-control" placeholder="Custom Kit" type="text" formControlName="CustomKit"> -->
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('CustomKit').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="CustomKit" id="CustomKit">
+                        <label class="custom-control-label" for="CustomKit">Custom Kit</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <div class="form-group">
+
+                      <!--  <label class="col-form-label">Web Sellable</label>
+                      <input class="form-control" placeholder="Web Sellable" type="text" formControlName="Websellable"> -->
+                      <!--   {{this.InventoryForm.get('Websellable').value}} -->
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('Websellable').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="Websellable"
+                          id="Websellable">
+                        <label class="custom-control-label" for="Websellable" [attr.readonly]="true">
+                          Web
+                          Sellable
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <div class="form-group">
+
+                      <!--  <label class="col-form-label">Web Sellable</label>
+                      <input class="form-control" placeholder="Web Sellable" type="text" formControlName="Websellable"> -->
+                      <!--   {{this.InventoryForm.get('Websellable').value}} -->
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('GiftVoucher').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="GiftVoucher"
+                          id="GiftVoucher" (change)="switchForGiftVoucher123()">
+                        <label class="custom-control-label" for="GiftVoucher" [attr.readonly]="true">
+                          GiftVoucher
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <div class="form-group">
+
+                      <!--  <label class="col-form-label">Web Sellable</label>
+                      <input class="form-control" placeholder="Web Sellable" type="text" formControlName="Websellable"> -->
+                      <!--   {{this.InventoryForm.get('Websellable').value}} -->
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.InventoryForm.get('UseExpiryDates').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="UseExpiryDates"
+                          id="UseExpiryDates" (change)="switchForGiftVoucher123()">
+                        <label class="custom-control-label" for="UseExpiryDates" [attr.readonly]="true">
+                          Use Expiry Dates
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save
+                Inventory</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive"
+                (click)="onSave('Close')">Save Inventory & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+
+        <app-inventory-detail *ngIf="Mode=='Edit'" [IsActive]="this.IsActive" [InventryID]="this.SelectedInventryID"
+          [IsWareHousePrice]="IsWareHousePrice" [IsInventoryActive]="this.IsActive">
+        </app-inventory-detail>
+
+      </div>
+    </div>
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='InventoryDetails'">
+      <app-inventory-detail [InventryID]="this.SelectedInventryID" [IsWareHousePrice]="IsWareHousePrice">
+
+      </app-inventory-detail>
+    </div> -->
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryUnitofMeasureConversions'">
+      <app-inventory-unit-of-measure-conversions [InventoryID]="this.SelectedInventryID"
+        [IsInventoryActive]="this.IsActive" [SelectedUOM]="this.selectedUOM">
+
+      </app-inventory-unit-of-measure-conversions>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryVendors'">
+      <app-inventory-vendors [InventryID]="this.SelectedInventryID" [IsInventoryActive]="this.IsActive">
+
+      </app-inventory-vendors>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryBarCode'">
+      <app-inventory-barcode [ProductStatus]="this.InventoryForm.get('ProductStatus').value" [InventryID]="this.SelectedInventryID" [IsInventoryActive]="this.IsActive">
+      </app-inventory-barcode>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryProductPrice'">
+      <app-inventory-product-price [InventryID]="this.SelectedInventryID" [IsInventoryActive]="this.IsActive" (onModeChange)="onModeChange($event)">
+
+      </app-inventory-product-price>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryDebtorPrice'">
+      <app-inventory-debtor-price [InventryID]="this.SelectedInventryID" [IsInventoryActive]="this.IsActive">
+
+      </app-inventory-debtor-price>
+    </div>
+    <!--<div *ngIf="Mode=='Edit' && AccessTab=='InventoryStockAllocationDetails'">
+      <app-inventory-stock-allocation-details [InventryID]="this.SelectedInventryID">
+
+      </app-inventory-stock-allocation-details>
+    </div>-->
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryKit'">
+      <app-inventory-kit [InventryID]="this.SelectedInventryID" [IsInventoryActive]="this.IsActive">
+
+      </app-inventory-kit>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryImage'">
+      <app-inventory-image [InventryID]="this.SelectedInventryID" [IsInventoryActive]="this.IsActive">
+
+      </app-inventory-image>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryPrescription'">
+      <app-inventory-prescription [InventoryID]="this.SelectedInventryID" (onModeChange)="onModeChange($event)"
+        [IsInventoryActive]="this.IsActive">
+
+      </app-inventory-prescription>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='InventoryAutomative'">
+      <app-inventory-automative [InventryID]="this.SelectedInventryID" [IsInventoryActive]="this.IsActive">
+
+      </app-inventory-automative>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedInventryID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+        
+
+
+      </app-general-notes>
+
+
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedInventryID" [HeaderNames]="this.HeaderNames"
+        [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='History'">
+      <app-history [RecID]="this.SelectedInventryID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [IsActive]="IsActive">">
+      </app-history>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Transfer'">
+      <app-transfer [RecID]="this.SelectedInventryID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [IsActive]="IsActive">">
+      </app-transfer>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='StockTake'">
+      <app-stock-take [RecID]="this.SelectedInventryID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [IsActive]="IsActive">">
+      </app-stock-take>
+    </div>
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='InventoryUnitofMeasureConversions'">
+      <app-inventory-unit-of-measure-conversions [InventoryID]="this.SelectedInventryID">
+
+      </app-inventory-unit-of-measure-conversions>
+    </div> -->
+    <!--<div *ngIf="Mode=='Edit' && AccessTab=='InventoryStockAllocationDetails'">
+      <app-inventory-stock-allocation-details [InventryID]="this.SelectedInventryID">
+
+      </app-inventory-stock-allocation-details>
+    </div>-->
+  </div>
+
+  <!-- <pre>{{ InventoryForm.valid | json }}<br/>{{ InventoryForm.value | json }}</pre> -->
+
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

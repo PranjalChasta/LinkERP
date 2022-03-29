@@ -1,0 +1,148 @@
+<form [formGroup]="TerminalForm" name="TerminalForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1> Terminals<span *ngIf="Mode == 'Edit'">({{TerminalForm.get('Description').value}})</span></h1>
+<!--<h1>Terminals</h1>-->
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Terminals</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <a>
+        {{Mode}}
+        Terminals
+      </a>
+    </li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="TerminalForm" name="TerminalForm" (ngSubmit)="OnSubmit()" class="Form-Horizontal">
+  <div class="card-body p-0" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <!-- <button type="button" class="nav-item nav-link" *ngIf="Mode=='Edit'"
+        [ngClass]='{"active": AccessTab=="Terminal"}' data-toggle="tab" (click)="onTerminalClicked()"
+        role="tab">Terminal</button>
+
+        <button type="button" class="nav-item nav-link" [ngClass]='{"active": AccessTab=="TerminalGroup"}'
+        *ngIf="Mode=='Edit'" data-toggle="tab" (click)="onTerminalGroupClicked()" role="tab">Terminal Group</button>
+
+        <button type="button" class="btn tabColor mr-1" [ngClass]='{"active": AccessTab=="TerminalGroupItems"}'
+        [disabled]="!this.terminalGrpItemActive" data-toggle="tab" (click)="AccessTab='TerminalGroupItems'"
+        role="tab">Terminal Group Items</button>
+
+        <button type="button" class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+        (click)="AccessTab='Notes'" role="tab">Notes</button>
+
+        <button type="button" class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+        data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</button> -->
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Terminal"}'
+           data-toggle="tab" (click)="AccessTab='Terminal'" role="tab">Terminal</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="TerminalGroup"}'
+           data-toggle="tab" (click)="AccessTab='TerminalGroup'" role="tab">Terminal Group</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}'
+           data-toggle="tab" (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+           data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Terminal'">
+      <div class="card-header">
+        {{Mode}} Terminal Group
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Description<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Description.errors}"
+                           type="text" formControlName="Description" maxlength="50">
+                    <div class="errorlbl" *ngIf="submitted && f.Description.errors">Please enter description</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Warehouse<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="Warehouse"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.Warehouse.errors?.notEqual}">
+                      <option value="-1">--Select Warehouse--</option>
+                      <option *ngFor="let warehouse of Warehouse" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} - {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Warehouse.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access|| !this.IsActive"
+                      (click)="SaveAction='Save'">
+                Save
+              </button>
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access || !this.IsActive"
+                      (click)="SaveAction='SaveNClose'">
+                Save & Close
+              </button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Terminal
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" [disabled]="!this.write_Access" class="btn add-btn mb-1">
+                  Add
+                  Terminal
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true" (OnActionClick)="OnActionClick($event)" [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="Mode=='Edit' && AccessTab=='TerminalGroup'">
+    <app-terminal-group *ngIf="Mode=='Edit'" (OnChangeAccessTab)="OnChangeAccessTab()"
+                        (OnEditOfTerminalGrp)="OnEditOfTerminalGrp($event)" [WareHouseID]="wareHouseId"
+                        [TerminalGroupID]="this.SelectedTerminalGroupID"
+                        [TerminalID]="this.SelectedTerminalID"
+                        [IsActive]="this.IsActive" (onModeChange)="onModeChange($event)" [IsTerminalActive]="this.IsActive">
+    </app-terminal-group>
+  </div>
+  <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+    <app-general-notes [RecID]="this.SelectedTerminalID" [write_Access]="this.write_Access"
+                       [delete_Access]="this.delete_Access" [IsActive]="this.IsActive">
+    </app-general-notes>
+  </div>
+  <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+    <app-attachment-files [RecID]="this.SelectedTerminalID" [HeaderNames]="this.HeaderNames"
+                          [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="this.IsActive">
+    </app-attachment-files>
+  </div>
+</form>

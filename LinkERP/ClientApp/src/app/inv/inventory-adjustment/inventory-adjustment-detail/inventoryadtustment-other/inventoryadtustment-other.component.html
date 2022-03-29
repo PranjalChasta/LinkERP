@@ -1,0 +1,74 @@
+<div>
+  <div style="text-align: right;padding-right: 20px;">
+    <button (click)="addnew()" type="button" class="btn add-btn mb-1" [disabled]="this.CurrentStatus!='New'">
+      Add Row
+    </button>
+  </div>
+  <!--<div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">-->
+  <div class="table-responsive table-padd" style="overflow: visible;">
+    <table class="table table-bordered table-striped" *ngIf="SerialList && SerialList.length>0">
+      <thead>
+        <tr>
+          <th>Bin</th>
+          <th>Product Code</th>
+          <th>Description</th>
+          <th *ngIf="IsuseExpiryDates">Expiry Date</th>
+          <th>Transaction <br/>Date</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of SerialList; let i = index">
+          <td>
+            <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option value="00000000-0000-0000-0000-000000000000">--Select Bin--</option>
+              <option *ngFor="let binlists of BinList" [value]="binlists.id">
+                {{binlists.binCode}} -- {{binlists.binName}}
+              </option>
+            </select>
+          </td>
+          <td>{{this.SelectedProductCode}}</td>
+          <td>{{this.SelectedProductDescription}}</td>
+          <td *ngIf="IsuseExpiryDates">
+            <!--<input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+         [(ngModel)]="detailslist.expiryDate" [value]="detailslist.expiryDate | date:'yyyy-MM-dd'">-->
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.expiryDate"></app-date-time-picker>
+          </td>
+          <td>
+            <!--<input class="form-control" type="text" placeholder="Date" bsDatepicker [bsConfig]="datePickerConfig"
+            [(ngModel)]="detailslist.transactionDateIn" [value]="detailslist.transactionDateIn | date:'yyyy-MM-dd'">-->
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.transactionDateIn">
+            </app-date-time-picker>
+          </td>
+          <td>
+            <input class="form-control" [(ngModel)]="detailslist.quantity" type="text" appTwoDigitDecimaNumber
+              (input)="onSearchChange($event.target.value,i)">
+          </td>
+          <td width="50" class="text-center" *ngIf="detailslist.id && this.CurrentStatus!='Closed'">
+            <a (click)="DeleteInventoryAdjustmentDeatilMatrix(detailslist.id)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+          <td width="50" class="text-center" *ngIf="!detailslist.id && this.CurrentStatus!='Closed'">
+            <a (click)="Deleteindex(i)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="text-align: right;padding-right: 80px;">
+    <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+  </div>
+  <div class="form-group text-center" *ngIf="SerialList && SerialList.length>0">
+    <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Save')"
+      [disabled]="this.submitted || this.CurrentStatus!='New'">Save Changes</button>
+    <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Close')"
+      [disabled]="this.submitted || this.CurrentStatus!='New'">Save & Close</button>
+    <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+
+  </div>
+  <ng-template #confirmDelete>
+    <app-confirm-dialog-popup (OnCancel)="ConfirmDialogClose()" (OnDelete)="DeleteAll()"></app-confirm-dialog-popup>
+  </ng-template>

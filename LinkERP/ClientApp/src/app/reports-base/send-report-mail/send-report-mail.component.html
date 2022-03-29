@@ -1,0 +1,67 @@
+<button class="btn add-btn mr-1" type="button" (click)="OpenEMailComposer()">Send Email</button>
+<ng-template #EMailComposer>
+  <form [formGroup]="SendEmailForm" name="SendEmailForm" (ngSubmit)="OnSendEmail()" class="Form-Horizontal">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="card">
+          <div class="card-header">
+            Send Report Email
+          </div>
+          <div class="card-body position-relative">
+            <div class="row">
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">Subject</label>
+                  <input type="text" class="form-control" formControlName="Subject" />
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">Email</label>
+                  <input type="text" class="form-control" formControlName="EmailAddresses" />
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">Email Template</label>
+                  <select class="form-control" formControlName="DocumentTemplate">
+                    <option value="-1">--Select Email Template--</option>
+                    <option *ngFor="let documentTemplate of DocumentTemplates" [value]="documentTemplate.id">{{documentTemplate.templateName}}</option>
+                  </select>
+
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="row">
+                  <div class="table-responsive table-padd" style="overflow-y:auto;height:200px">
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Login Name</th>
+                          <th>Email</th>
+                        </tr>
+                      </thead>
+                      <tbody formArrayName="UsersEmailAddresses">
+                        <tr class="Selecting" *ngFor="let userEmailAddress of UsersEmailAddresses.controls; let i = index;" [formGroupName]="i" (click)="SelectEmail(i)">
+                          <td width="30px"><input type="checkbox" formControlName="SelectUser" /></td>
+                          <td>{{userEmailAddress.get('LoginName').value}}</td>
+                          <td>{{userEmailAddress.get('EmailAddress').value}}</td>
+                        </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="form-group text-center">
+                  <button class="btn add-btn mr-1" type="button" (click)="Send()">Send</button>
+                  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>

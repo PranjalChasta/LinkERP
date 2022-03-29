@@ -1,0 +1,451 @@
+<form [formGroup]="VendorForm" name="VendorForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1> Vendor<span *ngIf="Mode == 'Edit'">({{VendorForm.get('VendorCode').value}} - {{VendorForm.get('VendorAccountName').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Vendor</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Vendor</a></li>
+  </ol>
+</nav>
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="VendorForm" name="VendorForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Vendor
+              <div class="add-row">
+                <button [disabled]="!write_Access" (click)="AddNew()" type="button" class="btn add-btn mb-1" type="button"> Add Vendor</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true"
+                             [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Vendor"}' data-toggle="tab"
+           (click)="AccessTab='Vendor'" role="tab">Vendor</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit'&& AccessTab=='Vendor'">
+      <div class="card-header">
+        {{Mode}} Vendor
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Vendor Code<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.VendorCode.errors}" placeholder="" type="text"
+                           formControlName="VendorCode" maxlength="50">
+                    <div class="errorlbl" *ngIf="Submitted && f.VendorCode .errors"> Please enter vendor code</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor Account Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" placeholder="" [ngClass]="{ 'is-invalid': this.Submitted && f.VendorAccountName.errors}" type="text"
+                           formControlName="VendorAccountName" maxlength="255">
+                    <div class="errorlbl" *ngIf="Submitted && f.VendorAccountName.errors"> Please enter vendor account name </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Tax Identification Number </label>
+                    <input class="form-control"
+                           type="text" formControlName="TaxIdentificationNumber" maxlength="50" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Trading Name</label>
+                    <input class="form-control"
+                           type="text" formControlName="TradingName" maxlength="255" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Company Name</label>
+                    <input class="form-control"
+                           type="text" formControlName="CompanyName" maxlength="255" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Proprietor Name</label>
+                    <input class="form-control"
+                           type="text" formControlName="ProprietorName" maxlength="255" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Laddr 1</label>
+                    <input class="form-control"
+                           type="text" formControlName="Laddr1" maxlength="50" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Laddr 2</label>
+                    <input class="form-control"
+                           type="text" formControlName="Laddr2" maxlength="50" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Laddr 3</label>
+                    <input class="form-control"
+                           type="text" formControlName="Laddr3" maxlength="50" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Paddr 1 </label>
+                    <input class="form-control"
+                           type="text" formControlName="Paddr1" maxlength="50" />
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Paddr 2</label>
+                    <input class="form-control"
+                           type="text" formControlName="Paddr2" maxlength="50" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Paddr 3</label>
+                    <input class="form-control"
+                           type="text" formControlName="Paddr3" maxlength="50" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">ZipCode </label>
+                    <input class="form-control"
+                           type="text" formControlName="ZipCode" maxlength="50" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Phone</label>
+                    <input class="form-control" type="text" formControlName="Phone" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Fax</label>
+                    <input class="form-control" type="text" formControlName="Fax" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email </label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.EmailAddress.errors}" formControlName="EmailAddress" type="text" maxlength="255">
+                    <!-- <div class="errorlbl" *ngIf="Submitted && f.EmailAddress.errors?.pattern">
+                      Please enter valid email (example: info@domain.com)
+                    </div> -->
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Bank Account Name </label>
+                    <input class="form-control" type="text" formControlName="BankAccountName" maxlength="255">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Bank Name  </label>
+                    <input class="form-control" type="text" formControlName="BankName" maxlength="255">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Bank Account Number</label>
+                    <input class="form-control" type="text" formControlName="BankAccountNumber" maxlength="255">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">BSB </label>
+                    <input class="form-control" type="text" formControlName="BSB" maxlength="255">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Bank Swift Code </label>
+                    <input class="form-control" type="text" formControlName="BankSwiftCode" maxlength="255">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Credit Limit </label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber
+                           formControlName="CreditLimit">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Terms Days </label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber
+                           formControlName="TermsDays">
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label "> Last PurchaseDate</label>
+                    <!--<input class="form-control"
+                    #datepickerFull="bsDatepicker"
+                    bsDatepicker
+                    [value]="VendorForm.get('LastPurchaseDate').value | date:'dd-MM-yyyy, h:mm:ss a'"
+                    formControlName="LastPurchaseDate"
+                    [bsConfig]="datePickerConfig">-->
+                    <app-date-time-picker formControlName="LastPurchaseDate" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label "> Last PaymentDate</label>
+                    <!--<input class="form-control"
+                    #datepickerFull="bsDatepicker"
+                    bsDatepicker
+                    [value]="VendorForm.get('LastPaymentDate').value | date:'dd-MM-yyyy, h:mm:ss a'"
+                    formControlName="LastPaymentDate"
+                    [bsConfig]="datePickerConfig">-->
+                    <app-date-time-picker formControlName="LastPaymentDate" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Purchase Order ValidityDays </label>
+                    <input class="form-control" type="text" formControlName="PurchaseOrderValidityDays" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Current Balance  </label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber
+                           formControlName="CurrentBalance">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Period 1<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.Period1.errors}"
+                           formControlName="Period1">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Period1.errors">Please enter period 1</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Period 2<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.Period2.errors}"
+                           formControlName="Period2">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Period2.errors">Please enter period 2</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Period 3<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.Period3.errors}"
+                           formControlName="Period3">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Period3.errors">Please enter period 3</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Period 4<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.Period4.errors}"
+                           formControlName="Period4">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Period4.errors">Please enter period 4</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Currency</label>
+                    <select name="Country" class="form-control" formControlName="CurrencyID">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Currency--</option>
+                      <option *ngFor="let currency of Currency" [value]="currency.id">
+                        {{currency.currencyCode}} - {{currency.currecnyName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">FX Current Balance<span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.FXCurrentBalance.errors}"
+                           formControlName="FXCurrentBalance">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.FXCurrentBalance.errors">Please enter fx current balance</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">FX Period 1<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.FXPeriod1.errors}"
+                           formControlName="FXPeriod1">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.FXPeriod1.errors">Please enter fx period 1</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">FX Period 2<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.FXPeriod2.errors}"
+                           formControlName="FXPeriod2">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.FXPeriod2.errors">Please enter fx period 2</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">FX Period 3<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.FXPeriod3.errors}"
+                           formControlName="FXPeriod3">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.FXPeriod3.errors">Please enter fx period 3</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">FX Period 4<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber [ngClass]="{ 'is-invalid': this.Submitted && f.FXPeriod4.errors}"
+                           formControlName="FXPeriod4">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.FXPeriod4.errors">Please enter fx period 4</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Default Sales Invoice Workflow<span class="mandatoryFieldColor">*</span></label>
+                    <select name="Country" class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.DefaultPurchaseOrderWorkflow.errors?.notEqual}"
+                            formControlName="DefaultPurchaseOrderWorkflow">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select workflow--</option>
+                      <option *ngFor="let workflow of BindWorkFlow" [value]="workflow.id">
+                        {{workflow.workFlowCode}} - {{workflow.workFlowName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.DefaultPurchaseOrderWorkflow.errors?.notEqual">
+                      Please select workFlow
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Country</label>
+                    <select class="form-control" formControlName="Country"
+                            (change)="onCountrySelected($event.target.value)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Country--</option>
+                      <option *ngFor="let country of countries" [value]="country.countryID">{{country.countryCode}} - {{country.name}}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">State</label>
+                    <select class="form-control" formControlName="State" (change)="onStatesSelected($event.target.value)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select State--</option>
+                      <option *ngFor="let state of states" [value]="state.stateID">{{state.stateCode}} - {{state.name}}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">City</label>
+                    <select class="form-control" formControlName="City">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select City--</option>
+                      <option *ngFor="let city of cities" [value]="city.cityID">{{city.cityCode}} - {{city.name}}</option>
+                    </select>
+                  </div>
+                </div>
+
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+
+                    <div class="custom-control custom-switch swtch"
+                         [class.disabled]="!this.VendorForm.get('UseForeignCurrency').value">
+                      <input type="checkbox" class="custom-control-input"
+                             formControlName="UseForeignCurrency" id="UseForeignCurrency">
+                      <label class="custom-control-label" for="UseForeignCurrency">Use Foreign Currency</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+
+                    <div class="custom-control custom-switch swtch"
+                         [class.disabled]="!this.VendorForm.get('DefaultPaymentType').value">
+                      <input type="checkbox" class="custom-control-input"
+                             formControlName="DefaultPaymentType" id="DefaultPaymentType">
+                      <label class="custom-control-label" for="DefaultPaymentType">Default Payment Type </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+
+                    <div class="custom-control custom-switch swtch"
+                         [class.disabled]="!this.VendorForm.get('TradingStatus').value">
+                      <input type="checkbox" class="custom-control-input"
+                             formControlName="TradingStatus" id="TradingStatus">
+                      <label class="custom-control-label" for="TradingStatus">Trading Status  </label>
+                    </div>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!write_Access || !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!write_Access || !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedVendorid" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedVendorid"
+                            [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

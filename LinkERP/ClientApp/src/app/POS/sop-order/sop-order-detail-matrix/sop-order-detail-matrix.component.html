@@ -1,0 +1,54 @@
+<div>
+  <div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Color</th>
+          <th>Size</th>
+          <th>Bin</th>
+          <th>Quantity On Hand</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of ProductStyleMatrix  let i = index; ">
+
+          <td>
+            <input class="form-control" placeholder="columnName" [(ngModel)]="detailslist.productMatrixColumnName" readonly>
+          </td>
+          <td>
+            <input class="form-control" placeholder="columnName" [(ngModel)]="detailslist.productMatrixRowName" readonly>
+          </td>
+           <td>
+            <input class="form-control" [(ngModel)]="detailslist.binName" type="text" readonly >
+          </td>
+          <!-- <td>
+            <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option value="00000000-0000-0000-0000-000000000000">--Select Bin--</option>
+              <option *ngFor="let binlists of BinList" [value]="binlists.id">
+                {{binlists.binCode}} -- {{binlists.binName}}
+              </option>
+            </select> -->
+          <!-- </td> -->
+          <td>
+            <input class="form-control" [(ngModel)]="detailslist.quantityOnHand" type="text"
+              appTwoDigitDecimaNumber readonly>
+            </td>
+            <td>
+            <input class="form-control" [(ngModel)]="detailslist.transactionQuantity" type="text"
+              appTwoDigitDecimaNumber (input)="onSearchChange($event.target.value,i)">
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div style="text-align: right;padding-right: 80px;">
+  <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+  <div class="form-group text-center" *ngIf="ProductStyleMatrix.length>0">
+
+    <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges()">Ok</button>
+    <button class="btn btn-danger" type="button" (click)="OnCancel()">Close</button>
+  </div>
+</div>

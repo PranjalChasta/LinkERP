@@ -1,0 +1,112 @@
+<h1>Request For Quotation</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Request For Quotation</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<div class="card">
+  <nav *ngIf="Mode=='Edit'">
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Quotation"}' data-toggle="tab"
+        (click)="ChangeTab()" role="tab">Quotation</a>
+      <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="VendorPriceUpdate"}' data-toggle="tab"
+        (click)="AccessTab='VendorPriceUpdate'" role="tab">Vendor Price Entry</a>
+      <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="QuotationAnalysis"}' data-toggle="tab"
+        (click)="AccessTab='QuotationAnalysis'" role="tab">Preferred Vendor</a>
+    </div>
+  </nav>
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div *ngIf="Mode=='List' && this.AccessTab=='Quotation'" class="card">
+          <form [formGroup]="RequestForQuotationForm" name="RequestForQuotationForm" (ngSubmit)="onSave()"
+            class="Form-Horizontal">
+            <div class="card-header">
+              Request For Quotation
+            </div>
+            <div class="col-md-6">
+              <!-- <app-ag-grid [IsSearch]="true" >
+              </app-ag-grid> -->
+              <input style="margin: 10px;" class="form-control" type="text" placeholder="Search"
+                (input)="onSearch($event)">
+            </div>
+            <div class="table-responsive table-padd">
+              <table class="table table-bordered table-striped" *ngIf="RowData && RowData.length>0">
+                <thead>
+                  <tr>
+                    <th>Requisition Number</th>
+                    <th>Date Created</th>
+                    <th>ExpectedDeliveryDate</th>
+                    <th>Warehouse</th>
+                    <th>Amount</th>
+                    <th>CreatedBy</th>
+                    <th>RequestedBy</th>
+                    <th style="width: 150px;">Send To</th>
+                    <th style="width: 150px;">Edit</th>
+                    <th>
+                      Select All
+                      <input type="checkbox" (click)="checkAll($event)">
+                    </th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="ApprovedRequisition">
+                  <tr
+                    *ngFor="let approvedRequisition of RequestForQuotationForm.get('ApprovedRequisition').controls; let i = index"
+                    [formGroupName]="i">
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('RequisitionNumber').value}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('DateCreated').value | date:'dd/MM/yyyy'}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('ExpectedDeliveryDate').value | date:'dd/MM/yyyy'}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('WareHouse').value}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('Amount').value}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('CreatedBy').value}}
+                    </td>
+                    <td style="width: 100px;">
+                      {{approvedRequisition.get('RequestedBy').value}}
+                    </td>
+                    <td style="width:350px;">
+                      <select class="form-control" formControlName="Vendor" (change)="onVendorChange($event,i)"
+                        [ngClass]="{ 'is-invalid': this.submitted && f.Vendor.errors?.notEqual}">
+                        <option value="-1">--Select Vendor--</option>
+                        <option *ngFor="let vendor of vendorList" [value]="vendor.id">
+                          {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                        </option>
+                      </select>
+                    </td>
+                    <td (click)="onEdit(approvedRequisition.get('RequisitionID').value)"><i class="fa fa-pencil"></i>
+                    </td>
+                    <td style="width: 100px;">
+                      <input type="checkbox" formControlName="SelectRequisition">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="form-group text-center" *ngIf="RowData && RowData.length>0">
+              <button class="btn add-btn mr-1" type="submit">Submit Request</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="AccessTab=='VendorPriceUpdate' && Mode=='Edit'">
+    <app-vendor-quote-price [RequisitionID]="this.RequisitionId"></app-vendor-quote-price>
+  </div>
+  <div *ngIf="AccessTab=='QuotationAnalysis' && Mode=='Edit'">
+    <app-vendor-price-comparision [RequisitionID]="this.RequisitionId"></app-vendor-price-comparision>
+  </div>
+</div>

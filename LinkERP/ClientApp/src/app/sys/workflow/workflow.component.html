@@ -1,0 +1,128 @@
+<form [formGroup]="WorkFlowForm" name="WorkFlowForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1>Workflow <span *ngIf="Mode == 'Edit'">({{WorkFlowForm.get('WorkflowCode').value}} - {{WorkFlowForm.get('WorkFlowName').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Workflow</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Workflow</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="WorkFlowForm" name="WorkFlowForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card-body p-0" *ngIf="Mode=='Add'|| Mode=='Edit'">
+    <nav>
+
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Workflow"}' data-toggle="tab"
+           (click)="AccessTab='Workflow'" role="tab">Workflow</a>
+
+        <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="WorkflowApprovers"}' *ngIf="Mode=='Edit'" data-toggle="tab"
+           (click)="AccessTab='WorkflowApprovers'" role="tab">Workflow Approvers</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Workflow'">
+      <div class="card-header">
+        {{Mode}} Workflow
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label ">Code  <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control"  placeholder="" [ngClass]="{ 'is-invalid': this.submitted && f.WorkflowCode.errors}"
+                           formControlName="WorkflowCode" type="text" maxlength="50">
+                    <!-- <input class="form-control" *ngIf=addreadonly placeholder="" [ngClass]="{ 'is-invalid': this.submitted && f.WorkflowCode.errors}"
+                           formControlName="WorkflowCode" type="text" maxlength="50" readonly> -->
+                    <div class="errorlbl" *ngIf="this.submitted && f.WorkflowCode.errors">  Please enter code</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label ">Name <span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control" placeholder="" [ngClass]="{ 'is-invalid': this.submitted && f.WorkFlowName.errors}"
+                           formControlName="WorkFlowName" type="text" maxlength="255">
+                    <div class="errorlbl" *ngIf="this.submitted && f.WorkFlowName.errors">  Please enter name</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access|| !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1"  type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+              <div *ngIf="!this.write_Access|| !this.IsActive" style="text-align: center;">
+                <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+              </div>
+            </div>
+            <!-- <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please active this record to make changes</label>
+            </div> -->
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header" >
+              Workflow
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" [disabled]="!this.write_Access" type="button" >Add Workflow</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                             [IsEditable]="true"
+                             [Currentpage]="this.Currentpage"
+                            (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)"
+                             (OnEditStoped)="OnEditStoped($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="Mode=='Edit' && AccessTab=='WorkflowApprovers'">
+    <app-workflow-approvers *ngIf="Mode=='Edit'" [Workflowname]="this.Workflowname" [WorkflowID]="this.SelectedWorkflowID" [IsActive]="this.IsActive" (onModeChange)="onModeChange($event)">
+    </app-workflow-approvers>
+  </div>
+
+  <div *ngIf="Mode=='Edit' && AccessTab=='Notes'" >
+    <app-general-notes [RecID]="this.SelectedWorkflowID" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="this.IsActive">
+
+    </app-general-notes>
+  </div>
+  <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+    <app-attachment-files [RecID]="this.SelectedWorkflowID"
+                          [HeaderNames]="this.HeaderNames" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="this.IsActive">
+    </app-attachment-files>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>
+

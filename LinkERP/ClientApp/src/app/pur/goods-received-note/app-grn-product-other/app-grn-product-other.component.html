@@ -1,0 +1,71 @@
+<div>
+  <div style="text-align: right;padding-right: 20px;">
+    <button (click)="addnew()" type="button" class="btn add-btn mb-1" [disabled]="IsClose">
+      Add Row
+    </button>
+  </div>
+  <div class="table-responsive table-padd" style="overflow-y: scroll;min-height: 350px;max-height: 350px;">
+    <!--<div class="table-responsive table-padd"  style="min-height:350px">-->
+    <table class="table table-bordered table-striped" *ngIf="RowData && RowData.length>0">
+      <thead>
+        <tr>
+          <th>Bin</th>
+          <th>Product Code</th>
+          <th>Description</th>
+          <th>Date</th>
+          <th>Count Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of RowData; let i = index">
+          <td *ngIf="!detailslist.binName">
+            <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option value="null">--Select Bin--</option>
+              <option *ngFor="let binlists of BinList" [value]="binlists.id">
+                {{binlists.binCode}} -- {{binlists.binName}}
+              </option>
+            </select>
+          </td>
+          <td *ngIf="detailslist.binName">
+            {{detailslist.binName}}
+          </td>
+          <td>{{this.SelectedProductCode}}</td>
+          <td>{{this.SelectedProductDescription}}</td>
+          <td>
+
+            <!--<input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+                   [(ngModel)]="detailslist.transactionDateIn" [value]="detailslist.transactionDateIn | date:'yyyy-MM-dd'">-->
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.expiryDate"></app-date-time-picker>
+          </td>
+          <td>
+            <input class="form-control" [(ngModel)]="detailslist.purchaseQuantity" type="text" OnlyNumber="true"
+              (input)="onSearchChange($event.target.value,i)"> <!-- readonly -->
+          </td>
+          <td width="50" class="text-center" *ngIf="detailslist.id">
+            <a (click)="DeleteInventorystocktakeDeatilMatrix(detailslist.id)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+          <td width="50" class="text-center" *ngIf="!detailslist.id">
+            <a (click)="Deleteindex(i)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="text-align: right;padding-right: 80px;">
+    <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+  </div>
+  <div class="form-group text-center" *ngIf="RowData && RowData.length>0">
+    <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Save')"
+      [disabled]="this.submitted  || IsClose">Save Changes</button>
+    <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Close')"
+      [disabled]="this.submitted || IsClose">Save & Close</button>
+
+    <button class="btn btn-danger" type="button" (click)="Closenote()">Close</button>
+  </div>
+  <ng-template #confirmDelete>
+    <app-confirm-dialog-popup (OnCancel)="ConfirmDialogClose()" (OnDelete)="DeleteAll()"></app-confirm-dialog-popup>
+  </ng-template>

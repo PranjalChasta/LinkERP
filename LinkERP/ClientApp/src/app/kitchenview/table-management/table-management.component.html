@@ -1,0 +1,121 @@
+<form [formGroup]="TablesForm" name="TablesForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1> Table <span *ngIf="Mode == 'Edit'">({{TablesForm.get('TableName').value}})</span></h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Kitchen</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Table</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Table</a>
+      </li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Table
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add
+                  Table</button>
+              </div>
+            </div>
+
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="this.PageSize" [Currentpage]="this.Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" (OnPageSizeChange)="OnPageSizeChange($event)"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Table"}' data-toggle="tab"
+          (click)="AccessTab='Table'" role="tab">Table</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Reservation"}'
+          data-toggle="tab" (click)="AccessTab='Reservation'" role="tab">Reservation</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Table'">
+      <div class="card-header">
+        {{Mode}} Table
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-8 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Table Name<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="255"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.TableName.errors}" type="text"
+                      formControlName="TableName">
+                    <div class="errorlbl" *ngIf="this.submitted && f.TableName.errors"> Please Enter Table Name</div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">No Of Guests<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" type="number" placeholder="0" formControlName="NoOfGuests"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.NoOfGuests.errors}">
+                    <div class="errorlbl" *ngIf="this.submitted && f.NoOfGuests.errors"> Please Enter Number of Guests
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Reservation Start Time<span class="mandatoryFieldColor">*</span></label>
+                    <app-date-time-picker formControlName="ReservationStartTime"
+                      [isInvalid]="(this.Submitted && f.ReservationStartTime.errors)">
+                    </app-date-time-picker>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ReservationStartTime.errors">
+                      Please Select Reservation Start Time
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Reservation End Time<span class="mandatoryFieldColor">*</span></label>
+                    <app-date-time-picker formControlName="ReservationEndTime"
+                      [isInvalid]="(this.Submitted && f.ReservationEndTime.errors)">
+                    </app-date-time-picker>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ReservationEndTime.errors">
+                      Please Select Reservation End Time
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group text-center">
+          <button class="btn add-btn mr-1" type="submit">Save</button>
+          <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')">Save & Close</button>
+          <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Reservation'">
+      <app-reservation-management [TableID]="this.SelectedTableID">
+      </app-reservation-management>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

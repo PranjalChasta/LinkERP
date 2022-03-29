@@ -1,0 +1,184 @@
+<div>
+  <div style="text-align: right;padding-right: 20px;">
+    <button (click)="addnew()" type="button" class="btn add-btn mb-1" [disabled]=" this.StockTakeStatus!='New'">
+      Add Matrix
+    </button>
+  </div>
+  <!--  <div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+     <table class="table table-bordered table-striped" style="width: 150px;float: left;">
+       <thead>
+         <tr>
+           <th>C1</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr *ngFor="let detailslist of ProductStyleMatrixRow; let i = index">
+           <td>
+             <input class="form-control" [(ngModel)]="detailslist.styleMatrixDetailName"
+               (click)="myFunc(detailslist.id,i)">
+           </td>
+         </tr>
+       </tbody>
+     </table>
+
+     <table class="table table-bordered table-striped" *ngIf="Resultlist && Resultlist.length>0" style="width: 500px;">
+       <thead>
+         <tr>
+           <th>C2</th>
+           <th>Bin</th>
+           <th>Quantity</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr *ngFor="let detailslist of this.Resultlist| SearchByPipe:this.SelectedRowID; let i = index; ">
+
+           <td>
+             <input class="form-control" placeholder="columnName" [(ngModel)]="detailslist.styleMatrixDetailName">
+           <td>
+             <select class="form-control" [(ngModel)]="detailslist.binID">
+               <option value="00000000-0000-0000-0000-000000000000">--Select Bin--</option>
+               <option *ngFor="let binlist of BinList" [value]="binlist.id">
+                 {{binlist.binName}}
+               </option>
+             </select>
+           </td>
+           <td>
+             <input class="form-control" placeholder="quantity" [(ngModel)]="detailslist.quantity" type="text"
+               OnlyNumber="true" (input)="onSearchChange($event.target.value,i)"></td>
+
+         </tr>
+
+       </tbody>
+     </table>
+
+   </div> -->
+  <!--<div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">-->
+  <div class="table-responsive table-padd">
+    <div style="float: right;">
+      <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+        <label style="width: 70px;">Sort By</label>
+        <select class="form-control" (change)="onColumnNameSelected($event.target.value)" [(ngModel)]="ColName">
+          <option value="-1" style="text-align: center;">---Select Column---</option>
+          <option *ngIf="IsuseExpiryDates" value="ExpiryDate">Expiry Date</option>
+          <option value="TransactionDate">Transaction Date</option>
+          <option value="CountQty">Count Qty</option>
+        </select>
+      </div>
+      <br />
+    </div>
+    <table class="table table-bordered table-striped" *ngIf="RowData && RowData.length>0">
+      <thead>
+        <tr>
+          <th>Bin</th>
+          <th>{{this.ColumnName}}</th>
+          <th>{{this.RowName}}</th>
+          <th>Transaction <br />Date</th>
+          <th *ngIf="IsuseExpiryDates">Expiry Date</th>
+          <th>Variance Quantity</th>
+          <th>Count Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of RowData; let i = index">
+          <td *ngIf="!detailslist.binName">
+            <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option value="">--Select Bin--</option>
+              <option *ngFor="let binlists of BinList" [value]="binlists.id">
+                {{binlists.binCode}} -- {{binlists.binName}}
+              </option>
+            </select>
+          </td>
+
+          <td *ngIf="detailslist.binName">
+            {{detailslist.binName}}
+          </td>
+          <td *ngIf="!detailslist.id">
+            <select class="form-control" [(ngModel)]="detailslist.productMatrixColumn">
+              <option value="">--Select Matrix Column--</option>
+              <option *ngFor="let MatrixColumn of ProductStyleMatrixColumn" [value]="MatrixColumn.id">
+                {{MatrixColumn.styleMatrixDetailName}}
+              </option>
+            </select>
+          </td>
+          <td *ngIf="detailslist.id">
+            {{detailslist.productMatrixColumnName}}
+          </td>
+
+          <td *ngIf="!detailslist.id">
+            <select class="form-control" [(ngModel)]="detailslist.productMatrixRow">
+              <option value="">--Select Matrix Row--</option>
+              <option *ngFor="let MatrixRow of ProductStyleMatrixRow" [value]="MatrixRow.id">
+                {{MatrixRow.styleMatrixDetailName}}
+              </option>
+            </select>
+          </td>
+          <td *ngIf="detailslist.id">
+            {{detailslist.productMatrixRowName}}
+          </td>
+
+
+
+
+          <td>
+            <!--<input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+    [(ngModel)]="detailslist.transactionDateIn" [value]="detailslist.transactionDateIn | date:'yyyy-MM-dd'">-->
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.transactionDateIn">
+            </app-date-time-picker>
+          </td>
+          <td *ngIf="IsuseExpiryDates">
+            <!--  <input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+           [(ngModel)]="detailslist.expiryDate" [value]="detailslist.expiryDate | date:'yyyy-MM-dd'"> -->
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.expiryDate"></app-date-time-picker>
+          </td>
+          <td>
+            <input class="form-control" [(ngModel)]="detailslist.varianceQuantity" type="text" OnlyNumber="true" readonly/>
+                 
+          </td>
+          <td>
+            <input class="form-control" [(ngModel)]="detailslist.countQuantity" type="text" OnlyNumber="true"
+                   (input)="onSearchChange($event.target.value,i)">
+          </td>
+          <td width="50" class="text-center" *ngIf="detailslist.id && this.StockTakeStatus!='Approved'">
+            <!--<a (click)="DeleteInventorystocktakeDeatilMatrix(detailslist.id)">
+      <i class="fa fa-trash-o" aria-hidden="true"></i>
+    </a>-->
+            <a (click)="Deleteindex(i, this.rowinserted, detailslist)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+          <td width="50" class="text-center" *ngIf="!detailslist.id && this.StockTakeStatus!='Approved'">
+            <a (click)="Deleteindex(i, this.rowinserted, detailslist)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+
+          <td *ngIf="IsuseExpiryDates"></td>
+          <td colspan="2">
+            Total Quantity : {{this.totalQuantity}}
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="form-group text-center" *ngIf="RowData && RowData.length>0">
+  <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Save')"
+          [disabled]="this.submitted || this.StockTakeStatus!='New'">
+    Save Changes
+  </button>
+  <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Close')"
+          [disabled]="this.submitted || this.StockTakeStatus!='New'">
+    Save & Close
+  </button>
+  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+</div>
+<!-- <div style="text-align: right;padding-right: 80px;">
+  <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+</div> -->

@@ -1,0 +1,583 @@
+<h1>Tender Types <span *ngIf="Mode == 'Edit'">
+    ({{this.TenderTypeForm.get('FastKey').value}}-{{this.TenderTypeForm.get('Description').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Tender Types</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="TenderTypeForm" name="TenderTypeForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-header">
+      Tender Types
+      <div class="add-row">
+        <button (click)="AddNew()" class="btn add-btn mb-1" type="button">
+          Add Tender Type
+        </button>
+      </div>
+    </div>
+    <div class="card-body position-relative">
+      <div class="ag-theme-balham" style="width: 100%; height:500px;">
+        <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+          [IsColumnsToFit]="false" [IsExport]="true" [Currentpage]="this.Currentpage"
+          (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="this.PageSize"
+          (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+        </app-ag-grid>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' ">
+      <div class="card-header">
+        {{Mode}} Tender Type
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">FastKey<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.FastKey.errors}"
+                      placeholder=" " formControlName="FastKey" type="text" maxlength="50">
+                    <div class="errorlbl" *ngIf="submitted && f.FastKey.errors">Please enter fast key</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Description<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Description.errors}"
+                      placeholder=" " formControlName="Description" type="text" maxlength="100">
+                    <div class="errorlbl" *ngIf="submitted && f.Description.errors">Please enter description</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Tender Types</label>
+                    <select class="form-control" formControlName="TenderTypesGroup">
+                      <option value="-1">--Select TenderTypes Group--</option>
+                      <option *ngFor="let key of Tendertypegroup" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label ">Caption1</label>
+                    <input class="form-control" formControlName="Caption1" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption1IsRequired"
+                        id="Caption1IsRequired">
+                      <label class="custom-control-label" for="Caption1IsRequired">Required</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption1FieldType">
+
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of TenderFieldType" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption1List">
+
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of TenderTypesLookupList" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption1"
+                        id="VerifyFromListCaption1">
+                      <label class="custom-control-label" for="VerifyFromListCaption1">Verify From List</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label ">Caption2</label>
+                    <input class="form-control" formControlName="Caption2" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption2IsRequired"
+                        id="Caption2IsRequired">
+                      <label class="custom-control-label" for="Caption2IsRequired">Required</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption2FieldType">
+
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of TenderFieldType" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption2List">
+
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of TenderTypesLookupList" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption2"
+                        id="VerifyFromListCaption2">
+                      <label class="custom-control-label" for="VerifyFromListCaption2">Verify From List</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label ">Caption3</label>
+                    <input class="form-control" formControlName="Caption3" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption3IsRequired"
+                        id="Caption3IsRequired">
+                      <label class="custom-control-label" for="Caption3IsRequired">Required</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption3FieldType">
+
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of TenderFieldType" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption3List">
+
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of TenderTypesLookupList" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption3"
+                        id="VerifyFromListCaption3">
+                      <label class="custom-control-label" for="VerifyFromListCaption3">Verify From List</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label ">Caption4</label>
+                    <input class="form-control" formControlName="Caption4" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption4IsRequired"
+                        id="Caption4IsRequired">
+                      <label class="custom-control-label" for="Caption4IsRequired">Required</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption4FieldType">
+
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of TenderFieldType" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption4List">
+
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of TenderTypesLookupList" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption4"
+                        id="VerifyFromListCaption4">
+                      <label class="custom-control-label" for="VerifyFromListCaption4">Verify From List</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label ">Caption5</label>
+                    <input class="form-control" formControlName="Caption5" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption5IsRequired"
+                        id="Caption5IsRequired">
+                      <label class="custom-control-label" for="Caption5IsRequired">Required</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption5FieldType">
+
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of TenderFieldType" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption5List">
+
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of TenderTypesLookupList" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption5"
+                        id="VerifyFromListCaption5">
+                      <label class="custom-control-label" for="VerifyFromListCaption5">Verify From List</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label ">Caption6</label>
+                    <input class="form-control" formControlName="Caption6" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption6IsRequired"
+                        id="Caption6IsRequired">
+                      <label class="custom-control-label" for="Caption6IsRequired">Required</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption6FieldType">
+
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of TenderFieldType" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption6List">
+
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of TenderTypesLookupList" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption6"
+                        id="VerifyFromListCaption6">
+                      <label class="custom-control-label" for="VerifyFromListCaption6">Verify From List</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label ">Caption7</label>
+                    <input class="form-control" formControlName="Caption7" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption7IsRequired"
+                        id="Caption7IsRequired">
+                      <label class="custom-control-label" for="Caption7IsRequired">Required</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption7FieldType">
+
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of TenderFieldType" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption7List">
+
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of TenderTypesLookupList" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption7"
+                        id="VerifyFromListCaption7">
+                      <label class="custom-control-label" for="VerifyFromListCaption7">Verify From List</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label ">Caption8</label>
+                    <input class="form-control" formControlName="Caption8" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption8IsRequired"
+                        id="Caption8IsRequired">
+                      <label class="custom-control-label" for="Caption8IsRequired">Required</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption8FieldType">
+
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of TenderFieldType" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption8List">
+
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of TenderTypesLookupList" value={{key.dataCode}}>
+                        {{key.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption8"
+                        id="VerifyFromListCaption8">
+                      <label class="custom-control-label" for="VerifyFromListCaption8">Verify From List</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Surcharge Amount</label>
+                    <input class="form-control text-right" appFourDigitDecimaNumber type="text"
+                      formControlName="SurchargeAmount">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Discount Amount</label>
+                    <input class="form-control text-right" appFourDigitDecimaNumber type="text"
+                      formControlName="DiscountAmount">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Shift Variance Code </label>
+                    <input class="form-control" maxlength="50" type="text" formControlName="ShiftVarianceAccountCode">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Bank Account Code</label>
+                    <input class="form-control" maxlength="50" type="text" formControlName="BankAccountCode">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="SurchargePercentValue"
+                        id="SurchargePercentValue">
+                      <label class="custom-control-label" for="SurchargePercentValue">Surcharge Percent </label>
+                    </div>
+                  </div>
+                </div>
+
+
+
+                <!-- <div class="col-10 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="DiscountPercentValue"
+                             id="DiscountPercentValue">
+                      <label class="custom-control-label" for="DiscountPercentValue">Discount /Percent </label>
+                    </div>
+                  </div>
+                </div> -->
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="MultiCurrency"
+                        id="MultiCurrency">
+                      <label class="custom-control-label" for="MultiCurrency">Multi Currency</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="EFT" id="EFT">
+                      <label class="custom-control-label" for="EFT">EFT</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="IncludeInBanking"
+                        id="IncludeInBanking">
+                      <label class="custom-control-label" for="IncludeInBanking">Include Banking</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-border">
+                  <h3 class="form-heading">Discount</h3>
+                  <div class="col-10 col-md-2">
+                    <div class="form-group">
+                    </div>
+                    <div class="onoffswitchPerFlag">
+                      <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                        id="myonoffswitchPerFlag" formControlName="PercentageFlag">
+                      <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                        <span class="onoffswitchPerFlag-inner"></span>
+                        <span class="onoffswitchPerFlag-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]=" !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]=" !this.IsActive" (click)="onSave('Close')">Save
+                &
+                Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </div>
+
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

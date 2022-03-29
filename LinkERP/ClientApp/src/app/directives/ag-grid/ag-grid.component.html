@@ -1,0 +1,84 @@
+<div style="width:100%; height: 100%;">
+  <table style="width:100%;">
+
+  
+<tr>
+  <td style="width:40%;padding-bottom: 10px;">
+      <input type="text" class="form-control" *ngIf="IsSearch"  placeholder="Search" (keyup)="quickSearch()" [(ngModel)]="SearchValue">
+  </td>
+  <td>
+      <input type="submit" (click)="exportToExcel()" *ngIf="IsExport" value="Export to Excel" class="btn add-btn mr-1"
+      style="float: right;" type="button" />
+  </td>
+</tr>
+</table>
+
+<!-- <div class="test-header">
+  <form [formGroup]="AGDataForm" name="AGDataForm" class="Form-Horizontal">
+    Page Size:  <select  formControlName="PageSize"  (change)="onPageSizeChanged($event)" >
+      <option value="10" selected="">10</option>
+      <option value="100">100</option>
+      <option value="500">500</option>
+      <option value="1000">1000</option>
+    </select>
+  </form>
+ 
+  
+</div> -->
+<!-- class="ag-theme-balham" -->
+  <table id="dynamic-table" class="table table-stripedtable-hover" style="width:100%; height: 100%;">
+      <ag-grid-angular 
+      *ngIf="AgLoad"
+      style="width:100%; height:85%;" 
+   
+      class="ag-theme-balham"
+      [columnDefs]="ColumnDefs"
+      rowSelection="single"
+      [enableCellTextSelection]="true"
+      [enableSorting]="true"
+      [multiSortKey]="true"
+      [animateRows]="true"
+      [angularCompileHeaders]="true"
+      [pagination]="true" 
+      [rowMultiSelectWithClick]="true"
+      [rowSelection]="multiple"
+      [columnTypes]="columnTypes" 
+      [paginationPageSize]="100" 
+      [enableSorting]="true"
+      [floatingFilter]="true"
+      [suppressCsvExport]="false"
+      [suppressExcelExport]="false"
+      [singleClickEdit]="true"
+      [animateRows]="true"
+      [suppressDragLeaveHidesColumns]="true"
+       (cellEditingStopped)="onCellEditingStopped($event)"
+       (cellKeyPress)="onCellEditingStarted($event)"
+      (gridReady)="BindData($event)"
+      (cellClicked)="onCellClicked($event)"
+      [rowClassRules]="rowClassRules"
+      (rowValueChanged)="rowValueChanged($event)"
+      (cellMouseOut)="onnewCellValueChanged($event)"
+      [editType]="editType"
+      (selectionChanged)="onSelectionChanged($event)"
+       
+      [defaultColDef]="defaultColDef"
+      [suppressColumnVirtualisation]="true"
+      >
+    </ag-grid-angular>
+    <div  class="test-header" style="float: right;">
+      <form [formGroup]="AGDataForm" name="AGDataForm" class="Form-Horizontal">
+        Page Size:  <select  formControlName="PageSize"  (change)="onPageSizeChanged($event)" >
+          <option value="10" selected="">10</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="500">500</option>
+          <option value="1000">1000</option>
+        </select>
+      </form>
+     
+      
+    </div>
+  </table>
+</div> <!--  [deltaRowDataMode]="true" -->
+
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

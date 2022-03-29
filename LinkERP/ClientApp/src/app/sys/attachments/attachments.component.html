@@ -1,0 +1,105 @@
+<!-- <form  name="OrganisationMaintenanceForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+ 
+      <div class="card" *ngIf="Mode=='List'">
+        <div class="card-body pb-0">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header">
+                  User Role Maintenance
+                  <div class="add-row">
+                    <button (click)="AddNew()" class="btn add-btn mb-1">Add Attachments</button>
+                  </div>
+                </div>
+                 
+                <div class="card-body position-relative">
+                  <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                      <app-ag-grid *ngIf="AgLoad"
+                         [ColumnDefs]="this.ColumnDefs"
+                         [RowData]="this.RowData"
+                         [IsSearch]="true"
+                         [IsExport]="true"  
+                         [paginationPageSize]="10" 
+                         (OnActionClick)="OnActionClick($event)"
+                         >
+                      </app-ag-grid>
+                    </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+        <div class="card-body pb-0">
+          <div class="tab-content pt-2 pb-1">
+            <div class="tab-pane fade show active">
+              <div class="form-border">
+                <h3 class="form-heading">Attachments </h3> 
+                          <div class="row">
+                            <div class="col-12 col-md-6">
+                              <div class="form-group"> 
+                                <label for="file" class="col-form-label">Upload File</label>
+                               
+                               <input class="form-control" type='file' (change)="onSelectFile($event)" multiple>
+                              </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                               
+                            </div>
+                            <div class="col-12 col-md-6">
+                              <div class="form-group">
+                                <label class="col-form-label">Description</label>
+                                <input class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}" placeholder="Description" type="text">
+                              </div>
+                            </div>
+                          </div> 
+                        </div>
+                        
+                    <div class="form-group text-center">
+                      <button class="btn add-btn mr-1" type="submit">Save</button>
+                      <button class="btn btn-danger" type="button" (click)="Cancel()">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+      </div>
+  </form>
+             -->
+            
+
+             <form [formGroup]="OrganisationMaintenanceForm" name="OrganisationMaintenanceForm"  class="Form-Horizontal" (ngSubmit)="onSave()">
+                <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label class="col-form-label ">Number</label> 
+                   
+                     
+                <ng-template #popTemplate>
+                  <timepicker formControlName="timepick"  [showMeridian]="false"></timepicker>
+                </ng-template>
+                <input formControlName="timepick"  class="form-control"  placement="bottom" />
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label class="col-form-label ">Mandtory</label> 
+                        <input class="form-control"  placeholder="Mandtory" type="text" formControlName="CompanyCode">  
+                        <div class="errorlbl" *ngIf="submitted && f.CompanyCode.errors">***</div>
+                      </div>
+                    </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label class="col-form-label ">Email</label> 
+                       <!--  <input class="form-control"  placeholder="Email" type="text" formControlName="Phone">  
+                        <div class="errorlbl" *ngIf="submitted && f.Phone.errors?.email">Enter Proper Email</div> -->
+                        <!--  <input class="form-control"  OnlyNumber="true" placeholder="OnlyNumber" type="text"  >  --> 
+                    <timepicker name="timePopUp" formControlName="timepick" 
+                    [showMeridian]="true">
+                </timepicker>
+                      </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button class="btn add-btn mr-1" type="submit">Save</button>
+                        <button class="btn btn-danger" type="button" (click)="Cancel()">Cancel</button>
+                      </div>
+               </form>

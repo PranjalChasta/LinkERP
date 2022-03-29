@@ -1,0 +1,75 @@
+<form [formGroup]="VendorPriceComparisionForm" name="VendorPriceComparisionForm" (ngSubmit)="onSave()"
+  class="Form-Horizontal">
+  <div class="card-header">
+    Vendor Quote Price
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">ProductID<span class="mandatoryFieldColor">*</span> </label>
+                <select class="form-control" formControlName="ProductID" (change)="productChange($event.target.value)"
+                  [ngClass]="{ 'is-invalid': this.submitted && f.ProductID.errors?.notEqual}">
+                  <option value="-1">--Select Product--</option>
+                  <option *ngFor="let product of ProductList" [value]="product.productID">
+                    {{product.productCode}} - {{product.productName}}
+                  </option>
+                </select>
+                <div class="errorlbl" *ngIf="this.submitted && f.ProductID.errors?.notEqual">
+                  Please select ProductID
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="displayProductList" class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Vendor</th>
+                  <th>Vendor Name</th>
+                  <th>UOM</th>
+                  <th>UnitPrice</th>
+                  <th>
+                    Preferred vendor
+                  </th>
+                </tr>
+              </thead>
+              <tbody formArrayName="VendorPriceComparision">
+                <tr
+                  *ngFor="let vendorPrice of VendorPriceComparisionForm.get('VendorPriceComparision').controls; let i = index"
+                  [formGroupName]="i">
+                  <td style="width: 100px;">
+                    {{vendorPrice.get('Vendor').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{vendorPrice.get('VendorName').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{vendorPrice.get('UOM').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{vendorPrice.get('UnitPrice').value != null ? vendorPrice.get('UnitPrice').value.toString().indexOf(".") !== -1?vendorPrice.get('UnitPrice').value:vendorPrice.get('UnitPrice').value+".0000":"0.0000"}}
+                  </td>
+                  <td style="width: 100px;">
+                    <div class="form-group">
+                      <input type="checkbox" formControlName="SelectPreferredVendor" (click)="selectPreferredVendor(i)"/>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- <div *ngIf="PreferredVendor.length>0">
+            No Data found
+          </div> -->
+          <div *ngIf="displayProductList" class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit">Submit Price</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,103 @@
+<form [formGroup]="NonPrescriptionForm" name="NonPrescriptionForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1>Non-Prescription Labels</h1>
+  <div class="card">
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-md-1">
+                <label class="col-form-label"> Label No:</label>
+              </div>
+              <div class="col-md-8">
+                <div class="form-group">
+                  <input class="form-control"  formControlName="Label" type="text" >
+                </div>
+              </div>
+              <table>
+                <tr>
+                  <td style="padding-left: 10px;">
+                    <button class="btn add-btn mr-1" type="button">Search </button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col=lg-2">
+                <label class="col-form-label">Product Name:</label>
+              </div>
+              <div class="col-md-8">
+                <select class="form-control" formControlName="MedicationName" (change)="onTableChange($event.target.value)">
+                  <option value="-1">--Select Product Name --</option>
+                  <option *ngFor="let products of Product" [value]="products.id">
+                    {{products.productCode}} -- {{products.productName}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-md-1">
+                <label class="col-form-label"> Instructions:</label>
+              </div>
+              <div class="col-md-8">
+                <div class="form-group">
+                  <textarea class="form-control"
+                            formControlName="Instructions"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-md-1">
+                <label class="col-form-label"> Expiry Date:</label>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <app-date-time-picker  [showTimePicker]= "false" formControlName="ExpiryDate"></app-date-time-picker>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-md-1">
+                <label class="col-form-label"> Price:</label>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input class="form-control text-right" type="text" appTwoDigitDecimaNumber
+                         formControlName="Price">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-md-1">
+                <label class="col-form-label"> Number Of Copies:</label>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input class="form-control text-right" type="text"  OnlyNumber="true"
+                         formControlName="NumberOfCopies">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        </div>
+    </div>
+    <div class="form-group text-center">
+      <button class="btn add-btn mr-1" type="submit">Save </button>
+      <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')"> Save & Close</button>
+      <!--<button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>-->
+      <button class="btn btn-danger" type="button" onclick="location.reload();">Close </button>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,259 @@
+<h1>Requisition <span *ngIf="Mode == 'Edit'"> ({{this.RequisitionForm.get('RequisitionNumber').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Requisition</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Requisition</a></li>
+  </ol>
+</nav>
+ <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> 
+<form [formGroup]="RequisitionForm" name="RequisitionForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div #sectionNeedToScroll></div>
+  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Requisition
+
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" type="button" [disabled]="!this.write_Access">
+                  Add
+                  Requisition
+                </button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:550px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true"
+                             [IsColumnsToFit]="false"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+
+    <nav>
+
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit' || Mode=='Add'"
+           [ngClass]='{"active": AccessTab=="Requisitions"}' data-toggle="tab" (click)="AccessTab='Requisitions'"
+           role="tab">Requisitions</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'"
+           [ngClass]='{"active": AccessTab=="RequisitionApproveLogicDetails"}' data-toggle="tab"
+           (click)="AccessTab='RequisitionApproveLogicDetails'" role="tab">Approval Logs</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Requisitions'">
+
+      <div class="card-header">
+
+        {{Mode}} Requisition
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+                <!--  <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">RequisitionNumber</label>
+                    <input class="form-control" placeholder="num" type="text" formControlName="RequisitionNumber">
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Warehouse <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="WarehouseID"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.WarehouseID.errors?.notEqual}">
+                      <option value="-1">--Select Unit of Warehouse--</option>
+                      <option *ngFor="let warehouse of WareHouse" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} -  {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.WarehouseID.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+
+                <!-- <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label class="col-form-label">Requisition Status </label>
+                      <select class="form-control" formControlName="RequisitionStatus">
+                        <option value="-1">--Select Unit of Status--</option>
+                         <option *ngFor="let status of Status" [value]="status.statusName">
+                          {{status.statusName}}
+                        </option>
+                      </select>
+                    </div>
+                  </div> -->
+                <!-- <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label class="col-form-label"> Requisition-LineStatus </label>
+                      <input class="form-control textarea" placeholder="Requisition" type="text"
+                      formControlName="RequisitionStatus">
+                    </div>
+                  </div> -->
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor </label>
+                    <select class="form-control" formControlName="VendorID">
+                      <option value="-1">--Select Unit of Vendor--</option>
+                      <option *ngFor="let vendor of Vendor" [value]="vendor.id">
+                        {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                      </option>
+                    </select>
+                   
+                  </div>
+                </div>
+
+                <!-- <div class="col-12 col-md-4">
+                    <div class="form-group">
+                      <label class="col-form-label">ReceiveBy </label>
+
+                      <select class="form-control" formControlName="ReceiveBy">
+                        <option value="-1">--Select Unit of Users--</option>
+                         <option *ngFor="let user of Users" [value]="user.loginName">
+                          {{user.loginName}}
+                        </option>
+                      </select>
+
+                    </div>
+                  </div> -->
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">ReceiveBy<span class="mandatoryFieldColor">*</span></label>
+                    <app-date-time-picker *ngIf="!read" [ngClass]="{ 'is-invalid': this.submitted && f.ReceiveBy.errors}"   formControlName="ReceiveBy" [showTimePicker]="false"></app-date-time-picker>
+                    <!--<input *ngIf="!read" class="form-control" type="text" bsDatepicker
+                    [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }" formControlName="ReceiveBy">-->
+                    <!--<input *ngIf="read" class="form-control" type="text" bsDatepicker
+                    [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }" formControlName="ReceiveBy"
+                    readonly>-->
+                    <app-date-time-picker *ngIf="read"  formControlName="ReceiveBy" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                  <div class="errorlbl" *ngIf="this.submitted && f.ReceiveBy.errors">
+                    Please select date
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">RequestedBy <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.RequestedBy.errors?.notEqual}" formControlName="RequestedBy">
+                      <option value="-1">--Select Unit of Users--</option>
+                      <option *ngFor="let user of Users" [value]="user.loginID">
+                        {{user.loginID}} - {{user.loginName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.RequestedBy.errors?.notEqual">
+                      Please select requested by
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4" *ngIf="this.RequisitionStatus!='0'">
+                  <div class="form-group">
+                    <label class="col-form-label" style="padding-top: 20px;">Approval Status : {{this.RequisitionStatus}} </label>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-4" *ngIf="this.RequisitionForm.get('RequisitionNumber').value">
+                  
+                  <div class="form-group">
+                    <label class="col-form-label">Requisition No</label><br>
+                    <label style="font-size: 14px;"
+                           class="col-form-label"><b>{{this.RequisitionForm.get('RequisitionNumber').value}}</b></label>
+                  </div>
+                </div>
+                <!--  <div class="col-12 col-md-4" *ngIf="this.RequisitionStatus!='0'" >
+                   <div class="form-group">
+                     <label class="col-form-label" style="padding-top: 20px;">Next Approver : {{this.NextApprover}} </label>
+
+                   </div>
+                 </div> -->
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">NextApprover </label>
+                    <select class="form-control" formControlName="NextApprover">
+                      <option value="-1">--Select Unit of NextApprover--</option>
+                      <option *ngFor="let user of Users" [value]="user.loginName">
+                        {{user.loginName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>  -->
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <!--  -->
+              <button class="btn add-btn mr-1" type="submit"  *ngIf="this.RequisitionStatus=='0'" [disabled]="!this.write_Access || !this.IsActive">Save Requisition</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access || !this.IsActive" *ngIf="this.RequisitionStatus=='0'"    (click)="onSave('Close')">Save & Close</button>
+              <button class="btn add-btn mr-1" type="button" *ngIf="this.IsCreatedBY &&this.RequisitionStatus=='New'" [disabled]="!this.write_Access || !this.IsActive" (click)="RequstionStatus('2')">Submit</button>
+             <!--  <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover && this.IsNextApprover" (click)="RequstionStatus('3')">Delegate</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover" (click)="RequstionStatus('5')">Approve</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover" (click)="RequstionStatus('6')">Reject</button> -->
+              <button class="btn add-btn mr-1" type="button" *ngIf="this.RequisitionStatus=='Approved'" (click)="RequstionStatus('7')">Close Requisition</button>&nbsp;
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+        <app-requisition-details *ngIf="Mode=='Edit'" [RequisitionID]="this.SelectedRequisitionID" [isApprover]="isApprover" [SelectedWharehouseID]="this.SelectedWharehouseID" [RequisitionStatus]="this.RequisitionStatus" [IsCreatedBY]="this.IsCreatedBY" [IsNextApprover]="IsNextApprover" 
+        [VenderId]="this.VenderId" (OnRequstionStatus)="RequstionStatus($event)" [IsReqActive]="IsActive" >
+
+        </app-requisition-details>
+      </div>
+    </div>
+
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='RequisitionDetails'">
+      <app-requisition-details [RequisitionID]="this.SelectedRequisitionID">
+
+      </app-requisition-details>
+    </div>  -->
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='RequisitionApproveLogicDetails'">
+      <app-requisition-approval-logic [RequisitionID]="this.SelectedRequisitionID">
+
+      </app-requisition-approval-logic>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedRequisitionID"
+                         [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedRequisitionID"
+                            [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

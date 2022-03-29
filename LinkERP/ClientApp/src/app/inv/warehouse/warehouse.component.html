@@ -1,0 +1,219 @@
+<form [formGroup]="WareHouseForm" name="WareHouseForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1> Warehouse <span *ngIf="Mode == 'Edit'">({{WareHouseForm.get('WareHouseCode').value}} -
+      {{WareHouseForm.get('WareHouseName').value}})</span></h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Inventory</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Warehouse</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}}
+          Warehouse</a></li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Warehouse
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add
+                  Warehouse</button>
+              </div>
+            </div>
+
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="this.PageSize" [Currentpage]="this.Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" (OnPageSizeChange)="OnPageSizeChange($event)"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="WareHouse"}'
+          data-toggle="tab" (click)="AccessTab='WareHouse'" role="tab">WareHouse</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="WareHouseBin"}'
+          data-toggle="tab" (click)="AccessTab='WareHouseBin'" role="tab">WareHouseBin</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="WareHouseNextNumbers"}'
+          data-toggle="tab" (click)="AccessTab='WareHouseNextNumbers'" role="tab">Next Numbers</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='WareHouse'">
+      <div class="card-header">
+        {{Mode}} WareHouse
+      </div>
+      <div *ngIf="Mode=='Edit'" class="add-row">
+        <button [disabled]="!this.IsActive || !write_Access" (click)="AddProductWarehouse(this.SelectedWareHouseID)" type="button" class="btn add-btn mb-1">Add
+          Product
+          Warehouse</button>
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse Code<span class="mandatoryFieldColor">*</span></label>
+                    <input *ngIf=!addreadonly class="form-control" maxlength="50"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.WareHouseCode.errors}" type="text"
+                      formControlName="WareHouseCode">
+                    <!--<input *ngIf=addreadonly class="form-control" maxlength="50" [ngClass]="{ 'is-invalid': this.submitted && f.WareHouseCode.errors}" type="text"
+                     formControlName="WareHouseCode" readonly>-->
+                    <div class="errorlbl" *ngIf="this.submitted && f.WareHouseCode.errors"> Please enter warehouse code
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse Name<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="255"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.WareHouseName.errors}" type="text"
+                      formControlName="WareHouseName">
+                    <div class="errorlbl" *ngIf="this.submitted && f.WareHouseName.errors"> Please enter warehouse name
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Transaction Mask<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" type="text" maxlength="2"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.WarehouseTransactionMask.errors}"  formControlName="WarehouseTransactionMask">
+                    <!--<input *ngIf=addreadonly class="form-control" placeholder=" Transaction Mask" type="text" maxlength="2"
+                     formControlName="WarehouseTransactionMask" readonly> -->
+              <div class="errorlbl" *ngIf="this.submitted && f.WarehouseTransactionMask.errors">  Please enter warehouse transaction mask</div>
+                  </div>
+                </div>
+                <div class="form-border">
+                  <h3 class="form-heading">Delivery Address</h3>
+                  <div class="row">
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <!--label class="col-form-label ">&nbsp;</label>-->
+                        <input class="form-control" maxlength="255" formControlName="DeliveryAddress1" type="text">
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <!--<label class="col-form-label ">&nbsp;</label>-->
+                        <input class="form-control" maxlength="255" formControlName="DeliveryAddress2" type="text">
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <!--<label class="col-form-label ">&nbsp;</label>-->
+                        <input class="form-control" maxlength="255" formControlName="DeliveryAddress3" type="text">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-border">
+                  <h3 class="form-heading">Postal Address</h3>
+                  <div class="row">
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <!--<label class="col-form-label ">&nbsp;</label>-->
+                        <input class="form-control" maxlength="255" formControlName="PostalAdderss1" type="text">
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <!--<label class="col-form-label ">Postal Address 2</label>-->
+                        <input class="form-control" maxlength="255" formControlName="PostalAddress2" type="text">
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <!--<label class="col-form-label ">Postal Address 3</label>-->
+                        <input class="form-control" maxlength="255" formControlName="PostalAddress3" type="text">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-border">
+                  <h3 class="form-heading">Contact</h3>
+                  <div class="row">
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <label class="col-form-label ">Name</label>
+                        <input class="form-control" maxlength="255" formControlName="ContactName" type="text">
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <label class="col-form-label">Phone Number</label>
+                        <input class="form-control" type="text" formControlName="ContactPhoneNumber" maxlength="255">
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <label class="col-form-label">Email <span class="mandatoryFieldColor">*</span></label>
+                        <input class="form-control"
+                          [ngClass]="{ 'is-invalid': this.submitted && f.ContactEmailAddress.errors}"
+                          formControlName="ContactEmailAddress" type="text" maxlength="255">
+                        <div class="errorlbl" *ngIf="submitted && f.ContactEmailAddress.errors?.pattern">
+                          Please enter valid email (example: info@domain.com)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group text-center">
+          <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||!this.IsActive">Save</button>
+          <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive"
+            (click)="onSave('Close')">Save & Close</button>
+          <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+        </div>
+        <div *ngIf="!this.IsActive" style="text-align: center;">
+          <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='WareHouseBin'">
+      <app-ware-house-bin [WareHouseID]="this.SelectedWareHouseID" [IsActiveParent]="IsActive">
+      </app-ware-house-bin>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='WareHouseNextNumbers'">
+      <app-warehouse-next-number [WareHouseID]="this.SelectedWareHouseID" [IsActiveParent]="IsActive">
+      </app-warehouse-next-number>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedWareHouseID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedWareHouseID" [HeaderNames]="this.HeaderNames"
+        [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

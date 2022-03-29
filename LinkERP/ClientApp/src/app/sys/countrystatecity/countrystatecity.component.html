@@ -1,0 +1,149 @@
+<form [formGroup]="CountryStatecityForm" name="CountryStatecityForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1>{{this.SelectedCountryName}} - {{SelectedStateName}}- Cities <span *ngIf="Mode=='Edit'">({{CountryStatecityForm.get('CityCode').value}} - {{CountryStatecityForm.get('Name').value}})</span></h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/sys/country"]'>Country</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Backtostate()">State</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Cities</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Cities</a></li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              CITY
+              <div class="add-row">
+                <button class="btn btn-danger" type="button" (click)="Backtostate()">Back</button>
+                &nbsp;
+                <button (click)="AddNew()" type="button" class="btn add-btn mr-1" [disabled]="!this.write_Access">Add City</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                             [Currentpage]="this.Currentpage"
+                            (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="City"}' data-toggle="tab"
+           (click)="AccessTab='City'" role="tab">City</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='City'">
+      <div class="card-header">
+        {{Mode}} City
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <!--id="nav-tabContent"-->
+          <div class="tab-pane fade show active">
+            <!--id="tab1" role="tabpanel"-->
+            <div class="form-border mt-0">
+              <div class="row">
+               <!--  <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Country</label>
+                    <select name="Country" class="form-control"  [ngClass]="{ 'is-invalid': this.submitted && f.Country.errors?.notEqual}"
+                            (ngModelChange)="oncountrystateChange($event)"
+                            formControlName="Country">
+                      <option value="-1">--Select Country--</option>
+                      <option *ngFor="let countries of country" [value]="countries.countryID">
+                        {{countries.countryCode}} - {{countries.name}}
+                      </option>
+                    </select>
+                   
+                    <div class="errorlbl" *ngIf="this.submitted && f.Country.errors?.notEqual">
+                      Please select country
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">State</label>
+                    <select name="Country" class="form-control"  [ngClass]="{ 'is-invalid': this.submitted && f.State.errors?.notEqual}"
+                            formControlName="State">
+                      <option value="-1">--Select State--</option>
+                      <option *ngFor="let statesdetail of states" [value]="statesdetail.stateID">
+                        {{statesdetail.stateCode}} - {{statesdetail.name}}
+                      </option>
+                    </select>
+                 
+                    <div class="errorlbl" *ngIf="this.submitted && f.State.errors?.notEqual">
+                      Please select state
+                    </div>
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label ">City Code <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control"  [ngClass]="{ 'is-invalid': this.submitted && f.CityCode.errors}" placeholder=" " type="text"
+                           formControlName="CityCode" maxlength="50">
+                  
+                    <div class="errorlbl" *ngIf="submitted && f.CityCode.errors"> Please enter city code</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Name.errors}" placeholder="" type="text" formControlName="Name" maxlength="255">
+                    <div class="errorlbl" *ngIf="submitted && f.Name.errors"> Please enter name</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1"  type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedCity"  [IsActive]="IsActive"
+                         [write_Access]="this.write_Access" [delete_Access]="this.delete_Access">
+      </app-general-notes>
+    </div>
+
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedCity"  [IsActive]="IsActive"
+                            [HeaderNames]="this.HeaderNames" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access">
+      </app-attachment-files>
+    </div>
+  </div>
+
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

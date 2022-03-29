@@ -1,0 +1,291 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="InventoryDebtorForm" name="InventoryDebtorForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory DebtorPrice
+
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add Inventory
+                  DebtorPrice</button>
+              </div>
+            </div>
+            <div class="col-12 col-md-4" *ngIf="Mode=='List' && IsCustomer">
+              <!-- <div class="form-group">
+                <label class="col-form-label">Customer Name </label>
+                <select class="form-control" formControlName="CustomerName"  (change)="onCustomerChange($event.target.value)">
+                  <option value="-1">--Select Customer Name --</option>
+                  <option *ngFor="let customernames of CustomerName" [value]="customernames.id">
+                    {{customernames.customerName}}
+                  </option>
+                </select>
+              </div> -->
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [Currentpage]="this.Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="this.PageSize"
+                  (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Inventory Debtor Price
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+            
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Markup Percentage </label>
+                  <input class="form-control" placeholder="" type="text" formControlName="Percentage">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Promotion Type</label>
+                  <select class="form-control" formControlName="PromotionType">
+                    <option value="-1">--Select Promotion Type--</option>
+                    <option *ngFor="let promotionTypes of PromotionTypeList" [value]="promotionTypes.id">
+                      {{promotionTypes.name}}
+                    </option>
+                  </select>
+
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                
+                <div class="form-group">
+                  <label class="col-form-label">Promotion Days </label>
+                  <select class="form-control" formControlName="Days">
+                    <option value="-1">--Select Promotion Days--</option>
+                    <option *ngFor="let promotiondays of PromotionDays" [value]="promotiondays.promotionID">
+                      {{promotiondays.promotionDays}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Promotion Price </label>
+                  <input class="form-control" placeholder="" OnlyNumber="true" type="text" formControlName="Price">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group"> 
+                  <div class="custom-control custom-switch swtch"
+                    [class.disabled]="!this.InventoryProductPriceForm.get('EnablCostPlusMarkup').value">
+                    <input type="checkbox" class="custom-control-input" formControlName="EnablCostPlusMarkup"
+                      id="EnablCostPlusMarkup">
+                    <label class="custom-control-label" for="EnablCostPlusMarkup">EnablCostPlus Markup</label>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="form-border">
+                <div class="row">
+                  <div class="col-6 col-md-6">
+
+                    <div class="col-12 col-md-6">
+                      <div class="form-group"> 
+                        <label class="col-form-label">Promotion Date</label>
+                        <input *ngIf=!addreadonly class="form-control" placeholder="Date" type="text" bsDatepicker
+                          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }"
+                          formControlName="PromotionDateFrom">
+                        <input *ngIf=addreadonly class="form-control" placeholder="Date" type="text" bsDatepicker
+                          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }"
+                          formControlName="PromotionDateFrom" readonly>
+
+
+                      </div>
+
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <label class="col-form-label">Promotion To</label> 
+                        <input *ngIf=!addreadonly class="form-control" placeholder="Date" type="text" bsDatepicker
+                          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }"
+                          formControlName="PromotionDateTo">
+                        <input *ngIf=addreadonly class="form-control" placeholder="Date" type="text" bsDatepicker
+                          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }"
+                          formControlName="PromotionDateTo" readonly>
+
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="col-6 col-md-6">
+
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <label class="col-form-label">Promotion Time</label>
+                        <input *ngIf=!addreadonly class="form-control" placeholder="Date" type="text" bsDatepicker
+                          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+                          formControlName="PromotionTimeFrom">
+                        <input *ngIf=addreadonly class="form-control" placeholder="Date" type="text" bsDatepicker
+                          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+                          formControlName="PromotionTimeFrom" readonly>
+
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <label class="col-form-label">Promotion To</label>
+                        <input *ngIf=!addreadonly class="form-control" placeholder="Date" type="text" bsDatepicker
+                          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+                          formControlName="PromotionTimeTo">
+                        <input *ngIf=addreadonly class="form-control" placeholder="Date" type="text" bsDatepicker
+                          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+                          formControlName="PromotionTimeTo" readonly>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-border">
+                <div class="row">
+                  <div class="col-6 col-md-6">
+                    <div class="row">
+                      <label class="col-form-label">QuantityBreak1</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" OnlyNumber="true" type="text"
+                            formControlName="QuantityBreak1">
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-form-label">QuantityBreak2</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="QuantityBreak2">
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-form-label">QuantityBreak3</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="QuantityBreak3">
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-form-label">QuantityBreak4</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="QuantityBreak4">
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-form-label">QuantityBreak5</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="QuantityBreak5">
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-6">
+                    <div class="row">
+                      <label class="col-form-label">Price Break1</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="PriceBreak1">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-form-label">Price Break2</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="PriceBreak2">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-form-label">Price Break3</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="PriceBreak3">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-form-label">Price Break4</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="PriceBreak4">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-form-label">Price Break5</label>
+                      <div class="col-12 col-md-3">
+                        <div class="form-group"> 
+                          <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                            formControlName="PriceBreak5">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>  
+
+            </div>
+          </div>
+
+
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit">Save</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div> -->
+
+  <div class="card" *ngIf="Mode=='Price'">
+    <app-inventory-price *ngIf="IsDebtorload" [IsDebtor]="true" [InventryID]="this.InventryID"
+      [BindInventoryPrice]="this.BindInventoryPrice" (OnAddPrice)="OnAddPrice($event)"
+      (saveOrCloseAction)="saveOrCloseAction($event)" (OnCancelPrice)="OnCancelPrice($event)"
+      [IsInventoryActive]="this.IsInventoryActive"></app-inventory-price>
+  </div>
+</form>

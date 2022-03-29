@@ -1,0 +1,102 @@
+<h1>Next Number</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Next Number</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="NextNumberForm" name="NextNumberForm" (ngSubmit)="OnSubmit()" class="Form-Horizontal">
+  <div class="card-body p-0" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <div class="card-header">
+        {{Mode}} Next Number
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Warehouse<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="Warehouse"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Warehouse.errors?.notEqual}">
+                      <option value="-1">--Select Warehouse--</option>
+                      <option *ngFor="let warehouse of Warehouse" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} - {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Warehouse.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Description<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Description.errors}"
+                      type="text" formControlName="Description" maxlength="50">
+                    <div class="errorlbl" *ngIf="submitted && f.Description.errors">Please enter description</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Next Number Prefix<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.NextNumberPrefix.errors}"
+                      type="text" formControlName="NextNumberPrefix" maxlength="2">
+                    <div class="errorlbl" *ngIf="submitted && f.NextNumberPrefix.errors">Please enter Next Number Prefix
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Next Number<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.NextNumber.errors}"
+                      type="text" formControlName="NextNumber">
+                    <div class="errorlbl" *ngIf="submitted && f.NextNumber.errors">Please enter Next Number</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access"
+                (click)="SaveAction='Save'">Save</button>
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access"
+                (click)="SaveAction='SaveNClose'">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Next Number
+              <div class="add-row">
+                <button (click)="AddNew()" [disabled]="!this.write_Access" class="btn add-btn mb-1">Add
+                  Next Number</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" (OnActionClick)="OnActionClick($event)" [Currentpage]="this.Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="PageSize"
+                  (OnPageSizeChange)="OnPageSizeChange($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

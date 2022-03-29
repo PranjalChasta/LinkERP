@@ -1,0 +1,250 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryDetailForm" name="InventoryDetailForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+
+  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+
+            <div class="card-header">
+              Inventory Detail
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mr-1"
+                  [disabled]="!this.write_Access">
+                  Add Inventory
+                  Detail
+                </button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                [IsExport]="true" [IsColumnsToFit]="false" [paginationPageSize]="this.PageSize"
+                [Currentpage]="this.Currentpage" [RowIndex]="this.RowIndex"
+                (OnchangeCurrentpage)="OnchangeCurrentpage($event)" (OnPageSizeChange)="OnPageSizeChange($event)"
+                (OnActionClick)="OnActionClick($event)">
+              </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <!--<nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="WareHouse"}' data-toggle="tab"
+           (click)="AccessTab='WareHouse'" role="tab">WareHouse</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="WareHouseBin"}' data-toggle="tab"
+           (click)="AccessTab='WareHouseBin'" role="tab">WareHouseBin</a>
+
+      </div>
+    </nav>-->
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit' || Mode=='Add'" [ngClass]='{"active": AccessTab=="Inventory"}'
+          data-toggle="tab" (click)="AccessTab='Inventory'" role="tab">Inventory Details</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'"
+          [ngClass]='{"active": AccessTab=="InventoryStockAllocationDetails"}' data-toggle="tab"
+          (click)="AccessTab='InventoryStockAllocationDetails'" role="tab">Allocation Details</a>
+      </div>
+    </nav>
+    <div class="card-header" *ngIf=" AccessTab=='Inventory'">
+      {{Mode}} Inventory Detail
+    </div>
+    <div class="card-body pb-0" *ngIf=" AccessTab=='Inventory'">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+
+              <!--   <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Product Name</label>
+                  <select class="form-control" formControlName="ProductName">
+                    <option value="-1">--Select Product Name--</option>
+                    <option *ngFor="let product of Products" [value]="product.id">
+                      {{product.productName}}
+                    </option>
+                  </select>
+                </div>
+              </div> -->
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> WareHouse Name <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" formControlName="WareHouseName"
+                    [ngClass]="{ 'is-invalid': this.Submitted && f.WareHouseName.errors?.notEqual}"
+                    (change)="onWareHouseChange($event.target.value)">
+                    <option value="-1">--Select WareHouse Name--</option>
+                    <option *ngFor="let warehouse of WareHouse " [value]="warehouse.id">
+                      {{warehouse.wareHouseName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.Submitted && f.WareHouseName.errors?.notEqual">
+                    Please select warehouse name
+                  </div>
+                </div>
+              </div>
+
+
+
+              <!--  <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> BinName</label>
+                  <select class="form-control" formControlName="BinName"
+                    [ngClass]="{ 'is-invalid': this.Submitted && f.BinName.errors?.notEqual}">
+                    <option value="-1">--Select BinName--</option>
+                    <option *ngFor="let wareHouseBin  of WareHouseBins" [value]="wareHouseBin.id">
+                      {{wareHouseBin.binName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.Submitted && f.BinName.errors?.notEqual">
+                    Please select bin name
+                  </div>
+                </div>
+              </div> -->
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Minimum Stock </label>
+                  <input  class="form-control text-right" type="text"  maxlength="15"  appTwoDigitDecimaNumber
+                    formControlName="MinimumStock">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Maximum Stock </label>
+                  <input  class="form-control text-right" type="text"   maxlength="15"  appTwoDigitDecimaNumber
+                    formControlName="MaximumStock">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Minimum Order </label>
+                  <input  class="form-control text-right" type="text"   maxlength="15"  appTwoDigitDecimaNumber
+                    formControlName="MinimumOrder">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Standard Cost </label>
+                  <input class="form-control text-right" type="text"   maxlength="15"  appFourDigitDecimaNumber
+                    formControlName="StandardCost">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Average Cost </label>
+                  <input class="form-control text-right" type="text" maxlength="15"  appFourDigitDecimaNumber
+                    formControlName="AverageCost">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Last Cost </label>
+                  <input class="form-control text-right" type="text"  maxlength="15"  appFourDigitDecimaNumber
+                    formControlName="LastCost">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Available Quantity </label>
+                  <input class="form-control text-right" type="text" maxlength="15" appTwoDigitDecimaNumber
+                    formControlName="AvailableQuantity">
+                </div>
+              </div>
+
+
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> InventoryGL ClassificationID </label>
+                  <!-- <input class="form-control textarea" maxlength="50" type="text"
+                    formControlName="InventoryGLClassificationID"> -->
+                    <select class="form-control" formControlName="InventoryGLClassificationID">
+                    <option value="-1">--Select InventoryGL Classification--</option>
+                    <option *ngFor="let classifications  of inventoryGLClassifications" [value]="classifications.id">
+                      {{classifications.classificationName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Allow Negative </label>
+                  <input class="form-control textarea" placeholder="Allow Negative" type="number" formControlName="AllowNegative">
+                </div>
+              </div> -->
+              <!--<div class="form-border">
+                <h3 class="form-heading">Allow Negative</h3>
+                <div class="form-group">
+                  <label class="col-form-label">Allow Negative</label>
+                  <div class="col-12 col-md-12">
+                    <input type="radio" [value]="true" formControlName="AllowNegative">Yes
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" [value]="false" formControlName="AllowNegative">No
+                  </div>
+                </div>
+              </div>-->
+              <div class="col-12 col-md-6" style="color: #007bff;">
+                <div class="form-group">
+                  <div class="custom-control custom-switch swtch"
+                    [class.disabled]="!this.InventoryDetailForm.get('AllowNegative').value">
+                    <input type="checkbox" class="custom-control-input" formControlName="AllowNegative"
+                      id="AllowNegative">
+                    <label class="custom-control-label" for="AllowNegative">Allow Negative</label>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit"
+              [disabled]="!this.write_Access">
+              Save
+            </button>
+            <button class="btn add-btn mr-1" type="button"
+              [disabled]="!this.write_Access"
+              (click)="onSave('Close')">
+              Save & Close
+            </button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <!--<div *ngIf="!this.IsActivebutton" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>-->
+          <!-- <div *ngIf="!this.IsInventoryActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this product to Active to make changes</label>
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <div class="card" *ngIf="AccessTab=='InventoryStockAllocationDetails'">
+      <app-inventory-stock-allocation-details [InventryID]="this.InventryID" [WarehouseID]="this.WarehouseID">
+      </app-inventory-stock-allocation-details>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='InventoryStockAllocationDetails'">
+    <app-inventory-stock-allocation-details [InventryID]="this.InventryID" [WarehouseID]="this.WarehouseID" (OnCancelAllocation)="OnCancelAllocation($event)">
+    </app-inventory-stock-allocation-details>
+  </div>
+  <div class="card" *ngIf="Mode=='Price'">
+    <app-inventory-price *ngIf="AgLoad" [IsLocation]="true" [InventryID]="this.InventryID"
+      [IsWareHousePrice]="this.IsWareHousePrice" [SelectedLocationName]="this.SelectedLocationName"
+      [IsInventoryActive]="this.IsInventoryActive" [BindInventoryPrice]="this.BindInventoryPrice"
+      (OnAddPrice)="OnAddPrice($event)" (OnCancelPrice)="OnCancelPrice($event)"></app-inventory-price>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

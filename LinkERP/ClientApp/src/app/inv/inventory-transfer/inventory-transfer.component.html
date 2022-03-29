@@ -1,0 +1,262 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<h1>Inventory Transfer  <span *ngIf="Mode == 'Edit'"> ({{this.InventoryTransferForm.get('TransferNo').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Inventory</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Inventory Transfer</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Inventory Transfer</a></li>
+  </ol>
+</nav>
+<form [formGroup]="InventoryTransferForm" name="InventoryTransferForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory Transfer
+
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" type="button"  [disabled]="!this.write_Access">
+                  Add Inventory
+                  Transfer
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:600px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsColumnsToFit]="false" [IsExport]="true"
+                            [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Transfer"}'
+           data-toggle="tab" (click)="AccessTab='Transfer'" role="tab">Inventory Transfer</a>
+        <!-- <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="InventoryTransferDetail"}' data-toggle="tab"
+          (click)="AccessTab='InventoryTransferDetail'" role="tab">Detail</a> -->
+          <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents </a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Transfer'">
+      <div class="card-header">
+        {{Mode}} Inventory Transfer
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Transfer No </label>
+                    <input class="form-control textarea" [ngClass]="{ 'is-invalid': this.submitted && f.TransferNo.errors}"  placeholder="Transfer No" type="text" formControlName="TransferNo">
+                    <div class="errorlbl" *ngIf="submitted && f.TransferNo.errors">Please enter TransferNo</div>
+                  </div>
+                </div> -->
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Transfer Reason </label>
+                    <input class="form-control textarea"
+                           [ngClass]="{ 'is-invalid': this.submitted && f.TransferReason.errors}"
+                           type="text" maxlength="255" formControlName="TransferReason">
+                    <div class="errorlbl" *ngIf="submitted && f.TransferReason.errors">
+                      Please enter transfer reason
+                    </div>
+                  </div>
+                </div> -->
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Status </label>
+                    <input class="form-control textarea" [ngClass]="{ 'is-invalid': this.submitted && f.Status.errors}"  placeholder="Status" type="text" formControlName="Status">
+                     <div class="errorlbl" *ngIf="submitted && f.Status.errors">Please enter Status</div>
+                  </div>
+                </div> -->
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse From <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.WareHouseFrom.errors?.notEqual}"
+                            formControlName="WareHouseFrom" (change)="onWarehouseFromChange($event)">
+                      <option value="-1">--Select WareHouse--</option>
+                      <option *ngFor="let wareHouse of WareHouseFrom" [value]="wareHouse.id">
+                        {{wareHouse.wareHouseCode}} -- {{wareHouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.WareHouseFrom.errors?.notEqual">
+                      Please select warehouse from
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse To <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.WareHouseTo.errors?.notEqual}"
+                            formControlName="WareHouseTo" (change)="onWarehouseToChange($event)">
+                      <option value="-1">--Select WareHouse To--</option>
+                      <option *ngFor="let wareHouse of WareHouseTo" [value]="wareHouse.id">
+                        {{wareHouse.wareHouseCode}} -- {{wareHouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.WareHouseTo.errors?.notEqual">
+                      Please select warehouse to
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Transfer Reason <span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control textarea"
+                           [ngClass]="{ 'is-invalid': this.submitted && f.TransferReason.errors}"
+                           type="text" maxlength="255" formControlName="TransferReason">
+                    <div class="errorlbl" *ngIf="submitted && f.TransferReason.errors">
+                      Please enter transfer reason
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4" *ngIf="this.InventoryTransferForm.get('TransferNo').value">
+                  <!--  <div class="form-group">
+                    <label class="col-form-label" style="font-weight: bold;">Received By :</label>
+
+                        {{this.InventoryTransferForm.get('ReceivedBy').value}}
+
+                  </div> -->
+                  <div class="form-group">
+                    <label class="col-form-label">Transfer No</label><br>
+                    <label style="font-size: 14px;"
+                           class="col-form-label"><b>{{this.InventoryTransferForm.get('TransferNo').value}}</b></label>
+                  </div>
+                </div>
+                <div *ngIf="this.Mode=='Edit'" class="col-12 col-md-4">
+                  <div class="form-group">
+
+                    <label class="col-form-label">Status</label><br>
+                    <label style="font-size: 14px;" class="col-form-label"><b>{{this.invStatusService.status}}</b></label>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4" *ngIf="this.InventoryTransferForm.get('ReceivedBy').value">
+                  <!--  <div class="form-group">
+                    <label class="col-form-label" style="font-weight: bold;">Received By :</label>
+
+                        {{this.InventoryTransferForm.get('ReceivedBy').value}}
+
+                  </div> -->
+                  <div class="form-group">
+                    <label class="col-form-label">Received By</label><br>
+                    <label style="font-size: 14px;"
+                           class="col-form-label"><b>{{this.InventoryTransferForm.get('ReceivedBy').value}}</b></label>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4" *ngIf="this.InventoryTransferForm.get('ShippedBy').value">
+                  <!-- <div class="form-group">
+                    <label class="col-form-label" style="font-weight: bold;">Shipped By :</label>
+
+                        {{this.InventoryTransferForm.get('ShippedBy').value}}
+
+                  </div> -->
+                  <div class="form-group">
+                    <label class="col-form-label">Shipped By</label><br>
+                    <label style="font-size: 14px;" class="col-form-label"><b>{{this.InventoryTransferForm.get('ShippedBy').value}}</b></label>
+                  </div>
+                </div>
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Received By</label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.ReceivedBy.errors?.notEqual}"
+                      formControlName="ReceivedBy" (change)="onReceivedByChanged($event)">
+                      <option value="-1">--Select Received By--</option>
+                      <option *ngFor="let user of UsersReceivedBy" [value]="user.loginID">
+                        {{user.loginName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.ReceivedBy.errors?.notEqual">
+                      Please Select Received By
+                    </div>
+                  </div>
+                </div> -->
+
+                <div *ngIf="this.invStatusService.status=='Requested'" class="col-12 col-md-4">
+                  <div class="form-group">
+
+                    <label class="col-form-label">Date Shipped</label>
+                    <!--<input class="form-control" type="text" bsDatepicker
+         [bsConfig]="{ dateInputFormat: 'MM/DD/YYYY',showWeekNumbers:false }"
+         formControlName="DateShipped">-->
+                    <app-date-time-picker formControlName="DateShipped" [showTimePicker]="false"></app-date-time-picker>
+
+                  </div>
+                </div>
+                <div *ngIf="this.invStatusService.status=='Shipped'" class="col-12 col-md-4">
+                  <div class="form-group">
+
+                    <label class="col-form-label">Date Received</label>
+                    <!--<input class="form-control" type="text" bsDatepicker
+         [bsConfig]="{ dateInputFormat: 'MM/DD/YYYY',showWeekNumbers:false }"
+         formControlName="DateReceived">-->
+                    <app-date-time-picker formControlName="DateReceived" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                
+                <!-- <div *ngIf="this.Mode=='Add'" class="col-12 col-md-4">
+                  <div class="form-group">
+
+                    <button class="btn btn-danger" type="button" (click)="Setdate()">Set today's Date</button>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+            <div class="form-group text-center"  *ngIf="this.Mode =='Add'">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access || !this.IsActive || this.CurrentStatus =='Completed'">Save</button>
+              <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')" [disabled]="!this.write_Access || !this.IsActive || this.CurrentStatus =='Completed'">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+          </div>
+        </div>
+        <app-inventory-transfer-detail *ngIf="Mode=='Edit'" [CurrentStatus]="this.invStatusService.status"
+                                       [WareHouseFromID]="this.WareHouseFromID" [WareHouseToID]="this.WareHouseToID" [IsActive]="this.IsActive"
+                                       [TransferID]="this.SelectedTransferID" [EnableButton]="this.enableButton" (OnStatusChanged)="onChangeinStatus()" (OnSaveTransfer)="onSave($event)"  (OnTransferCancel)="Cancel()">
+        </app-inventory-transfer-detail>
+      </div>
+    </div>
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='InventoryTransferDetail'">
+        <app-inventory-transfer-detail [TransferID]="this.SelectedTransferID">
+
+        </app-inventory-transfer-detail>
+      </div>  -->
+      <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+        <app-general-notes [RecID]="this.SelectedTransferID"  [write_Access]="this.write_Access"
+                           [delete_Access]="this.delete_Access" [IsActive]="IsActive" >
+    
+        </app-general-notes>
+      </div>
+      <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'" >
+          <app-attachment-files   
+          [RecID]="this.SelectedTransferID"
+          [HeaderNames]="this.HeaderNames"
+          [write_Access]="this.write_Access" [delete_Access]="this.delete_Access"  [IsActive]="IsActive"
+          > 
+          </app-attachment-files>
+      </div>
+  </div>
+  
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

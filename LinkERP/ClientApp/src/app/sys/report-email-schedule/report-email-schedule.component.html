@@ -1,0 +1,230 @@
+<form [formGroup]="ReportScheduleForm" name="ReportScheduleForm" (ngSubmit)="OnSave()" class="Form-Horizontal">
+  <h1>Report Schedule</h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Report Schedule</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Report
+          Schedule</a></li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Report Schedule
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" type="button">Add Report Schedule</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="ReportScheduleColumns" [IsColumnsToFit]="false"
+                  [RowData]="ReportSchedules" [IsSearch]="true" [IsExport]="true" [paginationPageSize]="PageSize"
+                  [Currentpage]="Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+
+    <!--<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Organisation"}' data-toggle="tab"
+    (click)="AccessTab='Organisation'" role="tab">Organisation</a>
+    <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+    (click)="AccessTab='Notes'" role="tab">Notes</a>
+    <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+    (click)="AccessTab='Attachments'" role="tab">Documents</a>
+    </div>
+    </nav>-->
+
+    <div *ngIf="Mode=='Add' || Mode=='Edit'">
+      <div class="card-header">
+        {{Mode}} Report Schedule
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-12">
+                  <div class="form-group">
+                    <label class="col-form-label ">Description <span class="mandatoryFieldColor">*</span></label>
+                    <!--<input class="form-control" type="text" formControlName="Description" maxlength="255">-->
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.Description.errors}"
+                      placeholder=" " formControlName="Description" type="text" maxlength="255">
+
+                    <div class="errorlbl" *ngIf="Submitted && f.Description.errors">Please enter description</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-12">
+                  <div class="form-group">
+                    <label class="col-form-label">Subject <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.Subject.errors}"
+                      placeholder=" " formControlName="Subject" type="text" maxlength="255">
+
+                    <div class="errorlbl" *ngIf="Submitted && f.Subject.errors">Please enter subject</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-12">
+                  <div class="form-group">
+                    <label class="col-form-label">Email To <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.EmailTo.errors}"
+                      placeholder=" " formControlName="EmailTo" type="text" maxlength="255">
+
+                    <div class="errorlbl" *ngIf="Submitted && f.EmailTo.errors">Please enter email to</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Frequency <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="Frequency"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.Frequency.errors?.notEqual}">
+                      <option value="-1">--Select Frequency--</option>
+                      <option *ngFor="let frequency of Frequency" [value]="frequency.id">{{frequency.frequencyName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Frequency.errors?.notEqual">
+                      Please select frequency
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email Send Mode</label>
+                    <select class="form-control" formControlName="EmailSendMode"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.EmailSendMode.errors?.notEqual}">
+
+                      <option value="A">Automatic</option>
+                      <option value="M">Manual</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.EmailSendMode.errors?.notEqual">
+                      Please select EmailSendMode
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Next Run Date <span class="mandatoryFieldColor">*</span></label>
+                    <app-date-time-picker formControlName="NextRunDate"
+                      [isInvalid]="(this.Submitted && f.NextRunDate.errors)">
+                    </app-date-time-picker>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.NextRunDate.errors">
+                      Please enter next run date
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Report Option <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="Report"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.Report.errors?.notEqual}">
+                      <option value="-1">--Select Report--</option>
+                      <option *ngFor="let reportName of ReportNames" [value]="reportName.id">{{reportName.reportName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Report.errors?.notEqual">
+                      Please select report
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email Report Option <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="EmailReportOption"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.EmailReportOption.errors?.notEqual}">
+                      <option value="-1">--Select Option--</option>
+                      <option value="PDF">Send PDF</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.EmailReportOption.errors?.notEqual">
+                      Please select email report
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Run Report as User<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="ReportUser" [ngClass]="{ 'is-invalid': this.Submitted && f.ReportUser.errors?.notEqual}">
+                      <option value="-1">--Select User--</option>
+                      <option *ngFor="let user of Users" [value]="user.loginID">{{user.loginName}}</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ReportUser.errors?.notEqual">
+                      Please select report user
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Use Document Template<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="DocumentTemplate" [ngClass]="{ 'is-invalid': this.Submitted && f.DocumentTemplate.errors?.notEqual}">
+                      <option value="-1">--Select Document Template--</option>
+                      <option *ngFor="let template of documentTemplates" [value]="template.id">
+                        {{template.templateName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.DocumentTemplate.errors?.notEqual">
+                      Please select document template
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Date from</label>
+                    <app-date-time-picker formControlName="DateFromType" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Date to</label>
+                    <!--<app-date-time-picker formControlName="DateToType" [showTimePicker]="false"></app-date-time-picker>-->
+                    <app-date-time-picker formControlName="DateToType" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> OffSet from</label>
+                    <input class="form-control" placeholder=" " formControlName="OffSetDateFrom" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">OffSet to</label>
+                    <input class="form-control" placeholder=" " formControlName="OffSetDateTo" type="text">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit"  [disabled]="!this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="submit" (click)="OnSaveAndClose()" [disabled]="!this.IsActive" >Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+            <!--<div *ngIf="!IsActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </div>
+</form>

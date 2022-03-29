@@ -1,0 +1,223 @@
+<form [formGroup]="Jobsform" name="Jobsform" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1>Jobs<span *ngIf="Mode == 'Edit'">({{Jobsform.get('JobCode').value}} - {{Jobsform.get('JobName').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Jobs</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Jobs</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="Jobsform" name="Jobsform" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Jobs
+
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" type="button" [disabled]="!this.write_Access">Add Jobs</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [IsColumnsToFit]="false"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Job"}' data-toggle="tab"
+           (click)="AccessTab='Job'" role="tab">Job</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Job'">
+      <div class="card-header">
+        {{Mode}} Job
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <!--id="nav-tabContent"-->
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Company</label>
+                    <select class="form-control" formControlName="Company" (ngModelChange)="onDocumentChange($event)">
+                      <option value="-1">--Select Company--</option>
+                      <option *ngFor="let  organisation of Company" [value]="organisation.id">
+                        {{organisation.name}}</option>
+                    </select>
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Document Template <span class="mandatoryFieldColor">*</span></label>
+                    <select name="Document" class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Document.errors?.notEqual}" formControlName="Document">
+                      <option value="-1">--Select Document--</option>
+                      <option *ngFor="let documents of Document" [value]="documents.id">
+                        {{documents.templateName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Document.errors?.notEqual">
+                      Please select document
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Frequency <span class="mandatoryFieldColor">*</span></label>
+                    <select name="Document" class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Frequency.errors?.notEqual}" formControlName="Frequency">
+                      <option value="-1">--Select Frequency--</option>
+                      <option *ngFor="let frequency of Frequency" [value]="frequency.id">
+                        {{frequency.frequencyName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Frequency.errors?.notEqual">
+                      Please select frequency
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Module <span class="mandatoryFieldColor">*</span></label>
+                    <select name="module" class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Module.errors?.notEqual}" formControlName="Module">
+                      <option value="-1">--Select Module--</option>
+                      <option *ngFor="let module of Modules" [value]="module.id">
+                        {{module.id}} - {{module.moduleName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Module.errors?.notEqual">
+                      Please select module
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label ">Code <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.JobCode.errors}" placeholder=" "
+                           type="text" formControlName="JobCode" maxlength="50">
+
+                    <div class="errorlbl" *ngIf="submitted && f.JobCode.errors">Please enter code</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Name</label>
+                    <input class="form-control" placeholder=" " type="text" formControlName="JobName" maxlength="250">
+                    <!-- <div class="errorlbl" *ngIf="submitted && f.JobName.errors">Enter Name</div> -->
+                  </div>
+                </div>
+                <div class="col-12 col-md-12">
+                  <div class="form-group">
+                    <label class="col-form-label">Job script</label>
+                    <textarea class="form-control" placeholder=" " type="text" formControlName="JobScript"></textarea>
+                    <!-- <div class="errorlbl" *ngIf="submitted && f.JobScript.errors">Enter Script</div> -->
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email Address <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.EmailAddress.errors}" type="text" formControlName="EmailAddress">
+                  </div>
+                  <div class="errorlbl" *ngIf="submitted && f.EmailAddress.errors?.pattern">Please enter valid email (example: info@domain.com)</div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Copy Email Address <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.CopyAddress.errors}" type="text" formControlName="CopyAddress">
+                    <div class="errorlbl" *ngIf="submitted && f.CopyAddress.errors?.pattern">Please enter valid email (example: info@domain.com) </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">BCC Email Address <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.BccAddress.errors}" type="text" formControlName="BccAddress">
+                    <div class="errorlbl" *ngIf="submitted && f.BccAddress.errors?.pattern">Please enter valid email (example: info@domain.com)</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Last Execute Time</label>
+                    <!--<input class="form-control" placeholder="  " type="text" formControlName="Last"
+                           bsDatepicker [value]="Jobsform.get('Last').value | date:'dd-MM-yyyy, h:mm:ss a'"
+                           [bsConfig]="datePickerConfig">-->
+                    <app-date-time-picker formControlName="Last"></app-date-time-picker>
+                    <!--  <input *ngIf=addreadonly class="form-control" placeholder="  " type="text" formControlName="Last" bsDatepicker
+                    [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }" readonly> -->
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Next Execute Time</label>
+                    <!--<input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Next.errors}"
+                    placeholder="  " [value]="Jobsform.get('Next').value | date:'dd-MM-yyyy, h:mm:ss a'" type="text" formControlName="Next" bsDatepicker
+                    [bsConfig]="datePickerConfig" [minDate]="minDate">-->
+                    <app-date-time-picker formControlName="Next" [isInvalid]="submitted && f.Next.errors"></app-date-time-picker>
+                    <!--    <input *ngIf=addreadonly class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Next.errors}" placeholder="  " type="text" formControlName="Next" bsDatepicker
+                    [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }" readonly> -->
+                    <div class="errorlbl" *ngIf="submitted && f.Next.errors">Please enter next execute time</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedJob" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access"  [IsActive]="IsActive">
+      </app-general-notes>
+    </div>
+
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedJob"
+                            [HeaderNames]="this.HeaderNames" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access"  [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+
+  <!--<pre>{{ Jobsform.valid | json }}<br/>{{ Jobsform.value | json }}</pre> -->
+</form>
+
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

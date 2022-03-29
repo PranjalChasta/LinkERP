@@ -1,0 +1,173 @@
+<h1>Internal Transfer</h1>
+<nav aria-label="breadcrumb"> 
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Internal Transfer</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Internal Transfer</a></li>
+  </ol>
+</nav>
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="InternalTransferForm" name="InternalTransferForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Internal Transfer
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add Internal Transfer</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                              [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [IsColumnsToFit]="false"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link"  *ngIf="Mode=='Edit'"  [ngClass]='{"active": AccessTab=="Transfer"}'
+        data-toggle="tab" (click)="AccessTab='Transfer'" role="tab">Transfer</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+        (click)="AccessTab='Notes'" role="tab">Notes</a>
+     <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+        (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit'&& AccessTab=='Transfer'">
+      <div class="card-header">
+        {{Mode}} Internal Transfer
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Requisition <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="RequisitionID" [ngClass]="{ 'is-invalid': this.submitted && f.RequisitionID.errors?.notEqual}">
+                      <option value="-1">--Select Requisition--</option>
+                      <option *ngFor="let request of Requisitions" [value]="request.id">
+                        {{request.requisitionStatus}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.RequisitionID.errors?.notEqual">
+                      Please select requisition
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control" formControlName="ProductID" [ngClass]="{ 'is-invalid': this.submitted && f.ProductID.errors?.notEqual}">
+                      <option value="-1">--Select Product--</option>
+                      <option *ngFor="let inventory of BindInventory" [value]="inventory.id">
+                        {{inventory.productCode}} - {{inventory.productName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.ProductID.errors?.notEqual">
+                      Please select product
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse </label>
+                    <select class="form-control" formControlName="WareHouseID">
+                      <option value="-1">--Select WareHouse--</option>
+                      <option *ngFor="let warehouse of WareHouse" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} - {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.ProductID.errors?.notEqual">
+            Please select ProductID
+          </div> -->
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Batch Number </label>
+                    <input class="form-control" formControlName="InternalTransferBatchNumber" type="text" maxlength="50">
+                    <!-- <div class="errorlbl" *ngIf="submitted && f.PriceClassCode.errors">Please Enter the Code</div> -->
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Requested Quantity</label>
+                    <input class="form-control" formControlName="RequestedQuantity" type="text" appTwoDigitDecimaNumber maxlength="50">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Available Quantity</label>
+                    <input class="form-control" formControlName="AvailableQuantity" type="text" appTwoDigitDecimaNumber maxlength="50">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Transfer Quantity</label>
+                    <input class="form-control text-right" formControlName="TransferQuantity" type="text" appTwoDigitDecimaNumber>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Transfer No</label>
+                    <input class="form-control" formControlName="TransferNo" type="text" maxlength="50">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedinternaltransferID" [write_Access]="this.write_Access"
+                         [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedinternaltransferID"
+                            [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

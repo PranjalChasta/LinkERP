@@ -1,0 +1,501 @@
+<form [formGroup]="PurchaseOrderDetailForm" name="PurchaseOrderDetailForm" (ngSubmit)="onSave('Save')"
+      class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Purchase Order Detail
+
+              <div class="add-row">
+                <button (click)="AddNewPurchaseDetail()" class="btn add-btn mb-1" *ngIf="this.IsCreatedBY && this.PurchaseStatus=='New'" [disabled]="!this.write_Access">
+                  Add
+                  Order Detail
+                </button>
+              </div>
+            </div>
+            <!-- <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="5" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div> -->
+            <div>
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Product Type</th>
+                      <th>Product</th>
+                      <th>UOM</th>
+                      <th>Status</th>
+                      <th>Details</th>
+                      <th class="text-center" *ngIf="this.isApprover">
+                        Approve<input type="checkbox" [checked]="IsAllApproved"
+                                      (change)="checkAll($event,'Approved')" />
+                      </th>
+                      <th class="text-center" *ngIf="this.isApprover">
+                        Reject<input type="checkbox" [checked]="IsAllRejected"
+                                     (change)="checkAll($event,'Rejected')" />
+                      </th>
+                      <!-- <th class="text-center">Remove<input type="checkbox" [checked]="IsAllNew"
+                          (change)="checkAll($event,'New')" /></th> -->
+                      <th *ngIf="this.IsCreatedBY && (this.PurchaseStatus=='New' ||  this.IsAllReject) && this.PurchaseStatus!='Closed'">Edit</th>
+                      <th *ngIf="this.IsCreatedBY && this.PurchaseStatus=='New'">Delete</th>
+                      <!--<th class="text-center">None <input type="checkbox" (change)="checkAll($event,'NoAccess')" /></th>-->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let detailslist of RowData; let i = index">
+                      <td width="100">{{detailslist.productType}}</td>
+                      <td> {{detailslist.productName}}</td>
+                      <td> {{detailslist.uom}}</td>
+                      <td> {{detailslist.deleteStatus}}</td>
+                      <td >
+                        <div *ngIf="detailslist.productStyleMatrixEnabled">
+
+                          <a (click)="ProductMatrix(matrix,i)"><i class="bi fa fa-align-justify" aria-hidden="true"></i></a>
+
+                       </div>
+                      </td>
+                      <td *ngIf="this.isApprover" width="50" class="text-center">
+                        <input type="checkbox"
+                               [checked]="detailslist.purchaseLineStatus=='Approved'"
+                               (change)="onOptionSelected(i, $event, 'Approved')" />
+                      </td>
+                      <td *ngIf="this.isApprover" width="50" class="text-center">
+                        <input type="checkbox"
+                               [checked]="detailslist.purchaseLineStatus=='Rejected'"
+                               [disabled]="detailslist.purchaseLineStatus=='Approved'"
+                               (change)="onOptionSelected(i, $event,'Rejected')" />
+                      </td>
+                      <!-- <td width="50" class="text-center"><input type="checkbox"
+                          [checked]="detailslist.requisitionLineStatus=='New'"
+                          [disabled]="detailslist.requisitionLineStatus=='Approved'"
+                          (change)="onOptionSelected(i, $event,'New')" /></td> -->
+                      <td class="action-tools" width="50" *ngIf="this.IsCreatedBY && (this.PurchaseStatus=='New' ||  this.IsAllReject) && this.PurchaseStatus!='Closed'">
+                        <a (click)="EditRoleModule(i)"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                      </td>
+                      <td class="action-tools" width="50" *ngIf="this.IsCreatedBY &&  this.PurchaseStatus=='New'">
+                        <a (click)="DeleteRoleModule(i)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="form-group text-center" *ngIf="this.isApprover && this.RowData && this.RowData.length>0 && this.PurchaseStatus!='Closed'">
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access"
+
+                      (click)="UpdateStatus()">
+                Save Changes
+              </button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover && this.IsNextApprover" (click)="UpdatePurchaseStatus('3')">Delegate</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover && this.PurchaseStatus=='Approval In Progress'" (click)="UpdatePurchaseStatus('5')">Approve</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover  && this.PurchaseStatus=='Approval In Progress'" (click)="UpdatePurchaseStatus('6')" >Reject</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover  && this.PurchaseStatus=='Approval In Progress'" (click)="UpdatePurchaseStatus('7')" >Partially Received</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Purchase Order Detail
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Product Type<span class="mandatoryFieldColor">*</span> </label>
+                  <select class="form-control" formControlName="ProductType" maxlength="50" id="select1" name="select1"  (change)="productTypeStatus($event.target.value)">
+                    <option *ngFor="let productStatus of purproductList" [value]="productStatus.value">
+                      {{productStatus.name}}
+                    </option>
+                  </select>
+                   <div class="errorlbl" *ngIf="submitted && f.ProductType.errors">Please enter product type</div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Product<span class="mandatoryFieldColor">*</span></label>
+                  <!-- <select [ngClass]="{ 'is-invalid': this.submitted && f.Product.errors?.notEqual}" class="form-control"
+                  (change)="onProductChange($event.target.value)"   formControlName="Product">
+                    <option value="-1">--Select Product--</option>
+                    <option *ngFor="let InventoryList of inventoryList" [value]="InventoryList.id">
+                      {{InventoryList.productCode}} - {{InventoryList.productName}}
+                    </option>
+                  </select> -->
+                  <product-search [ModuleName]="'PurchaseOrderDetail'" formControlName="Product" (change)="onProductChange($event)" class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Product.errors?.notEqual}">
+                  </product-search>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Product.errors?.notEqual">
+                    Please select Product
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Product Description </label>
+                  <input class="form-control textarea" type="text" maxlength="255"
+                         formControlName="ProductDescription">
+
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Classification<span class="mandatoryFieldColor">*</span></label>
+                  <select [ngClass]="{ 'is-invalid': this.submitted && f.Classification.errors?.notEqual}"
+                          class="form-control" formControlName="Classification" maxlength="50">
+                    <option value="-1">--Select Classification--</option>
+                    <option *ngFor="let classifications of classification" [value]="classifications.id">
+                      {{classifications.classificationName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Classification.errors?.notEqual">
+                    Please select Classification
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> UOM<span class="mandatoryFieldColor">*</span></label>
+                  <select [ngClass]="{ 'is-invalid': this.submitted && f.PurchaseUOM.errors?.notEqual}"
+                          class="form-control" formControlName="PurchaseUOM">
+                    <option value="-1">--Select Unit of Measure--</option>
+                    <option *ngFor="let UOM of UOMList" [value]="UOM.uomidFrom">
+                       {{UOM.uomFromName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.PurchaseUOM.errors?.notEqual">
+                    Please select UOM
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Foreign Exchange Currency</label>
+                    <span>$</span>
+                  </div>
+                </div> -->
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Tax <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" maxlength="50" [ngClass]="{ 'is-invalid': this.submitted && f.TaxID.errors?.notEqual}"
+                          formControlName="TaxID">
+                    <option value="-1">--Select tax--</option>
+                    <option *ngFor="let tax of TaxCode" [value]="tax.id">
+                      {{tax.taxCode}} - {{tax.taxCodeName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.TaxID.errors?.notEqual">
+                    Please select tax
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Currency<span class="mandatoryFieldColor">*</span> </label>
+                  <select [ngClass]="{ 'is-invalid': this.submitted && f.CurrencyID.errors?.notEqual}"
+                          class="form-control" formControlName="CurrencyID">
+                    <option value="-1">--Select Currency--</option>
+                    <option *ngFor="let currency of Currency" [value]="currency.id">
+                      {{currency.currencyCode}} - {{currency.currecnyName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.CurrencyID.errors?.notEqual">
+                    Please select Currency
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Requisition </label>
+                  <select class="form-control" formControlName="RequisitionID">
+                    <option value="-1">--Select Requisition--</option>
+                    <option *ngFor="let requisitions of Requisitions" [value]="requisitions.id">
+                      {{requisitions.requisitionNumber}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">VendorPriceScheme </label>
+                  <select class="form-control" maxlength="50"
+                          formControlName="VendorPriceSchemeID">
+                    <option value="-1">--Select tax--</option>
+                    <option *ngFor="let vendorPriceScheme of VendorPriceSchemeList" [value]="vendorPriceScheme.id">
+                        {{vendorPriceScheme.dealsType}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Ordered Quantity </label>
+                  <input class="form-control" placeholder="" formControlName="OrderedQuantity" appFourDigitDecimaNumber
+                         type="text">
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Converted Ordered Quantity</label>
+                  <input class="form-control" placeholder="" formControlName="ConvertedOrderedQuantity" type="text" appFourDigitDecimaNumber readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Received Quantity </label>
+                  <input class="form-control" placeholder="" formControlName="ReceivedQuantity" appFourDigitDecimaNumber readonly
+                         type="text">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Foreign Exchange Rate</label>
+                  <input class="form-control textarea" type="text" appFourDigitDecimaNumber
+                         formControlName="ForExcRate">
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">UnitCost </label>
+                  <input class="form-control" placeholder="" formControlName="UnitCost" appTwoDigitDecimaNumber  type="text"  >
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Home UnitCost</label>
+                  <input class="form-control" placeholder="" formControlName="HomeUnitCost" type="text" appTwoDigitDecimaNumber readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Home Converted UnitCost</label>
+                  <input class="form-control" placeholder="" formControlName="HomeConvertedUnitCost" type="text" appTwoDigitDecimaNumber readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Tax Rate </label>
+                  <input class="form-control text-right" placeholder="" formControlName="TaxRate" appFourDigitDecimaNumber type="text"
+                  >
+                </div>
+              </div>
+
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Discount Amount </label>
+                  <input class="form-control" placeholder="" formControlName="DiscountAmount" appTwoDigitDecimaNumber
+                         type="text"  (keypress)="onlyNumberKey($event)">
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Discounted UnitCost </label>
+                  <input class="form-control" placeholder="" formControlName="DiscountedUnitCost" appTwoDigitDecimaNumber
+                         type="text" readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">LineTotalCost TaxEclusive </label>
+                  <input class="form-control text-right" placeholder="" formControlName="LineTotalCostTaxEclusive"
+                  appFourDigitDecimaNumber type="text" readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">LineTotal TaxAmount</label>
+                  <input class="form-control" placeholder="" formControlName="LineTotalTaxAmount" appTwoDigitDecimaNumber
+                         type="text" readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">LineTotalCost TaxInclusive </label>
+                  <input class="form-control" placeholder="" formControlName="LineTotalCostTaxInclusive"
+                         appTwoDigitDecimaNumber  type="text" readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Foreign Exchange Cost Tax Exclusive</label>
+                  <input class="form-control textarea" type="text" appTwoDigitDecimaNumber
+                         formControlName="ForExcCostTaxEx" readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Discounted UnitCostHome</label>
+                  <input class="form-control" placeholder="" formControlName="DiscountedUnitCostHome" type="text" appTwoDigitDecimaNumber readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Discounted UnitCost Foreign</label>
+                  <input class="form-control" placeholder="" formControlName="DiscountedUnitCostForeign" type="text" appTwoDigitDecimaNumber readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">TotalForeignExchange TaxAmount</label>
+                  <input class="form-control" placeholder="" formControlName="LineTotalForeignExchangeTaxAmount" type="text" appTwoDigitDecimaNumber readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Foreign Exchange Cost Tax Inclusive</label>
+                  <input class="form-control textarea" type="text" appTwoDigitDecimaNumber
+                         formControlName="ForExcCostTaxIn" readonly>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Supplier SKU</label>
+                  <input class="form-control textarea" type="text" formControlName="SupplierSKU" maxlength="50">
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Foreign Exchange Unit Cost</label>
+                  <input class="form-control textarea" type="text" appTwoDigitDecimaNumber
+                         formControlName="ForExcUnitCost">
+                </div>
+              </div>
+
+
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Line Total Home Amount</label>
+                  <input class="form-control text-right" appFourDigitDecimaNumber type="text"
+                         formControlName="LineTotalHomeAmount">
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Line Total Foreign Amount</label>
+                  <input class="form-control textarea" type="text" appTwoDigitDecimaNumber
+                         formControlName="LineTotalForeignAmount">
+                </div>
+              </div>
+
+
+
+
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Total CostTaxExc Home</label>
+                  <input class="form-control" placeholder="" formControlName="LineTotalCostTaxExclusiveHome" type="text" appTwoDigitDecimaNumber>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">TotalTax AmountHome</label>
+                  <input class="form-control" placeholder="" formControlName="LineTotalTaxAmountHome" type="text" appTwoDigitDecimaNumber>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Total CostTaxInc Home</label>
+                  <input class="form-control" placeholder="" formControlName="LineTotalCostTaxInclusiveHome" type="text" appTwoDigitDecimaNumber>
+                </div>
+              </div>
+
+
+              <!-- <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">Discounted UnitCostForeign</label>
+                  <input class="form-control" placeholder="" formControlName="DiscountedUnitCostForeign" type="text" appTwoDigitDecimaNumber>
+                </div>
+              </div> -->
+
+
+              <!-- <div class="form-border">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.PurchaseOrderDetailForm.get('AllowPartialReceiving').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="AllowPartialReceiving"
+                          id="AllowPartialReceiving">
+                        <label class="custom-control-label" for="AllowPartialReceiving"
+                          [attr.readonly]="true">AllowPartialReceiving
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <div class="custom-control custom-switch swtch"
+                        [class.disabled]="!this.PurchaseOrderDetailForm.get('DiscountType').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="DiscountType"
+                          id="DiscountType">
+                        <label class="custom-control-label" for="DiscountType">Discount Type</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div> -->
+              <div class="form-border">
+                <h3 class="form-heading">Discount Type</h3>
+                <div class="row">
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                    </div>
+                    <div class="onoffswitchPOPerFlag">
+                      <input type="checkbox" name="onoffswitchPOPerFlag" class="onoffswitchPOPerFlag-checkbox"
+                             id="myonoffswitchPOPerFlag" formControlName="DiscountType">
+                      <label class="onoffswitchPOPerFlag-label" for="myonoffswitchPOPerFlag">
+                        <span class="onoffswitchPOPerFlag-inner"></span>
+                        <span class="onoffswitchPOPerFlag-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+                  <div style="margin-top: 13px;" class="col-md-3">
+                    <div class="form-group">
+                      <div class="custom-control custom-switch swtch"
+                           [class.disabled]="!this.PurchaseOrderDetailForm.get('AllowPartialReceiving').value">
+                        <input type="checkbox" class="custom-control-input" formControlName="AllowPartialReceiving"
+                               id="AllowPartialReceiving">
+                        <label class="custom-control-label" for="AllowPartialReceiving"
+                               [attr.readonly]="true">
+                          Allow Partial Receiving
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access">Save</button>
+            <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access"      (click)="onSave('Close')">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #matrix>
+    <div class="modal-content">
+      <div class="modal-body">
+        <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+
+        <app-purchase-product-matrix  [ProductID]="ProductID" [SelectedPurchaseDetail_ID]="SelectedPurchaseDetail_ID"   [PurchaseStatus]="PurchaseStatus" [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()" ></app-purchase-product-matrix>
+      </div>
+    </div>
+  </ng-template>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>
+

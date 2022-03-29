@@ -1,0 +1,54 @@
+<div [formGroup]="form">
+  <div class="form-group">
+    <label [attr.for]="ReportControl.key" *ngIf="ReportControl.controlType!='hiddentext'"
+           class="col-form-label">{{ReportControl.label}}</label>
+    <div [ngSwitch]="ReportControl.controlType">
+      <input *ngSwitchCase="'textbox'" [formControlName]="ReportControl.key" class="form-control"
+             [type]="ReportControl.type">
+      <app-date-picker *ngSwitchCase="'datepicker'" [formControlName]="ReportControl.key" [id]="ReportControl.key" [type]="ReportControl.type" [showTimePicker]="false"></app-date-picker>
+     
+      <select [id]="ReportControl.key" *ngSwitchCase="'dropdown'" [formControlName]="ReportControl.key">
+        <option *ngFor="let opt of ReportControl.options" [value]="opt.key">{{opt.value}}</option>
+      </select>
+      <select [id]="ReportControl.key" *ngSwitchCase="'quantityfilter'" [formControlName]="ReportControl.key">
+        <option [value]="0">0-No Filter</option>
+        <option [value]="1">1-Suppress Zero Quantity</option>
+        <option [value]="2">2-Show Zero Quantity Only</option>
+        <option [value]="3">3-Show Negative Quantity Only</option>
+        <option [value]="4">4-Show Positive Quantity Only</option>
+      </select>
+      <div *ngSwitchCase="'dropdownsearch'">
+        <product-search-dropdown *ngIf="ReportControl.lookupTable=='Product'" [RetrunValue]="ReportControl.memberValue" [formControlName]="ReportControl.key"></product-search-dropdown>
+        <warehouse-search-dropdown *ngIf="ReportControl.lookupTable=='Warehouse'" [RetrunValue]="ReportControl.memberValue" [formControlName]="ReportControl.key"></warehouse-search-dropdown>
+        <warehouse-bin-search-dropdown *ngIf="ReportControl.lookupTable=='WarehouseBin'" [RetrunValue]="ReportControl.memberValue" [formControlName]="ReportControl.key"></warehouse-bin-search-dropdown>
+        <vendor-search-dropdown *ngIf="ReportControl.lookupTable=='Vendor'" [RetrunValue]="ReportControl.memberValue" [formControlName]="ReportControl.key"></vendor-search-dropdown>
+        <category-search-dropdown *ngIf="ReportControl.lookupTable=='Categories'" (CategoryChange)="onCategorySelected($event)" [RetrunValue]="ReportControl.memberValue" [formControlName]="ReportControl.key"></category-search-dropdown>
+        <sub-category-search-dropdown *ngIf="ReportControl.lookupTable=='SubCategories'" [RetrunValue]="ReportControl.memberValue" [formControlName]="ReportControl.key"></sub-category-search-dropdown>
+        <purchase-requisition-search-dropdown *ngIf="ReportControl.lookupTable=='PurchaseRequisition'" [RetrunValue]="ReportControl.memberValue" [formControlName]="ReportControl.key"></purchase-requisition-search-dropdown>
+        <purchase-order-number-search-dropdown *ngIf="ReportControl.lookupTable=='PurchaseOrderNumber'" [RetrunValue]="ReportControl.memberValue"
+                                               [formControlName]="ReportControl.key"></purchase-order-number-search-dropdown>
+        <app-shift-search-dropdown *ngIf="ReportControl.lookupTable=='Shift'" [RetrunValue]="ReportControl.memberValue"
+                                   [formControlName]="ReportControl.key"></app-shift-search-dropdown>
+        <app-price-group-search-dropdown *ngIf="ReportControl.lookupTable=='PriceGroup'" [RetrunValue]="ReportControl.memberValue"
+                                         [formControlName]="ReportControl.key"></app-price-group-search-dropdown>
+        <app-debtor-search-dropdown *ngIf="ReportControl.lookupTable=='Debtor'" [RetrunValue]="ReportControl.memberValue"
+                                    [formControlName]="ReportControl.key"></app-debtor-search-dropdown>
+        <app-currency-search-dropdown *ngIf="ReportControl.lookupTable=='Currency'" [RetrunValue]="ReportControl.memberValue"
+                                      [formControlName]="ReportControl.key"></app-currency-search-dropdown>
+        <app-users-search-dropdown *ngIf="ReportControl.lookupTable=='Users'" [RetrunValue]="ReportControl.memberValue"
+                                   [formControlName]="ReportControl.key"></app-users-search-dropdown>
+        <app-adjustment-dropdown *ngIf="ReportControl.lookupTable=='Adjustment'" [RetrunValue]="ReportControl.memberValue"
+                                 [formControlName]="ReportControl.key"></app-adjustment-dropdown>
+        <app-adjustment-detail-dropdown *ngIf="ReportControl.lookupTable=='AdjustmentDetail'" [RetrunValue]="ReportControl.memberValue"
+                                 [formControlName]="ReportControl.key"></app-adjustment-detail-dropdown>
+        <app-organisation-details *ngIf="ReportControl.lookupTable=='Company'" [RetrunValue]="ReportControl.memberValue"
+                                 [formControlName]="ReportControl.key"></app-organisation-details>
+         <app-role-detailas *ngIf="ReportControl.lookupTable=='Roles'" [RetrunValue]="ReportControl.memberValue"
+                                 [formControlName]="ReportControl.key"></app-role-detailas>
+
+                                
+      </div>
+    </div>
+    <div class="errorMessage" *ngIf="!isValid">{{ReportControl.label}} is required</div>
+  </div>
+</div>

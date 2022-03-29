@@ -1,0 +1,491 @@
+<div *ngIf="Menuaccess=='PrescriptionEntry'">
+  <!-- <form [formGroup]="PrescriptionForm" name="PrescriptionForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  </form> -->
+  <h1> Prescription Entry
+    <!--<span *ngIf="Mode == 'Edit'">({{PrescriptionForm.get('DoctorName').value}})</span> -->
+  </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Prescription Entry</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}}
+          Prescription
+          Entry</a></li>
+    </ol>
+  </nav>
+  <!--<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>-->
+  <form [formGroup]="PrescriptionForm" name="PrescriptionForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+    <!-- <div class="card" *ngIf="Mode=='List'">
+      <div class="card-body pb-0">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                Prescription Entery
+                <div class="add-row">
+                  <button (click)="AddNew()" type="button" class="btn add-btn mb-1"> Add Prescription</button>
+                </div>
+              </div>
+              <div class="card-body position-relative">
+                <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                  <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                               [IsExport]="true"
+                               [paginationPageSize]="this.PageSize"
+                               [Currentpage]="this.Currentpage"
+                               (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                               (OnPageSizeChange)="OnPageSizeChange($event)"
+                               (OnActionClick)="OnActionClick($event)">
+                  </app-ag-grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <!--<div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">-->
+    <!--<nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Prescription"}' data-toggle="tab"
+           (click)="AccessTab='Prescription'" role="tab">Prescription</a>
+      </div>
+    </nav>-->
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <div class="card-header">
+        {{Mode}} Prescription
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Prescription No </label>
+                    <input [disabled]="Mode=='Add' ? true : false" class="form-control" formControlName="PrescriptionNo"
+                      type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label">Line No </label>
+                    <input class="form-control" formControlName="LineNo" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> WareHouse Name<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="WarehouseID"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.WarehouseID.errors?.notEqual}">
+                      <option value="-1">--Select WareHouse--</option>
+                      <option *ngFor="let warehouse of WareHouseList " [value]="warehouse.id">
+                        {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.WarehouseID.errors?.notEqual">
+                      Please select Warehouse
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Patient Name<span class="mandatoryFieldColor">*</span> </label>
+                    <input type="hidden" formControlName="PatientName">
+                    <select class="form-control" formControlName="PatientID" (change)="onPatSelect($event)"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.PatientID.errors?.notEqual}">
+                      <option value="-1">--Select Patient --</option>
+                      <option *ngFor="let pat of PatientList " [value]="pat.id">
+                        {{pat.patientName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.PatientID.errors?.notEqual">
+                      Please select PatientName
+                    </div>
+                    <!-- <input class="form-control"
+        formControlName="PatientName" type="text"> -->
+                    <!-- <input type="text" formControlName="PatientName" class="form-control wp-30"  (keyup)="onPatChange()">
+        <input type="hidden" formControlName="PatientID">
+        <ng-container *ngIf="hideDropdownPat==true">
+          <div class="tooltip">
+            <div class="body">
+              <ul style="list-style-type:none;" *ngFor="let pat of patDetailsForFilter;">
+                <li (click)="getPatDetails(pat)"
+                style="cursor:pointer">
+                {{pat.patientName}}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </ng-container> -->
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label col-md-12"> &nbsp;</label>
+                    <div style="cursor: pointer;"><i class="bi fa fa-align-justify"
+                        (click)="PatientDetails(detailpopup)"></i></div>
+                    <!--<button class="btn add-btn col-12 col-md-12 mt-1" type="button" (click)="PatientDetails(detailpopup)">Add Patient</button>-->
+                    <button class="btn add-btn col-12 col-md-12 mb-1" type="button"
+                      (click)="SerialiseDetail(priscEntery)">Load Prescription</button>
+                  </div>
+
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Patient Age </label>
+                    <input class="form-control text-right" formControlName="PatientAge" appTwoDigitDecimaNumber
+                      type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Doctor Reference No </label>
+                    <input class="form-control" maxlength="50" formControlName="DoctorReferenceNo" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Doctor Name <span class="mandatoryFieldColor">*</span></label>
+                    <!-- <input class="form-control" maxlength="255" [ngClass]="{ 'is-invalid': this.submitted && f.DoctorName.errors }"
+               formControlName="DoctorName" type="text">
+        <div class="errorlbl" *ngIf="this.submitted && f.DoctorName.errors">Please enter doctor name</div> -->
+                    <input type="text" formControlName="DoctorName" class="form-control wp-30" (keyup)="onDocChange()"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.DoctorName.errors}">
+                    <input type="hidden" formControlName="DoctorID">
+                    <div class="errorlbl" *ngIf="submitted && f.DoctorName.errors">Please enter DoctorName</div>
+                    <ng-container *ngIf="hideDropdown==true">
+                      <div class="tooltip">
+                        <div class="body">
+                          <ul style="list-style-type:none;" *ngFor="let doc of doctorDetailsForFilter;">
+                            <li (click)="getDoctorDetails(doc)" style="cursor:pointer">
+                              {{doc.doctorShortCode}}-{{doc.doctorName}}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <!-- <label class="col-form-label col-md-12"> &nbsp;</label> -->
+
+                    <button class="btn add-btn col-12 col-md-12 mb-1" type="button"
+                      (click)="CopyPrescriptionByID(f.ID, PrescriptionNumbers)"
+                      [disabled]="IsDeleted != false? true:false || Mode=='Add' ? true : false">Copy</button>
+                    <button class="btn add-btn col-12 col-md-12 " type="button" (click)="OnAccept()"
+                      [disabled]="IsDeleted != false? true:false">Void</button>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Doctor Short Code </label>
+                    <input class="form-control" maxlength="50" formControlName="DoctorShortCode" type="text">
+                  </div>
+                </div>
+
+                <!-- <div class="col-12 col-md-3">
+      <div class="form-group">
+        <label class="col-form-label">Patient ID </label>
+        <input class="form-control" maxlength="50"
+               formControlName="PatientID" type="text">
+      </div>
+    </div> -->
+                <!-- <div class="col-12 col-md-3">
+      <div class="form-group">
+        <label class="col-form-label">Medication ID </label>
+        <input class="form-control" maxlength="50"
+               formControlName="MedicationID" type="text">
+      </div>
+    </div> -->
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Medication Name </label>
+                    <!-- <input formControlName="MedicationName" type="hidden"> -->
+                    <!-- <select class="form-control" formControlName="MedicationID" (change)="onMedChange($event)">
+                      <option value="-1">--Select Medication--</option>
+                      <option *ngFor="let inv of InvList " [value]="inv.id">
+                        {{inv.productName}}
+                      </option>
+                    </select> -->
+                    <product-search [ModuleName]="'Medications'" [Action]="this.Action" (change)="onMedChange($event)"
+                      formControlName="MedicationName">
+                    </product-search>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Warning </label>
+                    <textarea class="form-control" formControlName="Warning"></textarea>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+
+                    <button class="btn add-btn col-12 col-md-12 mb-1" type="button"
+                      [disabled]="this.Mode == 'Edit'?false:true">Re-Print</button>
+                    <button class="btn add-btn col-12 col-md-12 " type="button" (click)="this.Cancel()">New</button>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Special Instructions </label>
+                    <textarea class="form-control" formControlName="SpecialInstructions"></textarea>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Instructions </label>
+                    <textarea class="form-control" formControlName="Instructions"></textarea>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Care Instructions </label>
+                    <textarea class="form-control" formControlName="CareInstructions"></textarea>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+
+                    <button [disabled]="this.Mode == 'Edit'?false:true" class="btn add-btn col-12 col-md-12 mb-1"
+                      type="button" (click)="AddMedication($event,'SaveMedication')">Add Medication</button>
+                    <button class="btn add-btn col-12 col-md-12" type="button" (click)="SerialiseDetail(ViewCopies)"
+                      [disabled]="IsDeleted != false? true:false">View Copies</button>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Dispensed Quantity </label>
+                    <input class="form-control text-right" formControlName="DispensedQuantity" appTwoDigitDecimaNumber
+                      type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; </label>
+                    <br>
+                    <div>
+                      <span style="display: inline-block;
+                        vertical-align: middle;">Unit Price Override &nbsp;</span> <input type="checkbox"
+                        class="form-control" style="width: 20px;display: inline-block;vertical-align: middle;"
+                        formControlName="UnitPriceOverride" />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Unit Price Tax Inclusive </label>
+                    <input class="form-control text-right" formControlName="UnitPriceTaxInclusive"
+                      appFourDigitDecimaNumber type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+
+                    <button class="btn add-btn col-12 col-md-12 " type="submit" [disabled]="IsDeleted">Save</button>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <button class="btn add-btn col-12 col-md-12 mb-1" type="button"
+                      [disabled]="(this.isSelected == true && this.Mode == 'Edit')?false:true"
+                      (click)="MixtureDetails(mixtureDetail)">Mixture</button>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <button class="btn add-btn col-12 col-md-12 " type="button">History</button>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; </label>
+                    <br>
+                    <div>
+                      <span style="display: inline-block;
+                        vertical-align: middle;">Admin Fees Override &nbsp;</span> <input type="checkbox"
+                        class="form-control" style="width: 20px;display: inline-block;vertical-align: middle;"
+                        formControlName="AdminFeesOverride" />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Admin Fees Tax Inclusive </label>
+                    <input class="form-control text-right" formControlName="AdminFeesTaxInclusive"
+                      appFourDigitDecimaNumber type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Total Amount Tax Inclusive </label>
+                    <input class="form-control text-right" formControlName="TotalAmountTaxInclusive"
+                      appFourDigitDecimaNumber type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    &nbsp;
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Repeats </label>
+                    <input class="form-control text-right" formControlName="Repeats" appTwoDigitDecimaNumber
+                      type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Unit Cost </label>
+                    <input class="form-control text-right" formControlName="UnitCost" appFourDigitDecimaNumber
+                      type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Total Cost </label>
+                    <input class="form-control text-right" formControlName="TotalCost" appFourDigitDecimaNumber
+                      type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    &nbsp;
+                  </div>
+                </div>
+
+
+                <!-- <div class="col-12 col-md-3">
+      <div class="form-group">
+        <label class="col-form-label">Repeats </label>
+        <input class="form-control"
+        formControlName="Repeats1" type="checkbox">
+      </div>
+    </div> -->
+                <!-- <div class="col-12 col-md-3">
+      <div class="form-group">
+        <label class="col-form-label">&nbsp; </label>
+        <select class="form-control" formControlName="Status" >
+          <option value="New">New</option>
+          <option value="Unprocessed">Unprocessed</option>
+          <option value="Processed">Processed</option>
+        </select>
+  
+      </div>
+    </div> -->
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; </label>
+                    <br>
+                    <div>
+                      <span style="display: inline-block;
+                        vertical-align: middle;">Pay By Insurance &nbsp;</span> <input type="checkbox"
+                        class="form-control" style="width: 20px;display: inline-block;vertical-align: middle;"
+                        formControlName="PayByInsurance" />
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Insurer </label>
+                    <!-- <input class="form-control text-right"
+        formControlName="Insurer" maxlength="50" type="text"> -->
+                    <select class="form-control" formControlName="Insurer">
+                      <option value="-1">--Select Insurer--</option>
+                      <option *ngFor="let deb of Debtor " [value]="deb.id">
+                        {{deb.debtorAccountName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <!-- <div class="col-12 col-md-3">
+      <div class="form-group">
+        <label class="col-form-label">&nbsp; </label>
+        <br>
+        <div><span style="display: inline-block;
+          vertical-align: middle;">Transaction Source Reference &nbsp;</span> <input type="checkbox" class="form-control"
+          style="width: 20px;display: inline-block;vertical-align: middle;" formControlName="TransactionSourceReference"/></div>
+      </div>
+    </div> -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    &nbsp;
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div> -->
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--</div>-->
+  </form>
+</div>
+<ng-template #priscEntery>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <app-prescription-entry-details (OnCancel)="Closenote()" (OnActionEdit)="OnActionEdit($event)">
+      </app-prescription-entry-details>
+    </div>
+  </div>
+</ng-template>
+<ng-template #ViewCopies>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <app-prescription-view-copies (OnCancel)="Closenote()" [IDs]="f.TransactionSourceReference"
+        (OnActionEdit)="OnActionEdit($event)">
+      </app-prescription-view-copies>
+    </div>
+  </div>
+</ng-template>
+<ng-template #detailpopup>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X </a>
+      <app-patient-maintenance (OnCancel)="Closenote()" (OnActionEdit)="OnActionEdit($event)">
+      </app-patient-maintenance>
+    </div>
+  </div>
+</ng-template>
+<ng-template #PrescriptionNumbers>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <app-prescription-list [prescriptionNO]="this.prescriptionNO" (OnCancel)="Closenote()"
+        (OnActionEdit)="OnActionEdit($event)">
+      </app-prescription-list>
+    </div>
+  </div>
+</ng-template>
+<ng-template #mixtureDetail>
+  <div class="modal-content">
+    <div class="modal-body">
+      <!-- <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a> -->
+      <app-mixture-detail (OnCancel)="Closenote()" [WarehouseID]="this.wareHouseId"
+        [PrescriptionID]="this.prescriptionID" [ModuleName]="mixtureDetails" [Action]="FetchProducts"
+        (OnActionEdit)="OnActionEdit($event)">
+      </app-mixture-detail>
+    </div>
+  </div>
+</ng-template>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="VoidInvoice(f.ID.value)">
+</confirmation-dialog-popup>
+<!-- <confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup> -->

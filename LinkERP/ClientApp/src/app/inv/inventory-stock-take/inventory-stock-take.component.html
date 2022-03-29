@@ -1,0 +1,242 @@
+<h1>Inventory Stock Take <span *ngIf="Mode == 'Edit'"> ({{this.InventoryStockTakeForm.get('StockTakeNo').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Inventory</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Inventory Stock Take</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Inventory
+        Stock Take</a></li>
+  </ol>
+</nav>
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="InventoryStockTakeForm" name="InventoryStockTakeForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory StockTake
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" *ngIf="write_Access && stock_create_write_Access"
+                  class="btn add-btn mb-1" [disabled]="!this.write_Access">Add Inventory Stock take</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="this.PageSize" [Currentpage]="this.Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" (OnPageSizeChange)="OnPageSizeChange($event)"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit' || Mode=='Add'" [ngClass]='{"active": AccessTab=="Stock"}'
+          data-toggle="tab" (click)="AccessTab='Stock'" role="tab">Stock Take</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit'&& AccessTab=='Stock'">
+      <div class="card-header">
+        {{Mode}} Inventory Stock Take
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="WareHouseID" (change)="onWareHouseChange($event.target.value)"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.WareHouseID.errors?.notEqual}">
+                      <option value="-1">--Select WareHouse--</option>
+                      <option *ngFor="let warehouselist of WareHouse" [value]="warehouselist.id">
+                        {{warehouselist.wareHouseCode}} -- {{warehouselist.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.WareHouseID.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Cycle</label>
+                    <select class="form-control" formControlName="CycleID"> 
+                      <option value="">--Select CycleID--</option>
+                      <option *ngFor="let Cycle of Cycle_list" [value]="Cycle.id">
+                        {{Cycle.dataCode}} - {{Cycle.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <!--  <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Stack No</label>
+                    <input class="form-control" placeholder="Stack No" formControlName="StockTakeNo"  [ngClass]="{ 'is-invalid': this.submitted && f.StockTakeNo.errors}" type="text">
+                  </div>
+                  <div class="errorlbl" *ngIf="submitted && f.StockTakeNo.errors">Please Enter the StockTakeNo</div>
+                </div> -->
+                <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Product Start </label>
+                    <select class="form-control" formControlName="ProductIDStart">
+                      <option value="">--Select Product Start--</option>
+                      <option *ngFor="let inventory of BindInventory" [value]="inventory.id">
+                        {{inventory.productCode}} -- {{inventory.productName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Product End </label>
+                    <select class="form-control" formControlName="ProductIDEnd">
+                      <option value="">--Select Product End--</option>
+                      <option *ngFor="let inventory of BindInventory" [value]="inventory.id">
+                        {{inventory.productCode}} -- {{inventory.productName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="form-group ng-invalid">
+
+                    <label class="col-form-label">Category Start</label>
+                    <select class="form-control" formControlName="CategoryIDStart"
+                      (change)="onCategoryStartChange($event.target.value)">
+                      <option value="">--Select Category Start--</option>
+                      <option *ngFor="let Category of CategoryStartList" [value]="Category.id">
+                        {{Category.dataCode}} -- {{Category.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="form-group ng-invalid">
+
+                    <label class="col-form-label">Category End</label>
+                    <select class="form-control" formControlName="CategoryIDEnd"
+                      (change)="onCategoryEndChange($event.target.value)">
+                      <option value="">--Select Category End--</option>
+                      <option *ngFor="let Category of CategoryEndList" [value]="Category.id">
+                        {{Category.dataCode}} -- {{Category.dataName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Sub Category Start</label>
+
+                    <select class="form-control" formControlName="SubCategoryIDStart">
+                      <option value="">--Select SubCategory Start--</option>
+                      <option *ngFor="let SubCategory of SubCategoryStartList" [value]="SubCategory.id">
+                        {{SubCategory.dataCode}} --{{SubCategory.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Sub Category End</label>
+                    <select class="form-control" formControlName="SubCategoryIDEnd">
+                      <option value="">--Select SubCategory End--</option>
+                      <option *ngFor="let SubCategory of SubCategoryEndList" [value]="SubCategory.id">
+                        {{SubCategory.dataCode}} --{{SubCategory.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Bin Start</label>
+                    <select class="form-control" formControlName="BinIDStart">
+                      <option value="">--Select Bin Start--</option>
+                      <option *ngFor="let bin of BindWareHouseBin" [value]="bin.id">
+                        {{bin.binCode}} -- {{bin.binName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Bin End </label>
+                    <select class="form-control" formControlName="BinIDEnd">
+                      <option value="">--Select Bin End--</option>
+                      <option *ngFor="let bin of BindWareHouseBin" [value]="bin.id">
+                        {{bin.binCode}} -- {{bin.binName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3" *ngIf="this.InventoryStockTakeForm.get('StockTakeNo').value  &&  this.Mode =='Edit' ">
+                  <div class="form-group">
+
+                    <label class="col-form-label">Stock Take No</label><br>
+                    <label style="font-size: 14px;"
+                      class="col-form-label"><b>{{this.InventoryStockTakeForm.get('StockTakeNo').value}}</b></label>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3" *ngIf="this.StockTakeStatus!='0'">
+                  <div class="form-group">
+
+                    <label class="col-form-label">Status</label><br>
+                    <label style="font-size: 14px;" class="col-form-label"><b>{{this.StockTakeStatus}}</b></label>
+                  </div>
+                </div>
+                <!-- <div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <product-dropdown  (change)="onChange($event.target.value)"></product-dropdown>
+                  </div>
+                </div>  -->
+                <!--<div class="col-6 col-md-3">
+                  <div class="form-group">
+                    <product-search formControlName="ProductTest">
+                    </product-search>
+                  </div>
+                </div>-->
+                <!-- <div class="col-6 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label ">StockTakeStatus </label>
+                  <input class="form-control" placeholder="No" formControlName="StockTakeStatus" type="text">
+                 </div>
+                </div>  -->
+              </div>
+            </div>
+            <div class="form-group text-center" *ngIf="this.Mode =='Add'">
+              <button class="btn add-btn mr-1" type="submit"
+                *ngIf="this.StockTakeStatus=='0' && stock_create_write_Access"
+                [disabled]="!this.write_Access && isStockCreater">Save Stock</button>
+              <!--<button class="btn add-btn mr-1" type="button" (click)="Test()">Test</button>-->
+              <!--  <button class="btn add-btn mr-1" type="button" *ngIf="this.StockTakeStatus=='New' && isStockCreater" [disabled]="!this.write_Access" (click)="UpdateStockTakeStatus('CountCompleted')">Count Completed</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.StockTakeStatus=='CountCompleted' && isStockApprover" (click)="UpdateStockTakeStatus('Approved')">Approve</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.StockTakeStatus=='CountCompleted' && isStockApprover" (click)="UpdateStockTakeStatus('Rejected')" >Reject</button> -->
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+           
+            
+          </div>
+        </div>
+      </div>
+      <app-inventory-stock-take-detail *ngIf="Mode=='Edit'" [StockTakeNo]="this.SelectedStockTakeNo"
+        [StockTakeStatus]="this.StockTakeStatus" [SelectedStockTakeID]="this.SelectedStockTakeID"
+        [isStockApprover]="this.isStockApprover" [isStockCreater]="isStockCreater"
+        [SelectedWareHouseID]="SelectedWareHouseID" [showInStock]="showInStock"
+        (UpdateStockTakeStatus)="UpdateStockTakeStatus($event)" (OnStockTakeCancel)="Cancel()" [IsActive]="IsActive">
+      </app-inventory-stock-take-detail>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

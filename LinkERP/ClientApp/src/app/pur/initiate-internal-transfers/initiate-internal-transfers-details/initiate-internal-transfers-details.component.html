@@ -1,0 +1,45 @@
+<div class="card-body pb-0">
+  <div class="tab-content pt-2 pb-1">
+    <div class="tab-pane fade show active">
+      <div class="form-border mt-0">
+
+        <div class="row" style="width: 100%;">
+          <div style="width: 100%;">
+            <div class="table-responsive table-padd">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Batch Number</th>
+                    <th>WareHouse</th>
+                    <th>Available Quantity</th>
+                    <th>Transfer Quantity</th>
+                    <th class="text-center">Select All<input type="checkbox" [(ngModel)]="IsAllSelected"
+                      [checked]="IsAllSelected" (change)="checkAll($event)" /></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let detailslist of RowData; let i = index">
+                    <td> {{detailslist.internalTransferBatchNumber}}</td>
+                    <td> {{detailslist.wareHouseFromName}}</td>
+                    <td> {{detailslist.availableQuantity| number: '1.2-2'}}</td>
+                   <td style="width:100px;"><input class="form-control text-right"
+                        [(ngModel)]="detailslist.transferQuantity" (input)="onSearchChange($event.target.value,i)"
+                        type="text" appTwoDigitDecimaNumber></td>
+                        <td width="50" class="text-center"><input type="checkbox" [checked]="detailslist.isSelect"  [(ngModel)]="detailslist.isSelect"
+                          (change)="onOptionSelected(i, $event)" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="width: 100%;" class="form-group text-center">
+              <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges()"  >Save</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

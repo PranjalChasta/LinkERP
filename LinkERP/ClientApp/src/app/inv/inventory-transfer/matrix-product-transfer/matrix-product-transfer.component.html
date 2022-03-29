@@ -1,0 +1,139 @@
+<div>
+  <div *ngIf="this.invStatusService.status=='New'"
+    class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+    <table class="table table-bordered table-striped" style="width: 150px;float: left;">
+      <thead>
+        <tr>  
+          <th>{{this.RowName}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of ProductStyleMatrixRow; let i = index">
+          <td>
+            <input [ngClass]="selectedRow[i]?'form-control bold':'form-control'" class="form-control"
+              [(ngModel)]="detailslist.styleMatrixDetailName" (click)="myFunc(detailslist.id,i)" readonly>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="table table-bordered table-striped" *ngIf="Resultlist && Resultlist.length>0" style="width: 500px;">
+      <thead>
+        <tr>
+          <th>{{this.ColumnName}}</th>
+          <!-- <th>Bin</th> -->
+          <th *ngIf="this.invStatusService.status=='New'">Requested Quantity</th>
+          <th *ngIf="this.invStatusService.status=='Requested'">Shipped Quantity</th>
+          <th *ngIf="this.invStatusService.status=='Shipped' || this.invStatusService.status=='Received'">Received
+            Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of this.Resultlist | SearchByPipe:this.SelectedRowID; let i = index; ">
+
+          <td>
+            <input class="form-control" placeholder="columnName" [(ngModel)]="detailslist.styleMatrixDetailName"
+              readonly>
+           <!--  <td>
+            <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option value="-1">--Select Bin--</option>
+              <option *ngFor="let binlist of BinList" [value]="binlist.id">
+                {{binlist.binName}}
+              </option>
+            </select>
+          </td> -->
+          <td>
+            <input *ngIf="this.invStatusService.status=='New'"
+              class="form-control" placeholder="quantity" [(ngModel)]="detailslist.requestedQty" type="text"
+              OnlyNumber="true" (input)="onSearchChange($event.target.value,detailslist.productMatrixRow,i)">
+            <input *ngIf="this.invStatusService.status=='Requested'" class="form-control" placeholder="quantity"
+              [(ngModel)]="detailslist.shippedQty" type="text" OnlyNumber="true"
+              (input)="onSearchChange($event.target.value,detailslist.productMatrixRow,i)">
+            <input *ngIf="this.invStatusService.status=='Shipped'" class="form-control" placeholder="quantity"
+              [(ngModel)]="detailslist.receivedQty" type="text" OnlyNumber="true"
+              (input)="onSearchChange($event.target.value,detailslist.productMatrixRow,i)">
+          </td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+    <div>
+      <label style="text-align: cenetr; padding-left: 161px;" class="col-form-label">Total Requested Quantity: </label> {{SelectedQuantity}}
+      <label style="text-align: right; padding-left: 71px;" class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+    </div>
+   
+    <div class="form-group text-center" *ngIf="Resultlist && Resultlist.length>0">
+      <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Save')">Save Changes</button>
+      <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Close')">Save & Close</button>
+      <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+    </div>
+  </div>
+
+  <!-- When Status is Shipped or Received -->
+  <div *ngIf="this.invStatusService.status =='Shipped' || this.invStatusService.status =='Requested' || this.invStatusService.status =='PartiallyReceived'"
+    class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+        <!--   <th *ngIf="CurrentStatus=='Shipped'">Bulk no</th> -->
+          <th>Color</th>
+          <th>Size</th>
+         <!--  <th>Purchase Date</th> -->
+          <th>Requested Quantity</th>
+          <th>Shipped Quantity</th>
+          <th>This Receiving Qty</th>
+          <th>Total Received</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let matrixDetails of this.MatrixGrid; let i = index">
+          <!-- <td *ngIf="CurrentStatus=='Shipped'">
+            <select class="form-control" [(ngModel)]="matrixDetails.binID">
+              <option [ngValue]="null" selected disabled>--Select Bin--</option>
+              <option *ngFor="let binlist of BinList" [value]="binlist.id">
+                {{binlist.binName}}
+              </option>
+            </select>
+          </td> -->
+
+          <td>
+            <label>{{matrixDetails.Color}}</label>
+          </td>
+          <td>
+            <label>{{matrixDetails.Size}}</label>
+          </td>
+          <!-- <td>
+            
+            <label>{{matrixDetails.transactionDateIn | date:'yyyy-MM-dd'}}</label>
+          </td> -->
+          <!-- <td>
+            <input class="form-control" placeholder="Quantity" [(ngModel)]="matrixDetails.requestedQty" type="text"
+              OnlyNumber="true" (input)="onMatrixSearchChange($event.target.value,i)" readonly>
+          </td> -->
+          <td>
+            <input class="form-control" placeholder="ShippedQty" [(ngModel)]="matrixDetails.shippedQty" type="text"
+              OnlyNumber="true" (input)="onMatrixSearchChange($event.target.value,i)" [readonly]="!(CurrentStatus=='Requested')">
+          </td>
+          <td>
+            <input class="form-control" placeholder="ReceivedQty" [(ngModel)]="matrixDetails.receivedQty" type="text"
+              OnlyNumber="true" (input)="onMatrixCheckReceive($event.target.value,i)"
+              [readonly]="!(CurrentStatus=='Shipped' || CurrentStatus=='PartiallyReceived')  || matrixDetails.previouslyReceviedQty>=matrixDetails.shippedQty">
+          </td>
+          <td>
+             {{matrixDetails.previouslyReceviedQty}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align: right;padding-right: 80px;">
+      <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+    </div>
+    <div class="form-group text-center">
+      <button class="btn add-btn mr-1" *ngIf="MatrixGrid && MatrixGrid.length>0" type="button" (click)="matrixGridSave('Save')" [disabled]="this.IsSubmit" >Save Changes</button>
+      <button class="btn add-btn mr-1" *ngIf="MatrixGrid && MatrixGrid.length>0" type="button" (click)="matrixGridSave('Close')" [disabled]="this.IsSubmit" >Save & Close</button>
+      <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+    </div>
+  </div>
+</div>

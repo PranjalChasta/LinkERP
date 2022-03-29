@@ -1,0 +1,187 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form *ngIf="this.Mode=='OrderDetail'" [formGroup]="OrderDetailForm" name="OrderDetailForm"
+  (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card-header">Order Detail Form</div>
+  
+  <div class="card-body pb-0" ng-class="{'my-disable':true}" >
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="table-responsive table-padd">
+            <div style="text-align: right;;">
+              TOTAL:<span>{{this.TotalSum}} </span> 
+            </div>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                <tr>
+                  <!-- <th>Line Num</th> --> 
+                  <th>Product</th>
+                  <th>Description</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Tax Type</th>
+                  <th>Tax Amount</th>
+                  <th>Discount</th>
+                  <th>Discounted Unit Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let detailslist of RowData; let i = index;">
+                  <td>
+                    <product-search [ModuleName]="'PurchaseOrderDetail'" [(ngModel)]="detailslist.productID"
+                      (changedetails)="changedetails($event,matrix,serial,Kit,i)" [ngModelOptions]="{standalone: true}"
+                      style="border: 0;">
+                    </product-search>
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="detailslist.description" [disabled]="true" [ngModelOptions]="{standalone: true}">
+                  </td> 
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="detailslist.transactionQuantity" (click)="OnquantityChange(quantity,i)"
+                      [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="detailslist.unitPrice" (click)="OnunitpriceChange(unitprice,i)"
+                      [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="detailslist.taxLabel" [disabled]="true" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="detailslist.taxRate" [disabled]="true" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="detailslist.discountGiven" (click)="OndiscountChange(discount,i)"
+                      [ngModelOptions]="{standalone: true}"   >
+                  </td>
+
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="detailslist.discountAmount" [ngModelOptions]="{standalone: true}" [disabled]="true">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="detailslist.lineTotalIncludingTax" [ngModelOptions]="{standalone: true}" [disabled]="true" >
+                  </td>
+                  <td width="50" class="text-center" *ngIf="!detailslist.id">
+                    <button class="btn add-btn mr-1" type="button" (click)="Deleteindex(i)">Remove</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <button class="btn add-btn mb-1" (click)="AddNewrow()" type="button" [disabled]="OrderStatus">
+              Add Detail
+            </button>
+            <button class="btn add-btn mb-1" style="float: right;" (click)="CheckOut()" type="button">
+              Checkout
+            </button>
+          </div>
+          <div>
+            <button class="btn add-btn mb-1" (click)="OnSave()" type="button"  [disabled]="OrderStatus">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<ng-template #quantity>
+  <div class="modal-content">
+    <div class="modal-body">
+      <app-change-quantity [SelectedproductID]="SelectedproductID" [SelectedQuantity]="SelectedQuantity"
+        [SelectedRow]="selectedRow" [selectedDebtorID]="SelctedDebtorID" [SelectedRowValue]="selectedRowValue"
+        (Cancel)="closePopUp()" (setQuantity)="setQuantity($event)">
+      </app-change-quantity>
+    </div>
+  </div>
+</ng-template>
+<ng-template #unitprice>
+  <div class="modal-content">
+    <div class="modal-body">
+      <app-change-unitprice [SelectedproductID]="SelectedproductID" [SelectedUnitprice]="SelectedUnitprice"
+        (Cancel)="closePopUp()" (setUnitprice)="setUnitprice($event)">
+      </app-change-unitprice>
+    </div>
+  </div>
+</ng-template>
+<ng-template #discount>
+  <div class="modal-content">
+    <div class="modal-body">
+      <app-change-discount [SelectedproductID]="SelectedproductID" [SelectedDiscount]="SelectedDiscount"
+        [SelectedTotal]="SelectedTotal" [LineBeforeDiscount]="LineBeforeDiscount" (Cancel)="closePopUp()" (setDiscount)="setDiscount($event)" [SelectedQuantity]="SelectedQuantity" [SelctedDebtorID]="SelctedDebtorID"  [WarehouseID]="this.WarehouseID" >
+      </app-change-discount>
+    </div>
+  </div>
+</ng-template>
+<ng-template #taxLabel>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-sop-order-detail-tax-label [SalesOrderDetailID]="this.selectedOrderDetailId" [TaxId]="this.selectedTaxId" 
+        (OnCancel)="closePopUp()">
+      </app-sop-order-detail-tax-label>
+    </div>
+  </div>
+</ng-template>
+<!-- If the Product is Matrix  -->
+<ng-template #matrix>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-sop-order-detail-matrix [LineNum]="this.selectedLineNum" [SalesOrderDetailID]="this.selectedOrderDetailId"
+        [InventoryId]="this.selectedInventoryID" [WarehouseID]="this.WarehouseID" (Cancel)="closePopUp()"
+        (ProductMatrixSave)="ProductMatrixSave($event)">
+      </app-sop-order-detail-matrix>
+    </div>
+  </div>
+</ng-template>
+<!-- If the Product is Serialised -->
+<ng-template #serial>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-sop-order-detail-serialised   [WarehouseID]="this.WarehouseID" [LineNum]="this.selectedLineNum" [SalesOrderDetailID]="this.selectedOrderDetailId"
+      [InventoryId]="this.selectedInventoryID" 
+        (Cancel)="closePopUp()"  (SerializedSave)="SerializedProductSave($event)"> 
+      </app-sop-order-detail-serialised>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #Kit>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-sop-order-detail-kit  [WarehouseID]="this.WarehouseID" [LineNum]="this.selectedLineNum" [SalesOrderDetailID]="this.selectedOrderDetailId"
+      [InventoryId]="this.selectedInventoryID" 
+        (Cancel)="closePopUp()">
+      </app-sop-order-detail-kit>
+    </div>
+  </div>
+</ng-template>
+<!-- <div *ngIf="this.Mode=='Kit'">
+  <app-sop-order-detail-kit [LineNum]="this.selectedLineNum" [SalesOrderDetailID]="this.selectedDetailID"
+    [InventoryId]="this.selectedInventoryID" (Cancel)="this.DetailsPage()"></app-sop-order-detail-kit>
+</div> -->
+
+<div *ngIf="this.Mode=='PriceScheme'">
+  <app-sop-order-detail-pricescheme [LineNum]="this.selectedLineNum" [SalesOrderDetailID]="this.selectedDetailID"
+    [InventoryId]="this.selectedInventoryID" [PriceGroupID]="this.PriceGroupID" (Cancel)="this.DetailsPage()">
+  </app-sop-order-detail-pricescheme>
+</div>
+
+<div *ngIf="this.Mode=='PaymentScreen'">
+<app-paymentscreen [ProductDetails]="RowData" [selectedDebtorID]="SelctedDebtorID" [WarehouseID]="this.WarehouseID"  (Cancel)="CancelPayment()"  (OnComplete)="OnComplete($event)"  [OrderMainID]="OrderMainID">
+
+</app-paymentscreen>
+</div>

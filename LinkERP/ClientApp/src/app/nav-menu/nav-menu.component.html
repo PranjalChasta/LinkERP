@@ -1,0 +1,244 @@
+<nav class="navbar navbar-expand-md fixed-top nav-bg navigation-sidebar">
+  <a class="navbar-brand" href="#"><img src="assets/images/LinkLogo.jpg" alt="Link Technologies"
+      title="Link Technologies" /></a>
+  <a class="nav-menu"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></a>
+  <div style="text-align: center;width: 60%;">
+    <h1 style="font-size: 22px;color: black;">{{this.SelectedCompanyName}} </h1>
+
+  </div>
+  <div ngbDropdown class="dropdown top-down ml-auto">
+    <div style="float: left; margin-right: 50px;">
+      <select class="form-control" (change)="onCompanyChange($event.target.value)" [(ngModel)]="SelectedCompany">
+        <option value="00000000-0000-0000-0000-000000000000">--Select Company--</option>
+        <option *ngFor="let companyPermissionlist of CompanyPermissions" [value]="companyPermissionlist.id">
+          {{companyPermissionlist.name}}</option>
+
+      </select>
+    </div>
+    <a class="dropdown-toggle user-img" id="dropdownMenuButton" ngbDropdownToggle data-toggle="dropdown"
+      aria-haspopup="true" aria-expanded="false">
+      <!--  <img src="assets/images/avtar.png" alt="" /> -->
+      <img id="image" [src]="imageSrc" alt="">
+
+    </a>
+    <div ngbDropdownMenu class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item">Hello {{LoginName}},</a>
+      <a [routerLink]='["/sys/profile"]' class="dropdown-item">Profile</a>
+      <a [routerLink]='["/sys/changing-password"]' class="dropdown-item">Change Password</a>
+      <a class="dropdown-item" (click)="LogOut()">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="main-content">
+  <nav id="navbar" class="rvnm-navbar-box dark-ruby">
+    <ul>
+      <li *ngIf="IsSYS">
+        <a (click)="SystemSettingsSubMenu=!SystemSettingsSubMenu"><i><img
+              src="assets/images/nav/settings.png"></i>System Settings</a>
+        <ul *ngIf="SystemSettingsSubMenu">
+          <li *ngFor="let menuPermissionsList of MenuPermissions">
+            <a *ngIf="menuPermissionsList.moduleID=='SYS' && menuPermissionsList.isVisible"
+               [routerLink]="menuPermissionsList.path">{{menuPermissionsList.menuName}}</a>
+          </li>
+          <!-- <li><a [routerLink]='["/sys/SalesPerson"]'>Sales Person</a></li> -->
+          <!--  <li><a [routerLink]='["/sys/organisation-maintenance"]'>Organisation Maintenance</a></li> *ngIf="menuPermissionsList.moduleID='SYS'"
+   <li><a [routerLink]='["/sys/role"]'>Role</a></li>
+   <li *ngIf="IsCheck(103)"><a [routerLink]='["/sys/user"]'>Users</a></li>
+   <li><a [routerLink]='["/sys/state"]'>State</a></li>
+   <li><a [routerLink]='["/sys/country"]'>Country</a></li>
+   <li><a [routerLink]='["/sys/city"]'>City</a></li>
+   <li><a [routerLink]='["/sys/work-flow"]'>Workflow</a></li>
+   <li><a [routerLink]='["/sys/document-template"]'>Document Template</a></li>
+   <li><a [routerLink]='["/sys/jobs"]'>Jobs</a></li>
+   <li><a [routerLink]='["/sys/frequency"]'>Frequency</a></li>
+   <li><a [routerLink]='["/sys/bank"]'>Bank</a></li>
+   <li><a [routerLink]='["/sys/tax-code"]'>Tax Code</a></li>
+   <li><a [routerLink]='["/sys/generic-table"]'>SYS Generic Table</a></li>
+  <li><a [routerLink]='["/sys/attachments"]'>Attachments</a></li>
+   <li><a [routerLink]='["/sys/ag-grid"]'>sys/ag-grid</a></li>
+   <li><a [routerLink]='["/sys/currency"]'>Currency</a></li>
+   <li><a [routerLink]='["/sys/currency-rate"]'>Currency Rate</a></li> -->
+          <!--<li><a [routerLink]='["sys/rnd"]'>RnD</a></li>-->
+          <li><a [routerLink]='["/sys/reports"]'>Reports</a></li>
+          <li><a [routerLink]='["/sys/newprofile"]'>Profile</a></li>
+          <li><a [routerLink]='["/sys/BackUPDataBase"]'>Utility</a></li>
+        </ul>
+      </li>
+      <li *ngIf="IsINV">
+        <a (click)="InventorySubMenu=!InventorySubMenu"><i><img src="assets/images/nav/inventory.png"></i>Inventory</a>
+        <ul *ngIf="InventorySubMenu">
+          <li *ngFor="let menuPermissionsINVList of MenuPermissions">
+            <a *ngIf="menuPermissionsINVList.moduleID=='INV' && menuPermissionsINVList.isVisible"
+              [routerLink]="menuPermissionsINVList.path">{{menuPermissionsINVList.menuName}}</a>
+          </li>
+          <li><a [routerLink]='["/inv/Debtor"]'>Debtor</a></li>
+          <li><a [routerLink]='["/inv/vendor"]'>Vendor</a></li>
+          <li><a [routerLink]='["/inv/utilites"]'>Price Update Scheduler</a></li>
+          <li><a [routerLink]='["/inv/PriceChangeAudit"]'>Price Change Audit</a></li>
+
+          <!-- <li><a [routerLink]='["/inv/inventorystocktake"]'>Inventory Stock Take</a></li>   -->
+          <!--  <li><a [routerLink]='["/inv/inventory"]'>Inventory</a></li>
+          <li><a [routerLink]='["/inv/vendor-price-scheme"]'>Vendor Price Scheme</a></li>
+           <li><a [routerLink]='["/inv/warehouse"]'>WareHouse</a></li>
+
+           <li><a [routerLink]='["/inv/inventorypricelevel"]'>Inventory Price Level</a></li>
+           <li><a [routerLink]='["/inv/product-style-matrix"]'>Product Style Matrix</a></li>
+
+
+
+          <li><a [routerLink]='["/inv/price-groups"]'>Price-groups</a></li>
+          <li><a [routerLink]='["/inv/generic-table"]'>INV Generic Table</a></li> -->
+          <!--<li><a [routerLink]='["/inv/inventory-detail"]'>Inventory Detail</a></li> -->
+          <!-- <li><a [routerLink]='["/inv/product-style-matrix-detail"]'>product-style-matrix-detail</a></li>  -->
+          <!-- <li><a [routerLink]='["/inv/ware-house-bin"]'>WareHouse Bin  </a></li> -->
+          <!-- <li><a [routerLink]='["/inv/inventory-stock-take-detail-product-style-matrix"]'>Stock Take Product Style Matrix  </a></li> -->
+        </ul>
+      </li>
+      <li *ngIf="IsPUR">
+        <a (click)="PurchaseSubMenu=!PurchaseSubMenu"><i><img src="assets/images/nav/purchasing.png"></i>Purchasing</a>
+        <ul *ngIf="PurchaseSubMenu">
+
+          <li *ngFor="let menuPermissionsPURList of MenuPermissions">
+            <a *ngIf="menuPermissionsPURList.moduleID=='PUR'  && menuPermissionsPURList.isVisible"
+              [routerLink]="menuPermissionsPURList.path">{{menuPermissionsPURList.menuName}}</a>
+          </li>
+
+
+          <!--   <li><a [routerLink]='["/pur/landed-cost-shipment-lines"]'>Landed Cost Shipment</a></li> -->
+          <!--   <li><a [routerLink]='["/pur/orderApproval"]'>Order Approval</a></li> -->
+          <!--  <li><a [routerLink]='["/pos/tender-types"]'>Tender Types</a></li> -->
+          <!-- <li><a [routerLink]='["/pos/sop-tendertype"]'>SOP Generic Table</a></li>  -->
+          <!--  <li><a [routerLink]='["/pur/goodsReceiveNote"]'>goods ReceiveNote</a></li>   -->
+          <!-- <li><a [routerLink]='["/pur/requisition"]'>Requisition</a></li>
+   <li><a [routerLink]='["/pur/purchaseTemplate"]'>Purchase Template</a></li>
+  <li><a [routerLink]='["/pur/quotation"]'>Requisition Quotation </a></li>
+     <li><a [routerLink]='["/pur/internaltransfer"]'>Internal Transfer</a></li>
+     <li><a [routerLink]='["/pur/requestApproval"]'>Request Approval</a></li> -->
+          <!--<li><a [routerLink]='["/pur/landed-cost-shipment-lines"]'>Landed Cost Shipment</a></li>-->
+
+        </ul>
+
+      </li>
+
+      <!--<li class="rvnm-expandable">
+        <a href="#"><i><img src="assets/images/nav/ledger.png"></i>General Ledger</a>
+       <ul>
+          <li><a href="#">Maintenance</a></li>
+          <li>
+            <a href="#">Journal Transactions</a>
+            <ul>
+              <li><a href="#">Journal Sets</a></li>
+              <li><a href="#">Automatic Journals</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#">Configuration</a>
+            <ul>
+              <li><a href="#">Setup</a></li>
+              <li><a href="#">Categories</a></li>
+              <li><a href="#">Transaction Codes</a></li>
+              <li><a href="#">Journal Set Document Types</a></li>
+              <li><a href="#">Journal Set Note Types</a></li>
+            </ul>
+          </li>
+          <li><a href="#">Reports</a></li>
+          <li><a href="#">Utilities</a></li>
+        </ul>
+      </li>
+      <li><a [routerLink]='["/sys/organisation-maintenance"]'><i><img src="assets/images/nav/cash-book.png"></i>Cash Book</a></li>
+
+      <li><a href="#"><i><img src="assets/images/nav/sales.png"></i>Sales</a></li>
+
+      <li ><a href="#"><i><img src="assets/images/nav/debit.png"></i>Debtors</a></li>
+      <li><a href="#"><i><img src="assets/images/nav/credit.png"></i>Creditors</a></li>
+      <li><a href="#"><i><img src="assets/images/nav/manufacturing.png"></i>Manufacturing</a></li>
+      <li><a href="#"><i><img src="assets/images/nav/contact.png"></i>Contacts</a></li>
+      <li><a href="#"><i><img src="assets/images/nav/job-costing.png"></i>Job Costing</a></li>
+      <li><a href="#"><i><img src="assets/images/nav/service-manager.png"></i>Service Manager</a></li>    -->
+      <li *ngIf="IsPOS">
+        <a (click)="posSubMenu=!posSubMenu"><i><img src="assets/images/nav/sales.png"></i>Sales Order</a>
+        <ul *ngIf="posSubMenu">
+          <li *ngFor="let menuPermissionsPOSList of MenuPermissions">
+            <a *ngIf="menuPermissionsPOSList.moduleID=='POS' && menuPermissionsPOSList.isVisible"
+              [routerLink]="menuPermissionsPOSList.path">{{menuPermissionsPOSList.menuName}}</a>
+          </li>
+          <!-- <li><a [routerLink]='["/pos/sop-tendertype"]'>SOP Tender Types</a></li> -->
+          <li><a [routerLink]='["/pos/prescription-doctor"]'>Doctor Maintenance</a></li>
+          <li><a [routerLink]='["/pos/prescription-instruction"]'>Prescription Instructions</a></li>
+          <li><a [routerLink]='["/pos/patient-maintenance"]'>Patient Maintenance</a></li>
+          <li><a [routerLink]='["/pos/non-prescription-labels"]'>Non Prescription Labels</a></li>
+          <li><a [routerLink]='["/pos/prescription-entry"]'>Prescription Entry</a></li>
+          <li><a [routerLink]='["/pos/shift-list"]'>Shift List</a></li>
+          <li><a [routerLink]='["/pos/server-relationship"]'>Server RelationShip</a></li>
+          <li><a [routerLink]='["/pos/terminal-configuration"]'>Terminal Configuration</a></li>
+          <li><a [routerLink]='["/kitchen/tableview"]'>Table Management</a></li>
+          <li><a [routerLink]='["/kitchen/kitchenProcessing"]'>Kitchen Processing</a></li>
+          <li><a [routerLink]='["/kitchen/reservationview"]'>Reservation</a></li>
+        </ul>
+      </li>
+      <li *ngIf="IsAcr">
+        <a (click)="ACRSubMenu=!ACRSubMenu"><i><img src="assets/images/nav/debit.png"></i>Account Receivable</a>
+        <ul *ngIf="ACRSubMenu">
+          <li><a [routerLink]='["/AR/Debtors"]'>Debtor</a></li>
+
+        </ul>
+        <ul *ngIf="ACRSubMenu">
+          <li><a [routerLink]='["/AR/Receipts"]'>Receipts</a></li>
+        </ul>
+        <ul *ngIf="ACRSubMenu">
+          <li><a [routerLink]='["/AR/Refund"]'>Refund</a></li>
+        </ul>
+        <ul *ngIf="ACRSubMenu">
+          <li><a [routerLink]='["/AR/Adjustment"]'>Adjustment</a></li>
+          <li><a [routerLink]='["/AR/reports"]'>Reports</a></li>
+        </ul>
+      </li>
+      <li *ngIf="IsDoc">
+        <a (click)="DocSubMenu=!DocSubMenu"><i><img src="assets/images/nav/cash-book.png"></i>Document</a>
+        <ul *ngIf="DocSubMenu">
+          <li *ngFor="let menuPermissionsDOCList of MenuPermissions">
+            <a *ngIf="menuPermissionsDOCList.moduleID=='DOC' && menuPermissionsDOCList.isVisible"
+              [routerLink]="menuPermissionsDOCList.path">{{menuPermissionsDOCList.menuName}}</a>
+          </li>
+
+        </ul>
+      </li>
+
+      <!-- <li>
+
+        <a ><i><img src="assets/images/kitchen.png"></i>Kitchen View </a>
+         <ul>
+          <li><a [routerLink]='["/kitchen/tableview"]'>Table</a></li>
+          <li><a [routerLink]='["/kitchen/kitchenProcessing"]'>Kitchen Processing</a></li>
+            <li><a [routerLink]='["/kitchen/reservationview"]'>Reservation</a></li>
+        </ul>
+      </li> -->
+<!-- 
+      <li>
+
+        <a [routerLink]="['/new']"><i><img src="assets/images/kitchen.png"></i>new </a>
+       
+      </li> -->
+    </ul>
+  </nav>
+
+  <section id="wrapper" class="rvnm-wrapper">
+    <router-outlet></router-outlet>
+  </section>
+</div>
+
+<div class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-4 text-center text-md-left pb-2 pb-md-0">Email: <a
+          href="mailto:info@demo.com">support@linktechnologies.com.fj</a></div>
+      <div class="col-12 col-md-5 text-center pb-2 pb-md-0">
+        <a href="https://www.linktechnologies.com.fj/" style="color: black;">
+          Powered by Link Technologies © Link Business Solutions Pte Ltd </a>
+      </div>
+      <div class="col-12 col-md-3 text-center pb-2 text-md-right">Version: 2.4.7</div>
+      <!--<div class="col-12 col-md-4 text-center pb-2 text-md-right">LBS developed by <a href="https://aspiresoftwareconsultancy.com/" target="_blank">Aspire Software Consultancy</a></div>-->
+    </div>
+  </div>
+</div>

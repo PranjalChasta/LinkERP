@@ -1,0 +1,101 @@
+
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="GenericTableDataForm" name="GenericTableDataForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label class="col-form-label">Table Name</label>
+                <select class="form-control"  formControlName="TblSelectedID"  (change)="onTableChange($event.target.value)">
+                  <option value="-1">--Select Table Name--</option>
+                  <option *ngFor="let allTables of AllTables" [value]="allTables.id">
+                    {{allTables.tableName}}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="card-header" >
+              Generic Table Data 
+              <div class="add-row" >
+                <button (click)="AddNew()" *ngIf="this.SelectedID" type="button" [disabled]="!this.write_Access"  class="btn add-btn mb-1">Add  Generic Table Data</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                             [IsEditable]="true"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             [LineEditField]="this.LineEditField"
+                             [IsInlineEdit]="true"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+               
+              </div>
+             
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Generic Table Data for table "{{this.selectedtable}}"
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="row">
+          <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label"> Data Code </label>
+                  <input class="form-control textarea" placeholder="DataCode" type="text" formControlName="DataCode" name="BinCode" maxlength="50" [ngClass]="{ 'is-invalid': this.submitted && f.DataCode.errors}">
+                </div>
+                <div class="errorlbl" *ngIf="submitted && f.DataCode.errors"> Please enter datacode </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label">&nbsp;Data Name</label>
+                  <input class="form-control" placeholder="Data Name" type="text" formControlName="DataName" maxlength="255" [ngClass]="{ 'is-invalid': this.submitted && f.DataName.errors}"> 
+                </div>
+                <div class="errorlbl" *ngIf="submitted && f.DataName.errors"> Please enter dataname </div>
+              </div>
+<!-- 
+          <app-add-child-table-data style="width: 100%;" [ParentTableID]="this.ParentTableID"   [SelectedID]="this.SelectedID" *ngIf="IsChildData" [ParentName]="this.ParentName" (OnCloseChild)="OnCloseChild()">
+
+          </app-add-child-table-data> -->
+        </div>
+    
+
+        
+      </div>
+    </div>
+    <div class="form-group text-center">
+      <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||!this.IsActive">Save</button>
+      <button class="btn add-btn mr-1"  type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+      <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+    </div>
+    <div *ngIf="!this.IsActive" style="text-align: center;">
+      <label class="errorlbl">Please active this record to make changes</label>
+    </div> 
+  </div>
+  <app-add-child-table-data style="width: 100%;" [ParentTableID]="this.ParentTableID"   [SelectedID]="this.SelectedID" *ngIf="IsChildData" [ParentName]="this.ParentName" (OnCloseChild)="OnCloseChild()" [IsParentActive]="this.IsParentActive" [Delete_Access]="this.delete_Access">
+
+  </app-add-child-table-data>
+ 
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>
+
+

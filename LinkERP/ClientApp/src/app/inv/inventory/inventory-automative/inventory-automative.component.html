@@ -1,0 +1,140 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="InventoryAutomativeForm" name="InventoryAutomativeForm" (ngSubmit)="onSave('Save')"
+  class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory Automative
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1"
+                  [disabled]="!this.write_Access || !this.IsInventoryActive">Add Automative</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" 
+                           [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Inventory Automative
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Make <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Make.errors?.notEqual}"
+                    (ngModelChange)="onMakeChange($event)" formControlName="Make">
+                    <option value="-1">--Select Make--</option>
+                    <option *ngFor="let makedeatil of MakeDetails" [value]="makedeatil.id">
+                      {{makedeatil.makeDescription}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Make.errors?.notEqual">
+                    Please select make
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Model <span class="mandatoryFieldColor">*</span> </label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Model.errors?.notEqual}"
+                    (ngModelChange)="onModelChange($event)" formControlName="Model">
+                    <option value="-1">--Select Model--</option>
+                    <option *ngFor="let model of modellist" [value]="model.id">
+                      {{model.modelDescription}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Model.errors?.notEqual">
+                    Please select model
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Series <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Series.errors?.notEqual}"
+                    (ngModelChange)="onSeriesChange($event)" formControlName="Series">
+                    <option value="-1">--Select Series--</option>
+                    <option *ngFor="let seriesdetail of serieslist" [value]="seriesdetail.id">
+                      {{seriesdetail.series}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Series.errors?.notEqual">
+                    Please select series
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Engine <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Engine.errors?.notEqual}"
+                    formControlName="Engine">
+                    <option value="-1">--Select Engine--</option>
+                    <option *ngFor="let engines of EngineDetails" [value]="engines.id">
+                      {{engines.engine}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Engine.errors?.notEqual">
+                    Please select engine
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Year <span class="mandatoryFieldColor">*</span> </label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Year.errors?.notEqual}"
+                    formControlName="Year">
+                    <option value="-1">--Select Year--</option>
+                    <option *ngFor="let years of yearlist" [value]="years.id">
+                      {{years.year}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Year.errors?.notEqual">
+                    Please select year
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1"
+              [disabled]="!this.write_Access||!this.IsActive || !this.IsInventoryActive">Save</button>
+            <button class="btn add-btn mr-1" type="button"
+              [disabled]="!this.write_Access ||  !this.IsActive || !this.IsInventoryActive"
+              (click)="onSave('Close')">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!this.IsActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+          <div *ngIf="!this.IsInventoryActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this product to Active to make changes</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

@@ -1,0 +1,84 @@
+
+<form [formGroup]="SalesPersonForm" name="SalesPersonForm"  class="Form-Horizontal">
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<!-- <form [formGroup]="SalesPersonForm" name="SalesPersonForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"> -->
+  <div class="card-body p-0" *ngIf="Mode=='List'">
+    <h1>
+     Sales Person
+    </h1>
+    <div class="card" *ngIf="Mode=='List'">
+      <div class="card-header">
+        <a>Add Sales Person</a>
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                    formControlName="WareHouseID" (change)="onWarehouseFromChange($event)"
+                    [ngClass]="{ 'is-invalid': this.Submitted && f.WareHouseID.errors}">
+                    <option value="00000000-0000-0000-0000-000000000000">--Select WareHouse--</option>
+                    <option *ngFor="let ware of WareHouse" [value]="ware.id">
+                      {{ware.wareHouseCode}} -- {{ware.wareHouseName}}
+                    </option>
+                  </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.WareHouseID.errors">  Please select WareHouse</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Sales Person Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control"   type="text"   formControlName="SalesPersoName"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.SalesPersoName.errors}">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.SalesPersoName.errors">Please enter Sales Person Name</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="button" (click)="onSave('Save')" [disabled]="!this.write_Access">Save</button>
+              <!-- <button class="btn add-btn mr-1"  type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button> -->
+            </div>
+            <!-- <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Sales Person
+              
+            </div>
+           
+            <div  class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs"
+                 [RowData]="this.RowData" [IsSearch]="true"
+                  [Currentpage]="this.Currentpage"
+                (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                [IsEditable]="true"
+                [IsExport]="true" [paginationPageSize]="10" 
+                (OnActionClick)="OnActionClick($event)"
+               >
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

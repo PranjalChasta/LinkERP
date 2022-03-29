@@ -1,0 +1,5 @@
+<select class="form-control" [(ngModel)]="value" (change)="OnProductSelected($event.target.value)">
+  <option value="-1">--Select Product--</option>
+  <option *ngFor="let product of Products" [value]="product.id">{{product.productCode}} - {{product.productName}}</option>
+</select>
+<!-- <button type="button" (click)="OnSelect()">Select</button> -->

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="SYS\LBS_SYS_Table.cs" />
+    <Compile Remove="SYS\LBS_SYS_TableData.cs" />
+  </ItemGroup>
+
+</Project>
+
+
+

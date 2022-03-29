@@ -1,0 +1,103 @@
+<form [formGroup]="AdjustmentForm" name="AdjustmentForm" (ngSubmit)="onSave('Save')"
+      class="Form-Horizontal">
+      <div class="card" *ngIf="Mode=='List'">
+
+        <div class="card-body pb-0">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header">
+                 Adjustment
+                  <div class="add-row">
+                    <button (click)="AddNewAdjustment()" type="button" class="btn add-btn mb-1"> Add Adjustment</button>
+                  </div>
+                </div>
+                <div class="card-body position-relative">
+                  <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                    <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                                 [IsExport]="true"
+                                 [paginationPageSize]="this.PageSize"
+                                 [Currentpage]="this.Currentpage"
+              
+                                 (OnActionClick)="OnActionClick($event)">
+                    </app-ag-grid>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div *ngIf="Mode=='Add' || Mode=='Edit'">
+      <div class="card-header">
+        {{Mode}} Adjustment
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <!--  <div class="col-12 col-md-4">
+                   <div class="form-group">
+                     <label class="col-form-label"> Adjustment No </label>
+                     <input class="form-control textarea" placeholder="Adjustment No" type="text"
+                       [ngClass]="{ 'is-invalid': this.submitted && f.AdjustmentNo.errors}"
+                       formControlName="AdjustmentNo">
+                     <div class="errorlbl" *ngIf="submitted && f.AdjustmentNo.errors">Please enter Adjustment Number
+                     </div>
+                   </div>
+                 </div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Adjustment BatchNumber</label>
+                    <input class="form-control textarea" maxlength="255" type="text" formControlName="AdjustmentBatchNumber"
+                           [ngClass]="{ 'is-invalid': this.submitted && f.AdjustmentBatchNumber.errors}"
+                          >
+                    <div class="errorlbl" *ngIf="submitted && f.AdjustmentBatchNumber.errors">
+                      <!-- Please enter adjustment reason -->
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Status </label>
+                    <input class="form-control textarea"  placeholder="Status" type="text" [ngClass]="{ 'is-invalid': this.submitted && f.Status.errors}" formControlName="Status">
+                     <div class="errorlbl" *ngIf="submitted && f.Status.errors">Please enter Status</div>
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Description </label>
+                    <input  class="form-control textarea" maxlength="50" type="text" formControlName="Description"
+                           [ngClass]="{ 'is-invalid': this.submitted && f.Description.errors}">
+                    <div class="errorlbl" *ngIf="submitted && f.Description.errors">Please enter Description</div>
+                  </div>
+                </div>
+                <div *ngIf="Mode=='Edit' " class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"></label>
+                    <button  [disabled]="IsCloseAdjustment" (click)="CloseAdjustment()" type="button" class="btn add-btn mb-1">Active Adjustment
+                    </button>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div  *ngIf="Mode=='Add' || Mode=='Edit'">
+      <app-debtor-adjustment-details [IsCloseAdjustment]="this.IsCloseAdjustment"
+      [AddAdjustmentDetails]="this.AddAdjustmentDetailsData"
+      (AddUpDateAdjustmentDetails)="OnSave($event)">
+    
+      </app-debtor-adjustment-details>
+    </div>
+ 
+  </div>
+  <confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>
+</form>
+

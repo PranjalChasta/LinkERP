@@ -1,0 +1,90 @@
+<div>
+  <div style="text-align: right;padding-right: 20px;">
+    <button [disabled]="IsCloseAdjustment" (click)="AddNewAdjustmentDetailLine()" type="button" class="btn add-btn mb-1">Add
+    </button>
+  </div>
+</div>
+
+<div class="table-padd">
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <!-- <th>Line Num</th> -->
+        <th>Debtor</th>
+        <th >Invoice/Remit No</th>
+        <th>Date </th>
+        <th>DueDate</th>
+        <th>Tranction Amount</th>
+        <th>Tax</th>
+        <th>Tax Rate</th>
+        <th>Tax Amount</th>
+        <!-- <th> Tax Rate</th>
+        <th> Tax</th> -->
+        <th>Write On/Off</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr  *ngFor="let detailslist of AdjustmentDetails; let i = index"> 
+       <td>
+          <debtor-search [disabled]="IsCloseAdjustment"  [ModuleName]=" 'DebtorSearch' " [Action]="'SelectAll'" [(ngModel)]="detailslist.debtorID"
+          (change)="debtorChange($event)"   name="debtor" [ngModelOptions]="{standalone: true}"></debtor-search>
+        </td>
+        <td>
+          <input [disabled]="IsCloseAdjustment" class="form-control text-right"  [(ngModel)]="detailslist.adjustmentReferenceNo"  name="adjustmentReferenceNo" [ngModelOptions]="{standalone: true}">
+        </td>
+        <td> 
+          <app-date-time-picker [disabled]="IsCloseAdjustment"  [showTimePicker]="false" [(ngModel)]="detailslist.adjustmentDate" [ngModelOptions]="{standalone: true}" ></app-date-time-picker>
+        </td>
+        <td> 
+          <app-date-time-picker [disabled]="IsCloseAdjustment"  [showTimePicker]="false" [(ngModel)]="detailslist.adjustmentDate" [ngModelOptions]="{standalone: true}" ></app-date-time-picker>
+        </td>
+        <td>
+          <input [disabled]="IsCloseAdjustment" class="form-control text-right"  appFourDigitDecimaNumber [(ngModel)]="detailslist.transactionAmount"  name="transactionAmount" [ngModelOptions]="{standalone: true}">
+        </td>
+        <td>
+            <!-- <input class="form-control" placeholder="TaxID" type="text" formControlName="Tax"> -->
+            <select [disabled]="IsCloseAdjustment"  class="form-control" [(ngModel)]="detailslist.taxID" (change)="OnTaxChange($event.target.value,i)">
+              <option value="00000000-0000-0000-0000-000000000000">--Select Tax--</option>
+              <option *ngFor="let tax of TaxcodeList" [value]="tax.id">
+                {{tax.taxCode}} - {{tax.taxCodeName}}
+              </option>
+            </select>
+        </td>
+        <td>
+          <input readonly class="form-control text-right"  [(ngModel)]="detailslist.taxRate"  name="taxRate" [ngModelOptions]="{standalone: true}">
+        </td>
+        <td>
+          <input readonly class="form-control text-right"  [(ngModel)]="detailslist.taxAmount"  name="taxAmount" [ngModelOptions]="{standalone: true}">
+        </td>
+        <td>
+          <div class="onoffswitchPerFlag" >
+            <input type="checkbox" [disabled]="IsCloseAdjustment" name="writeOnOff" class="onoffswitchPerFlag-checkbox"
+              id="myonoffswitchPerFlag_{{i}}" [(ngModel)]="detailslist.writeOnOff" (ngModelChange)="onSwitchChange($event,i)">
+            <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag_{{i}}">
+              <span class="onoffswitchPerFlag-inner"></span>
+              <span class="onoffswitchPerFlag-switch"></span>
+            </label>
+          </div>
+          <!-- <input class="form-check-input" type="checkbox" [(ngModel)]="detailslist.writeOnOff" id="flexSwitchCheckChecked" > -->
+        </td>
+        <td width="50" class="text-center hdrs" *ngIf="AdjustmentDetails.length>1">
+          <button  class="btn add-btn mr-1 " type="button" (click)="Deleteindex(i)">Remove</button>
+        </td>
+    </tbody>
+  </table>
+  <div style="margin-top: 13px;" class="form-group text-center">
+   
+    <!-- <button class="btn btn-danger" type="button" (click)="Close()">Close</button> -->
+  </div>
+</div>
+<div class="form-group text-center">
+  <button  [disabled]="IsCloseAdjustment"  class="btn add-btn mr-1" type="button" (click)="onSave('Save')">
+    Save
+  </button>
+  <button [disabled]="IsCloseAdjustment"  class="btn add-btn mr-1"  type="button"(click)="onSave('Save & Close')">
+    Save & Close
+  </button>
+
+  <button class="btn btn-danger" type="button" (click)="onSave('Close')">Close</button>
+</div>

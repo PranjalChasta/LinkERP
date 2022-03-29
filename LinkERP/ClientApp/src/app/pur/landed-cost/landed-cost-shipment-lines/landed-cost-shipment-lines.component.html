@@ -1,0 +1,113 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="LandedCostShipmentForm" name="LandedCostShipmentForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card-header">
+    Shippment Lines
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>PO <br>Line Number</th>
+                  <th>Invoice No</th>
+                  <th>Vendor</th>
+                  <th>Purchase Order No</th>
+                  <th>Description</th>
+                  <th>Qty Ordered</th>
+                  <th>Qty this Shipment</th>
+                  <th>Unit Cost Ex.Tax</th>
+                  <th>Fx Rate</th>
+                  <th>Fx Unit<br> Cost Ex.Tax</th>
+                  <th>Unit Cost<br> In.Tax</th>
+                  <th>Line Total<br> Ex.Tax</th>
+                  <th>Line Total<br> In.Tax</th>
+                  <th>Fx Line<br> Total Ex.Tax</th>
+                  <th>Import Cost</th>
+                  <th>Unit Landed<br>Cost Ex.Tax</th>
+                  <th>Line Total<br> Landed Cost Ex.Tax</th>
+                  <!-- <th>
+                    Select All
+                    <input type="checkbox" (click)="checkAll($event)">
+                  </th> -->
+                  <!-- <th>Delete</th> -->
+                </tr>
+              </thead>
+              <tbody formArrayName="ShipmentOrder">
+                <tr *ngFor="let shipmentOrder of LandedCostShipmentForm.get('ShipmentOrder').controls; let i = index"
+                  [formGroupName]="i">
+                  <td style="width: 100px;">
+                    {{shipmentOrder.get('POLineNo').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{shipmentOrder.get('InvoicesNo').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{shipmentOrder.get('VendorCode').value}} {{shipmentOrder.get('VendorName').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{shipmentOrder.get('PurchaseOrderNumber').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{shipmentOrder.get('Description').value}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('QuantityOrdered').value | number :'1.2-2'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    <input class="form-control" type="text" appFourDigitDecimaNumber
+                      (input)="onQuantityChange($event,i)" formControlName="QuantityReceivedThisShipment">
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('LandedUnitCostTaxExclusiveHome').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('ForeignExchangeRate').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('ForeignLandedUnitTaxExclusive').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('UnitCostTaxInclusiveHome').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('LineTotalTaxExclusiveHome').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('LineTotalTaxInclusiveHome').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('LineTotalTaxExclusiveForeign').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('ApportionedImportCosts').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('ForeignLandedUnitTaxExclusive').value | number :'1.4-4'}}
+                  </td>
+                  <td style="width: 100px;text-align: right">
+                    {{shipmentOrder.get('LineTotalLandedCostTaxExclusiveHome').value | number :'1.4-4'}}
+                  </td>
+                  <!-- <td style="width: 100px;">
+                    <div class="form-group">
+                      <input type="checkbox" style="margin-left: 17px;margin-top: 7px;" formControlName="SelectShipmentOrder" />
+                    </div>
+                   </td> -->
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top: 13px;" class="form-group text-center">
+            <button [disabled]="this.Status =='Finalise'" class="btn add-btn mr-1" type="submit">Submit
+              Shippment</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<!-- <confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup> -->

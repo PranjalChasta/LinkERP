@@ -1,0 +1,139 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="LandedCostOrderForm" name="LandedCostOrderForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Landed Cost Order
+
+              <div class="add-row">
+                <button (click)="AddNew()" [disabled]="!this.write_Access" class="btn add-btn mb-1">Add Landed Cost Order</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}}  Landed Cost Order
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Purchase</label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Purchase.errors?.notEqual}" formControlName="Purchase">
+                    <option value="-1">--Select Purchase--</option>
+                    <option *ngFor="let purchaseOrders of purchaseOrder" [value]="purchaseOrders.id">
+                      {{purchaseOrders.purchaseOrderNumber}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Purchase.errors?.notEqual">
+                    Please select purchase
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||  !this.IsActive">Save</button>
+            <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!this.IsActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>
+ -->
+<form [formGroup]="LandedCostOrderForm" name="LandedCostOrderForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card-header">
+    Purchase Order
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div *ngIf="displayPurchaseOrderList" class="form-border mt-0">
+          <div class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Purchase Order Number</th>
+                  <th>Vendor</th>
+                  <th>Currency</th>
+                  <th>Ordered Date</th>
+                  <th>
+                    Select All
+                    <input type="checkbox" (click)="checkAll($event)">
+                  </th>
+                  <th *ngIf="this.Status !='Finalise'">Delete</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="PurchaseOrder">
+                <tr *ngFor="let purchaseOrder of LandedCostOrderForm.get('PurchaseOrder').controls; let i = index"
+                  [formGroupName]="i">
+                  <td style="width: 100px;">
+                    {{purchaseOrder.get('PurchaseOrderNumber').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{purchaseOrder.get('Vendor').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{purchaseOrder.get('Currency').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{purchaseOrder.get('OrderedDate').value | date:'dd/MM/yyyy'}}
+                  </td>
+                  <td style="width: 100px;">
+                    <div class="form-group">
+                      <input type="checkbox" style="margin-left: 17px;margin-top: 7px;"
+                        [disabled]="purchaseOrder.get('isPOSelected').value" formControlName="isPOSelected" />
+                    </div>
+                  </td>
+                  <td *ngIf="!purchaseOrder.get('isPOSelected').value && this.Status !='Finalise'"
+                    style="width: 100px;"></td>
+                  <td *ngIf="purchaseOrder.get('isPOSelected').value && this.Status !='Finalise'"
+                    style="width: 100px;cursor:pointer"
+                    (click)="DeletePurchaseOrder(i,purchaseOrder.get('PurchaseOrderID').value)"><i
+                      class="re fa fa-trash-o"></i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="form-group text-center">
+            <button [disabled]="this.Status =='Finalise'" class="btn add-btn mr-1" type="submit">Submit Order</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

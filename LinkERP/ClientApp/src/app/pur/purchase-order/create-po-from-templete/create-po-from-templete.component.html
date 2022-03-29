@@ -1,0 +1,85 @@
+<div class="card">
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            Create PO From Template 
+            <div class="add-row">
+              <button class="btn btn-danger" type="button" (click)="Back()">Back</button>
+            </div>
+          </div>
+          <div  class="card-body" style="height: 430px;">
+            <div class="card-body position-relative">
+              <div class="form-group">
+                <div  class="col-md-5">
+
+                
+                <label class="col-form-label"> Purchase Template<span class="mandatoryFieldColor">*</span></label>
+                <select class="form-control" [(ngModel)]="SelectedtemplateID">
+                  <option value="-1">--Select Purchase Template--</option>
+                  <option *ngFor="let template of templates" [value]="template.id">
+                    {{template.description}}
+                  </option>
+                </select>
+                <div class="errorlbl" *ngIf="this.submitted && f.PurchaseTemplate.errors?.notEqual">
+                  Please select purchase template
+                </div>
+              </div>
+              </div>
+              <div class="form-group" style="padding: 15px;">
+              <div class="row" *ngIf="SelectedtemplateID!='-1'">
+                <button class="btn add-btn mr-1" type="button" (click)="CreatePO()">Create Purchase Order</button>
+              </div>
+            </div>
+            </div>
+          </div>
+       
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+
+
+
+
+
+<!-- <div class="card"> 
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+           Create PO From Template 
+            <div class="add-row">
+              
+              <button class="btn btn-danger" type="button" (click)="Back()">Back</button>
+            </div>
+            
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="col-form-label"> Purchase Template</label>
+              <select class="form-control" [(ngModel)]="SelectedtemplateID">
+                <option value="-1">--Select Purchase Template--</option>
+                <option *ngFor="let template of templates" [value]="template.id">
+                  {{template.description}}
+                </option>
+              </select>
+              <div class="errorlbl" *ngIf="this.submitted && f.PurchaseTemplate.errors?.notEqual">
+                Please select purchase template
+              </div>
+            </div>
+          </div>
+          <div class="row" *ngIf="SelectedtemplateID!='-1'">
+            <button class="btn add-btn mr-1" type="button" (click)="CreatePO()">Create Purchase Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  -->

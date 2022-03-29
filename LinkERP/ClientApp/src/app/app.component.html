@@ -1,0 +1,46 @@
+<!--<body>
+<app-nav-menu></app-nav-menu>
+<div class="container">
+<router-outlet></router-outlet>
+</div>
+</body>-->
+<!--<app-nav-menu></app-nav-menu>-->
+<!--<app-login></app-login>-->.
+
+
+<!--<div *ngIf="router.url == '/' || router.url == '/home'">
+</div>-->
+<!-- <div *ngIf="router.url == '/' || router.url == '/login'">
+<app-login></app-login>.
+</div>
+<div style="height: 100%" *ngIf="router.url != '/' && router.url != '/login' && router.url != '/set-new-password' && router.url !== '/forgotpassword' && !router.url.includes('resetpassword') && !router.url.includes('setpassword') && router.url != '/guest/guest-entry-form' && !router.url.includes('guest-entry-form')">
+<app-nav-menu></app-nav-menu>
+</div>
+<div *ngIf="router.url == '/set-new-password'">
+<app-set-new-password></app-set-new-password>.
+</div> -->
+
+<div *ngIf="router.url === '/login'">
+  <app-login></app-login>.
+  </div>
+  <div style="height: 100%" *ngIf="router.url != '/' && router.url != '/login' && router.url !== '/forgot-password' && !router.url.includes('reset-password') && !router.url.includes('set-new-password') && !router.url.includes('force-change-password') && !router.url.includes('no-access-permission')">
+  <app-nav-menu></app-nav-menu>
+  </div>
+  <!-- <div *ngIf="router.url.includes('resetpassword')">
+  <app-resetpassword></app-resetpassword>
+  </div> -->
+  <div *ngIf="router.url.includes('set-new-password')">
+  <app-set-new-password></app-set-new-password>
+  </div>
+  <div *ngIf="router.url.includes('no-access-permission')">
+  <app-no-access-permission></app-no-access-permission>
+  </div>
+  <div *ngIf="router.url.includes('forgot-password')">
+  <app-forgot-password></app-forgot-password>
+  </div>
+  <div *ngIf="router.url.includes('reset-password')">
+  <app-reset-password [ResetPasswordCode]="ResetPasswordCode"></app-reset-password>
+  </div>
+  <div *ngIf="router.url.includes('force-change-password')">
+  <app-change-password></app-change-password>
+  </div>

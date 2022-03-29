@@ -1,0 +1,73 @@
+<div class="card-header">
+  <form [formGroup]="BankAccountForm" name="BankAccountForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+    <!-- <ul>
+      <li *ngFor="let bankAccount of BankAccountForm.get('BankAccounts').controls; let i = index;">{{bankAccount.get('AccountNo').value}}</li>
+    </ul>  -->
+    <div class="row">
+      <div class="table-responsive table-padd">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Account No</th>
+              <th>Account Name</th>
+              <th>Reg No</th>
+              <th>Default Account</th>
+              <th>Status</th>
+              <th width="50px"></th>
+
+            </tr>
+          </thead>
+          <tbody formArrayName="BankAccounts">
+            <tr *ngFor="let bankAccount of BankAccountForm.get('BankAccounts').controls; let i = index;"
+              [formGroupName]="i">
+              <td>
+                <input class="form-control" placeholder=" " formControlName="AccountNo" type="text">
+              </td>
+              <td>
+                <input class="form-control" placeholder=" " formControlName="AccountName" type="text">
+              </td>
+              <td>
+                <input class="form-control" placeholder=" " formControlName="RegNo" type="text">
+              </td>
+              <td>
+                <div class="form-group">
+                  <input type="checkbox" formControlName="IsDefault" (click)="onDefaultSelected(i)" />
+                </div>
+              </td>
+              <td>
+                <span>{{bankAccount.get('Deleted').value}}</span>
+            </td>
+              <td *ngIf="this.delete_Access" class="re fa fa-trash-o" style="text-align: center;"
+                (click)="DeleteBankAccountDetails(i,bankAccount.get('ID').value,bankAccount.get('AccountNo').value)"></td>
+            </tr>
+          </tbody>
+          <tbody formGroupName="Account">
+            <tr>
+              <td>
+                <input class="form-control" placeholder=" " formControlName="AccountNo" type="text" maxlength="50">
+              </td>
+              <td>
+                <input class="form-control" placeholder=" " formControlName="AccountName" type="text" maxlength="255">
+              </td>
+              <td>
+                <input class="form-control" placeholder=" " formControlName="RegNo" type="text" maxlength="50">
+              </td>
+              <td>
+                <div class="form-group">
+                  <input type="checkbox" formControlName="IsDefault">
+                </div>
+              </td>
+              <td>
+                
+              </td>
+              <td>
+                <button class="btn add-btn" [disabled]="!this.write_Access || !IsActive" type="button" (click)="AddBankAccount()">Add</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </form>
+</div>

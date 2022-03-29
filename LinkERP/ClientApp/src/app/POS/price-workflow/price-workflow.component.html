@@ -1,0 +1,277 @@
+
+<h1> Price Workflow<span *ngIf="Mode=='Edit'"> ({{priceWorkflow.priceWorkflowDescription}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Price Workflow</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Price
+        Workflow</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<div class="card">
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            {{Mode}} Price Workflow
+            <div class="add-row">
+              <button (click)="AddNew()" type="button" class="btn add-btn mb-1">Add Price Workflow</button>
+            </div>
+          </div>
+          <div class="row" style="padding-left: 10px;padding-top: 10px;">
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <input class="form-control" placeholder="Search" type="text" [(ngModel)]="searchValue"
+                  (input)="Search()">
+              </div>
+            </div>
+          </div>
+          <div *ngIf="Mode=='Grid'" class="card-body">
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; min-height:500px;">
+                <div class="table-responsive table-padd">
+                  <table class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Use Cheapest Price</th>
+                        <th>Default</th>
+                        <th>Active</th>
+                        <th>&nbsp;</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let pr of RowData; let i = index">
+                        <td><input class="form-control" [(ngModel)]="pr.priceWorkflowDescription" type="text" readonly></td>
+                        <td><input name="cbxuseCheapestPrice" class="form-check-inline" type="checkbox"
+                            [checked]="pr.useCheapestPrice" (change)="pr.useCheapestPrice = !pr.useCheapestPrice" disabled></td>
+                        <td><input name="cbxdafault" class="form-check-inline" type="checkbox" [checked]="pr.default"
+                          disabled></td>
+                        <td><input name="cbxdeleted" class="form-check-inline" type="checkbox" [checked]="!pr.deleted"
+                          disabled></td>
+                        <td>
+                          <a (click)="OnActionClick(pr.id)"><i class="bi fa fa-pencil" aria-hidden="true"></i></a>&nbsp;&nbsp;
+                          <a *ngIf="pr.deleted==0" (click)="DeletePriceWorkFlow(pr.id,false)"><i class="bi fa fa-trash-o" aria-hidden="true"></i></a>
+                          <a *ngIf="pr.deleted==1" (click)="DeletePriceWorkFlow(pr.id,true)"><i class="bi fa fa-undo"
+                            aria-hidden="true"></i></a>
+                        </td>
+
+                        <!-- <td width="50" class="text-center">
+                          <button class="btn add-btn mr-1" type="button" (click)="OnActionClick($event)"><i
+                              class="fa Edit" aria-hidden="true"></i></button></td> -->
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- <app-ag-grid   *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid> -->
+              </div>
+            </div>
+          </div>
+          <div  *ngIf="Mode=='Add' || Mode=='Edit'" [formGroup]="listBoxForm" class="card-body">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-4">
+                  <input type="text" formControlName="pwpriceWorkflowDescription"
+                    [(ngModel)]="priceWorkflow.priceWorkflowDescription" class="form-control text-left"
+                    placeholder="Description" />
+                </div>
+                <div class="col-md-8">
+                  &nbsp;&nbsp;Active&nbsp;<input type="checkbox" formControlName="pwActive"
+                    [ngModel]="!priceWorkflow.deleted" (click)="ChangeValue(priceWorkflow)"  id="chkActive" class="form-check-inline">
+                  &nbsp;&nbsp;Default&nbsp;<input type="checkbox" formControlName="pwDefault"
+                    [(ngModel)]="priceWorkflow.default" id="chkdefault" class="form-check-inline">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-5 col-lg-5 col-sm-12">
+                  <div class="form-border">
+                    <h3 class="form-heading">{{availableText}}</h3>
+
+                    <!-- <h4 class="text-center vertical-spacing-5">{{availableText}}</h4> -->
+                    <!-- <input type="text" class="form-control vertical-spacing-5"
+                      placeholder="{{availableFilterPlaceholder}}" formControlName="availableSearchInput" /> -->
+                    <pre>Price</pre>
+                    <select style="height: 300px;" class="form-control list-box" formControlName="availableListBox"
+                      multiple>
+                      <option style="background-color: #f5f5fb;" *ngFor="let item of availableItems"
+                        [value]="item.priceWorkflowOptionsId" (click)="onAvailableSelect(item)">
+                        &nbsp;{{item.priceWorkflowName}}</option>
+                      <!-- <option
+                        *ngFor="let item of availableItems | arrayFilter:['text', searchTermAvailable] | arraySort:['text', 'ASC'];trackBy:trackByValue"
+                        [value]="item?.value" (dblclick)="moveAvailableItemToSelected(item)">{{item?.text}}</option> -->
+                    </select>
+                    <br>
+                    <!-- <button type="button" class="btn add-btn mb-1" (click)="AddNew()" style="float:right;">
+                      Create New
+                    </button> -->
+                  </div>
+                </div>
+                <div class="col-md-2 col-lg-2 col-sm-12 center-block text-center">
+                  <br>
+                  <br>
+                  <br>
+                  <br>
+                  <button type="button" class="btn add-btn mb-1" style="width: 100%;"
+                    [disabled]="!availableItems.length>0" (click)="addAll()"> Add All
+                    <!-- <span class="glyphicon glyphicon-list"></span> -->
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                  </button>
+                  <br>
+                  <br>
+                  <br>
+                  <!-- <button type="button" class="btn add-btn mb-1" style="width: 100%;"
+                    [disabled]="!availableListBoxControl.value?.length" (click)="moveMarkedAvailableItemsToSelected()">
+                    Add Selected <span class="glyphicon glyphicon-chevron-right"></span>
+                  </button> -->
+                  <button type="button" class="btn add-btn mb-1" style="width: 100%;"
+                    [disabled]="!availableSelectedItem" (click)="addSelected()">
+                    Add Selected <span class="glyphicon glyphicon-chevron-right"></span>
+                  </button>
+                  <br>
+                  <br>
+                  <br>
+                  <br>
+                  <!-- <button type="button" style="width: 100%;" class="btn add-btn mb-1"
+                    [disabled]="!selectedListBoxControl.value?.length" (click)="moveMarkedSelectedItemsToAvailable()">
+                    <span class="glyphicon glyphicon-chevron-left"></span> Remove Selected
+                  </button> -->
+                  <button type="button" style="width: 100%;" class="btn add-btn mb-1" [disabled]="!usedSelectedItem"
+                    (click)="removeSelected()">
+                    <span class="glyphicon glyphicon-chevron-left"></span> Remove Selected
+                  </button>
+                  <br>
+                  <br>
+                  <br>
+                  <button type="button" style="width: 100%;" class="btn add-btn mb-1"
+                    [disabled]="!selectedItems.length>0" (click)="removeAll()">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    <!-- <span class="glyphicon glyphicon-list"></span>  -->
+                    Remove All
+                  </button>
+                </div>
+                <div class="col-md-5 col-lg-5 col-sm-12">
+                  <div class="form-border">
+                    <h3 class="form-heading">{{selectedText}}</h3>
+                    <!-- <h4 class="text-center vertical-spacing-5">{{selectedText}}</h4> -->
+                    <!-- <input type="text" class="form-control vertical-spacing-5"
+                      placeholder="{{selectedFilterPlaceholder}}" formControlName="selectedSearchInput" /> -->
+                    <pre>Price</pre>
+                    <select style="height: 300px;" class="form-control list-box" formControlName="selectedListBox"
+                      multiple>
+                      <!-- <option
+                        *ngFor="let item of selectedItems | arrayFilter:['text', searchTermSelected] | arraySort:['text', 'ASC'];trackBy:trackByValue"
+                        [value]="item?.value" (dblclick)="moveSelectedItemToAvailable(item)">{{item?.text}}</option> -->
+                      <option style="background-color: #f5f5fb;" *ngFor="let item of selectedItems; let i = index"
+                        [value]="item.priceWorkflowOptionsId" (click)="onUsedSelect(item)">
+                        &nbsp;{{item.priceWorkflowName}}</option>
+                    </select>
+                    <br>
+                    <input type="checkbox" id="chkcheap" formControlName="pwCheap"
+                      [(ngModel)]="priceWorkflow.useCheapestPrice" class="form-check-inline" />&nbsp;Use the cheapest
+                    price&nbsp;
+                    <br>
+                    <button type="button" class="btn add-btn mb-1" (click)="moveUp()" style="float: left;"
+                      [disabled]="!usedSelectedItem">
+                      <span class="glyphicon glyphicon-chevron-up"></span> Move Up
+                    </button>
+                    <button type="button" class="btn add-btn mb-1" (click)="moveDown()" style="float:right;"
+                      [disabled]="!usedSelectedItem">
+                      <span class="glyphicon glyphicon-chevron-down"></span> Move Down
+                    </button>
+
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!-- <div class="dual-list-wrapper">
+                <div class="dual-list-groupa">
+                  <h4>Group A</h4>
+                  <ejs-listbox [dataSource]="groupA" [fields]="setfield" height="330px" [toolbarSettings]="toolbar"
+                    scope="#listbox">
+                  </ejs-listbox>
+                </div>
+                <div class="dual-list-groupb">
+                  <h4>Group B</h4>
+                  <ejs-listbox [dataSource]="groupB" [fields]="setfield" height="330px" id="listbox"></ejs-listbox>
+                </div>
+              </div> -->
+
+            <div>
+              <div style="text-align: right;padding-right: 20px;">
+                <!-- <button type="button" class="btn add-btn mb-1">Add
+                </button> -->
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" (click)="savePriceWorkflows('Save')" type="submit">Save</button>
+              <button class="btn add-btn mr-1" (click)="savePriceWorkflows('Close')" type="submit">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>
+
+  <!-- <div *ngIf="Mode=='Add'">
+    <div class="card-header">
+      Add Price Workflow
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label">Description</label>
+                  <input class="form-control" maxlength="50" [(ngModel)]="prwDescription" type="text"
+                    id="pwDescription">
+                  <div class="errorlbl" *ngIf="this.submitted && f.pwDescription.errors"> Please enter Description</div>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <input type="checkbox" id="chkPwActive" [(ngModel)]="pwActive" class="form-check-inline" />Active
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <input type="checkbox" id="chkPwCheap" [(ngModel)]="pwCheap" class="form-check-inline" />Use Cheapest
+                  Price
+
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <input type="checkbox" id="chkPwDefault" [(ngModel)]="pwDefault" class="form-check-inline" />Default
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group text-center">
+        <button class="btn add-btn mr-1" (click)="savePriceWorkflow('Save')" type="submit">Save</button>
+        <button class="btn add-btn mr-1" type="button" (click)="savePriceWorkflow('Close')">Save & Close</button>
+        <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+      </div>
+    </div>
+  </div> -->
+</div>

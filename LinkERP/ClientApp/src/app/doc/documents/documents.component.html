@@ -1,0 +1,142 @@
+
+<form [formGroup]="DocumentForm" name="DocumentForm" (ngSubmit)="onSaveDocument()" class="Form-Horizontal">
+  <h1>Documents</h1>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Documents
+              <div class="add-row">
+                <button (click)="AddNew()" [disabled]="!write_Access" class="btn add-btn mb-1">Add Document</button>
+              </div>
+            </div>
+            <div class="col-12 col-md-12">
+              <table>
+                <tr>
+                  <td style="width:450px;">
+                    <input class="form-control" [(ngModel)]="SearchText" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td style="padding-left: 10px;">
+                    <button class="btn add-btn mr-1" type="button" (click)="BindDocumentsBySearch()">Search</button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="ColumnDefs"
+                             [RowData]="Documents"
+                             [IsSearch]="false"
+                             [IsExport]="true"
+                             [paginationPageSize]="PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Documents
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label for="file" class="col-form-label">Upload File</label>
+                  <input class="form-control" type='file' [ngClass]="{ 'is-invalid': Submitted && f.FileBinary.errors}" style="padding: 0px;" (change)="onSelectFile($event)" multiple accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf">
+                  <div class="errorlbl" *ngIf="Submitted && f.FileBinary.errors">Please select the file</div>
+                </div>
+                <div>
+                  <label class="errorlbl">Max file size to be 5mb per file</label>
+                  <br>
+                  Note: <label class="label">Allowed file types : xlsx, xls, image, doc, docx, ppt, pptx, txt, pdf</label>
+                </div>
+              </div>
+              <!--<div class="col-12 col-md-6">
+
+              </div>-->
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label">Description</label>
+                  <input class="form-control" type="text" formControlName="Description" [ngClass]="{ 'is-invalid': Submitted && f.Description.errors}">
+                  <div class="errorlbl" *ngIf="Submitted && f.Description.errors">Please enter Description</div>
+                </div>
+
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Access Group</label> <!--[ngClass]="{ 'is-invalid': this.submitted && f.UnitofMeasure.errors?.notEqual}"-->
+                  <select class="form-control" formControlName="RoleAccessGroup" [ngClass]="{ 'is-invalid': Submitted && f.RoleAccessGroup.errors?.notEqual}">
+                    <option value="-1">--Select Access Group--</option>
+                    <option *ngFor="let role of Roles" [value]="role.id">
+                      {{role.roleCode}} - {{role.roleName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="Submitted && f.RoleAccessGroup.errors?.notEqual">Please enter Access Group</div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Category</label>
+                  <select class="form-control" (change)="onCategoryChange($event.target.value)" formControlName="Category" [ngClass]="{ 'is-invalid': Submitted && f.Category.errors?.notEqual}">
+                    <option value="-1">--Select Category--</option>
+                    <option *ngFor="let category of Categories" [value]="category.id">
+                      {{category.categoryCode}} - {{category.categoryName}}
+                    </option>()
+                  </select>
+                  <div class="errorlbl" *ngIf="Submitted && f.Category.errors?.notEqual">Please select the Category</div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Sub Category</label>
+                  <select class="form-control" formControlName="SubCategory" [ngClass]="{ 'is-invalid': Submitted && f.SubCategory.errors?.notEqual}">
+                    <option value="-1">--Select Sub Category--</option>
+                    <option *ngFor="let subCategory of SubCategories" [value]="subCategory.id">
+                      {{subCategory.subCategoryCode}} - {{subCategory.subCategoryName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="Submitted && f.SubCategory.errors?.notEqual">Please select the Sub Category</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="card-body position-relative">
+      <div class="ag-theme-balham" style="width: 100%; height:500px;">
+        <app-ag-grid *ngIf="AgLoad"
+                     [ColumnDefs]="DocumentAttributesCols"
+                     [RowData]="DocumentAttributes"
+                     [IsSearch]="false"
+                     [IsExport]="false"
+                     [IsEditable]="true"
+                     [paginationPageSize]="10"
+                     (OnActionClick)="OnActionClick($event)">
+        </app-ag-grid>
+      </div>
+    </div>
+    <div class="form-group text-center">
+      <button class="btn add-btn mr-1" type="submit" [disabled]="!write_Access || !IsActive">Save</button>
+      <!--<button class="btn add-btn mr-1" type="submit" [disabled]="!write_Access || !IsActive">Save & Close</button>-->
+      <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+    </div>
+    <div *ngIf="!IsActive" style="text-align: center;">
+      <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+    </div>
+  </div>
+</form>

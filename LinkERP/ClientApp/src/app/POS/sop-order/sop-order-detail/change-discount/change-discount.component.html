@@ -1,0 +1,66 @@
+<div class="card">
+  <div class="card-header">
+    Order Discount
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="row">
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Product Code</label>
+            <input name="ProductCode" class="form-control" placeholder="Product Code" type="text"
+              [(ngModel)]="ProductCode" [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Description</label>
+            <input name="ProductName" class="form-control" placeholder="Product Name" type="text"
+              [(ngModel)]="ProductName" [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Quantity</label>
+            <input name="Quantity" class="form-control" placeholder="Quantity" type="text" [(ngModel)]="this.SelectedQuantity"
+              [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Line Total Before Discount</label>
+            <input name="Discount" class="form-control" placeholder="Discount" type="text" [(ngModel)]="LineBeforeDiscount"
+              [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-12 col-md-6" style="display: inline;">
+            <label class="col-form-label">Discount Type</label>
+            <br />
+            <!-- <label for="Amount">Amount</label>
+            <input type="radio" class="form-control" id="Amount" name="DiscountType" value="Amount"
+              [(ngModel)]="DiscountType" [checked]="isChecked" (click)="setValue('Amount')">
+              <label for="Percentage">Percentage</label>
+            <input type="radio" class="form-control" id="Percentage" name="DiscountType" value="Percentage"
+              [(ngModel)]="DiscountType" [checked]="isChecked" (click)="setValue('Percentage')"> -->
+            Amount:<input type="radio" name="DiscountType" value="Amount" (click)="setValue('Amount')"
+              [checked]="isAmountChecked" [(ngModel)]="DiscountType">
+            Percentage:<input type="radio" name="DiscountType" value="Percentage" (click)="setValue('Percentage')"
+              [checked]="isPercentageChecked" [(ngModel)]="DiscountType">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Discount</label>
+            <input name="Discount" class="form-control" placeholder="Discount" appTwoDigitDecimaNumber
+              [(ngModel)]="SelectedDiscount" (change)="setDiscountValue(SelectedDiscount)"
+              [ngModelOptions]="{standalone: true}" >
+          </div><br />
+
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">New Line Total</label>
+            <input name="RevDiscount" class="form-control" placeholder="New Discount" appTwoDigitDecimaNumber
+              [(ngModel)]="RevDiscount" [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div>
+        </div>
+        <br />
+        <div class="form-group text-center">
+          <button class="btn add-btn mr-1" type="submit" (click)="OnSave()">
+            OK
+          </button>
+          <button class="btn btn-danger" type="button" (click)="Close()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

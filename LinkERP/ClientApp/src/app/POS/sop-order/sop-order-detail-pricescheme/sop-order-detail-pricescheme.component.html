@@ -1,0 +1,105 @@
+<form [formGroup]="OrderDetailPriceGroupForm" name="OrderDetailPriceGroupForm" (ngSubmit)="onSave('Save')"
+  class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Order Detail Price Group
+              <div class="add-row">
+                <button (click)="AddOrderDetailPriceGroup()" type="button" class="btn add-btn mb-1">
+                  Add Price Group
+                </button>
+                <button class="btn btn-danger mb-1 ml-1" type="button" (click)="BackToDetails()">Close</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [IsColumnsToFit]="false" [paginationPageSize]="this.PageSize"
+                  [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Order Detail Price Group
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Unit Price </label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.UnitPrice.errors}" type="text"
+                    appFourDigitDecimaNumber formControlName="UnitPrice">
+                  <div class="errorlbl" *ngIf="this.submitted && f.UnitPrice.errors">
+                    Please select unit price
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Sales Quantity</label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.SalesQuantity.errors}" type="text" type="text"
+                    appTwoDigitDecimaNumber formControlName="SalesQuantity">
+                  <div class="errorlbl" *ngIf="this.submitted && f.SalesQuantity.errors">
+                    Please select quantity
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Return Quantity </label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.ReturnQuantity.errors}" type="text"
+                    appTwoDigitDecimaNumber formControlName="ReturnQuantity">
+                  <div class="errorlbl" *ngIf="this.submitted && f.ReturnQuantity.errors">
+                    Please select return quantity
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Unit Cost </label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.UnitCost.errors}" type="text" appFourDigitDecimaNumber
+                    formControlName="UnitCost">
+                  <div class="errorlbl" *ngIf="this.submitted && f.UnitCost.errors">
+                    Please select unit cost
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit">
+              Save
+            </button>
+            <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')">
+              Save & Close
+            </button>
+            <button class="btn btn-danger" type="button" (click)="Close()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>
