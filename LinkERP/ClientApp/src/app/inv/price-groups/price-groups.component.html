@@ -1,0 +1,267 @@
+<form [formGroup]="PriceGroupForm" name="PriceGroupForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1> Price Group<span *ngIf="Mode == 'Edit'">({{PriceGroupForm.get('PriceClassCode').value}} - {{PriceGroupForm.get('PriceClassName').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Inventory</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Price Group</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Price Group</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="PriceGroupForm" name="PriceGroupForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              PriceGroup
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" type="button" [disabled]="!this.write_Access">Add Price Group</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true"
+                             [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Pricegroup"}' data-toggle="tab"
+           (click)="AccessTab='Pricegroup'" role="tab">Price Groups</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Pricegroup'">
+      <div class="card-header">
+        {{Mode}} Price Group
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Price Change Reason </label>
+                    <select class="form-control" maxlength="255" formControlName="PriceChangeReason">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select  Price Change Reason--</option>
+                      <option *ngFor="let reason of PriceChangeReasons" [value]="reason.id">
+                        {{reason.dataCode}} - {{reason.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Group Code<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="50" [ngClass]="{ 'is-invalid': this.submitted && f.PriceClassCode.errors}"
+                           formControlName="PriceClassCode" type="text">
+                    <div class="errorlbl" *ngIf="submitted && f.PriceClassCode.errors">Please enter price group</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Group Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="255" [ngClass]="{ 'is-invalid': this.submitted && f.PriceClassName.errors}"
+                           formControlName="PriceClassName" type="text">
+                    <div class="errorlbl" *ngIf="submitted && f.PriceClassName.errors">Please enter group name</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Tax Code</label>
+                    <select name="Country" class="form-control" formControlName="TaxCode">
+                      <option value="-1">--Select Tax--</option>
+                      <option *ngFor="let taxes of TaxCodes" [value]="taxes.id">
+                        {{taxes.taxCode}} - {{taxes.taxCodeName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-border">
+                  <h3 class="form-heading">Promotion</h3>
+                  <div class="row">
+                    <div class="col-12 col-md-3">
+                      <div class="form-group">
+                        <label class="col-form-label">Price</label>
+                        <input class="form-control text-right" type="text"
+                               appFourDigitDecimaNumber formControlName="Price">
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <div class="form-group">
+                        <label class="col-form-label"> Type</label>
+                        <select class="form-control" (change)="dealtypestatus($event.target.value)" id="select1" name="select1"
+                                formControlName="PromotionType">
+                          <option value="-1">--Select Promotion Type--</option>
+                          <option *ngFor="let promotionTypes of PromotionType" [value]="promotionTypes.id">
+                            {{promotionTypes.name}}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                      <div class="form-group">
+                        <label class="col-form-label"> Days </label>
+                        <select class="form-control" maxlength="255" formControlName="PromotionDays">
+                          <option value="-1">--Select Promotion Days--</option>
+                          <option *ngFor="let promotiondays of PromotionDays" [value]="promotiondays.promotionID">
+                            {{promotiondays.promotionDays}}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <!-- <div class="col-6 col-md-6"> -->
+
+                    <div class="col-12 col-md-3">
+                      <div class="form-group">
+                        <!-- <label class="col-form-label">Quantity1</label> -->
+                        <label class="col-form-label"> Date From</label>
+                        <!--<input class="form-control" type="text" bsDatepicker
+                        [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }"
+                        formControlName="PromotionDateFrom">-->
+                        <app-date-time-picker formControlName="PromotionDateFrom" [showTimePicker]="false"></app-date-time-picker>
+                      </div>
+
+                    </div>
+                    <div class="col-12 col-md-3">
+                      <div class="form-group">
+                        <label class="col-form-label">Time From </label>
+                        <!--<input class="form-control" type="text" bsDatepicker
+                        [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+                        formControlName="PromotionTimeFrom">-->
+                        <!--<app-date-time-picker formControlName="PromotionTimeFrom" [showDatePicker]="false"></app-date-time-picker>-->
+                        <app-date-time-picker formControlName="PromotionTimeFrom" [showDatePicker]="false"></app-date-time-picker>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                      <div class="form-group">
+                        <label class="col-form-label"> Date To</label>
+                        <!-- <label class="col-form-label">Quantity1</label> -->
+                        <!--<input class="form-control" type="text" bsDatepicker
+                        [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }"
+                        formControlName="PromotionDateTo">-->
+                        <app-date-time-picker formControlName="PromotionDateTo" [showTimePicker]="false"></app-date-time-picker>
+                      </div>
+                    </div>
+
+                    <!-- </div> -->
+                    <!-- <div class="col-6 col-md-6"> -->
+
+
+                    <div class="col-12 col-md-3">
+                      <div class="form-group">
+                        <label class="col-form-label">Time To</label>
+                        <!--<input class="form-control" type="text" bsDatepicker
+                        [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD HH:MM:SS',showWeekNumbers:false }"
+                        formControlName="PromotionTimeTo">-->
+                        <!--<app-date-time-picker formControlName="PromotionTimeTo"></app-date-time-picker>-->
+                        <app-date-time-picker formControlName="PromotionTimeTo" [showDatePicker]="false"></app-date-time-picker>
+                      </div>
+                    </div>
+                    
+                    <!-- </div> -->
+                  </div>
+                </div>
+                <div class="form-border">
+                  <!--style="height:310px"-->
+                  <h3 class="form-heading">Price Break</h3>
+                  <div class="row">
+                    <div class="col-2 col-md-2"></div>
+                    <div class="col-8 col-md-8">
+                      <div class="table-responsive table-padd">
+                        <table class="table table-bordered table-striped">
+                          <tr>
+                            <th colspan="2" class="text-center">Quantity</th>
+
+                            <th colspan="2" class="text-center">Price</th>
+
+                          </tr>
+                          <tr>
+                            <td>Quantity 1</td>
+                            <td><input class="form-control text-right" type="text" appTwoDigitDecimaNumber formControlName="Quantity1"></td>
+                            <td>Price 1</td>
+                            <td>
+                              <input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="Price1">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Quantity 2</td>
+                            <td> <input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="Quantity2"></td>
+                            <td>Price 2</td>
+                            <td><input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="Price2"></td>
+                          </tr>
+                          <tr>
+                            <td>Quantity 3</td>
+                            <td><input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="Quantity3"></td>
+                            <td>Price 3</td>
+                            <td><input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="Price3"></td>
+                          </tr>
+                          <tr>
+                            <td>Quantity 4</td>
+                            <td><input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="Quantity4"></td>
+                            <td>Price 4</td>
+                            <td><input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="Price4"></td>
+                          </tr>
+                          <tr>
+                            <td>Quantity 5</td>
+                            <td><input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="Quantity5"></td>
+                            <td>Price 5</td>
+                            <td><input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="Price5"></td>
+                          </tr>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="col-2 col-md-2"></div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||!this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedPriceID" [write_Access]="this.write_Access"
+                         [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedPriceID"
+                            [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

@@ -1,0 +1,9 @@
+{
+    "DateTimeFormat": {
+        "Date": "MM-dd-yyyy",
+        "Time": "hh:mm a",
+        "DateTime": "MM-dd-yyyy hh:mm a",
+        "GridDate":"MM-DD-yyyy",      
+        "GridTime":"hh:mm A"
+    }
+}

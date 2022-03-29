@@ -1,0 +1,96 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryKitForm" name="InventoryKitForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Component
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access || !this.IsInventoryActive">Add Component </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                            [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}}  Component
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-8 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product Name <span class="mandatoryFieldColor">*</span> </label>
+                  <select class="form-control" maxlength="50" [ngClass]="{ 'is-invalid': this.Submitted && f.ProductName.errors?.notEqual }" 
+                  formControlName="ProductName">
+                    <option value="-1">--Select Product Name --</option>
+                    <option *ngFor="let kitProducts of BindParentProductKit" [value]="kitProducts.id">
+                      {{kitProducts.productCode}} -  {{kitProducts.productName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.Submitted && f.ProductName.errors?.notEqual">
+                    Please select product name
+                  </div>
+                </div>
+              </div>
+              <div class="col-8 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">&nbsp; Quantity <span class="mandatoryFieldColor">*</span></label>
+                  <input class="form-control text-right" appTwoDigitDecimaNumber 
+                  type="text"
+                  [ngClass]="{ 'is-invalid': this.Submitted && f.Quantity.errors}"
+                        formControlName="Quantity">
+                </div>
+                <div class="errorlbl" *ngIf="this.Submitted && f.Quantity.errors">  Please enter quantity</div>
+              </div>
+              <div class="col-8 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">&nbsp; Conversion Ratio <span class="mandatoryFieldColor">*</span></label>
+                  <input class="form-control text-right" [ngClass]="{ 'is-invalid': this.Submitted && f.ConversionRatio.errors}"
+                  appTwoDigitDecimaNumber type="text" formControlName="ConversionRatio">
+                </div>
+                <div class="errorlbl" *ngIf="this.Submitted && f.ConversionRatio.errors">  Please enter conversion ratio </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive || !this.IsInventoryActive">Save</button>
+            <button class="btn add-btn mr-1"  type="button" [disabled]="!this.write_Access ||  !this.IsActive || !this.IsInventoryActive" (click)="onSave('Close')">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!this.IsActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+          <div *ngIf="!this.IsInventoryActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this product to Active to make changes</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>
+
+

@@ -1,0 +1,303 @@
+<form [formGroup]="UtilitesForm" name="UtilitesForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1> Price Update Scheduler <span *ngIf="Mode == 'Edit'">Edit -
+    Price Update Scheduler</span></h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Inventory</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Price Update Scheduler</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}}
+        Price Update Scheduler</a></li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Price Update Scheduler
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1">Add Price Update Scheduler</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="this.PageSize" [Currentpage]="this.Currentpage"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='WareHouse'">
+      <div class="card-header">
+        {{Mode}} Price Update Scheduler
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">PriceUpdate Scheduler Number <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" type="text" formControlName="PriceUpdateSchedulerNumber"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.PriceUpdateSchedulerNumber.errors}">
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.PriceUpdateSchedulerNumber.errors">Please enter
+                      PriceUpdate Scheduler Number</div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Product Start  <span class="mandatoryFieldColor">*</span></label>
+                    <!-- <select class="form-control" formControlName="ProductIDStart"  [ngClass]="{ 'is-invalid': this.submitted && f.ProductIDStart.errors}">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Product Start--</option>
+                      <option *ngFor="let inventory of BindInventory" [value]="inventory.id">
+                        {{inventory.productCode}} -- {{inventory.productName}}
+                      </option>
+                    </select> -->
+                    <product-search [ModuleName]="'PriceUpdate'" (change)="OnProductChange($event)"
+                      formControlName="ProductIDStart"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.ProductIDStart.errors}">
+                    </product-search>
+                    <div class="errorlbl" *ngIf="this.submitted && f.ProductIDStart.errors">
+                      Please select Product Start
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Product End  <span class="mandatoryFieldColor">*</span></label>
+                    <!-- <select class="form-control" formControlName="ProductIDEnd" [ngClass]="{ 'is-invalid': this.submitted && f.ProductIDEnd.errors}">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Product End--</option>
+                      <option *ngFor="let inventory of BindInventory" [value]="inventory.id">
+                        {{inventory.productCode}} -- {{inventory.productName}}
+                      </option>
+                    </select> -->
+                    <product-search [ModuleName]="'PriceUpdate'" (change)="OnProductChange($event)"
+                      formControlName="ProductIDEnd"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.ProductIDEnd.errors}">
+                    </product-search>
+                    <div class="errorlbl" *ngIf="this.submitted && f.ProductIDEnd.errors">
+                      Please select Product End
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group ng-invalid">
+                    <label class="col-form-label">Category Start <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="CategoryIDStart"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.CategoryIDStart.errors}"
+                      (change)="onCategoryStartChange($event.target.value)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Category Start--</option>
+                      <option *ngFor="let Category of CategoryStartList" [value]="Category.id">
+                        {{Category.dataCode}} -- {{Category.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.CategoryIDStart.errors">
+                      Please select Category Start
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group ng-invalid">
+                    <label class="col-form-label">Category End <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="CategoryIDEnd"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.CategoryIDEnd.errors}"
+                      (change)="onCategoryEndChange($event.target.value)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Category End--</option>
+                      <option *ngFor="let Category of CategoryEndList" [value]="Category.id">
+                        {{Category.dataCode}} -- {{Category.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.CategoryIDEnd.errors">
+                      Please select Category End
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Sub Category Start <span class="mandatoryFieldColor">*</span></label>
+
+                    <select class="form-control" formControlName="SubCategoryIDStart"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.SubCategoryIDStart.errors}">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select SubCategory Start--</option>
+                      <option *ngFor="let SubCategory of SubCategoryStartList" [value]="SubCategory.id">
+                        {{SubCategory.dataCode}} --{{SubCategory.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.SubCategoryIDStart.errors">
+                      Please select Sub Category Start
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Sub Category End <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="SubCategoryIDEnd"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.SubCategoryIDEnd.errors}">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select SubCategory End--</option>
+                      <option *ngFor="let SubCategory of SubCategoryEndList" [value]="SubCategory.id">
+                        {{SubCategory.dataCode}} --{{SubCategory.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.SubCategoryIDEnd.errors">
+                      Please select Sub Category End
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse From</label>
+                    <select class="form-control" formControlName="WareHouseFrom"
+                      (change)="onWarehouseFromChange($event)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select WareHouse--</option>
+                      <option *ngFor="let wareHouse of WareHouseFrom" [value]="wareHouse.id">
+                        {{wareHouse.wareHouseCode}} -- {{wareHouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.WareHouseFrom.errors?.notEqual">
+                      Please select warehouse from
+                    </div> -->
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse To</label>
+                    <select class="form-control" formControlName="WareHouseTo" (change)="onWarehouseToChange($event)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select WareHouse To--</option>
+                      <option *ngFor="let wareHouse of WareHouseTo" [value]="wareHouse.id">
+                        {{wareHouse.wareHouseCode}} -- {{wareHouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.WareHouseTo.errors?.notEqual">
+                      Please select warehouse to
+                    </div> -->
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">SupplierID From</label>
+                    <select class="form-control" formControlName="SupplierIDFrom">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select SupplierID From--</option>
+                      <option *ngFor="let SubCategory of SubCategoryEndList" [value]="SubCategory.id">
+                        {{SubCategory.dataCode}} --{{SubCategory.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">SupplierID To</label>
+                    <select class="form-control" formControlName="SupplierIDTo">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select SupplierID --</option>
+                      <option *ngFor="let SubCategory of SubCategoryEndList" [value]="SubCategory.id">
+                        {{SubCategory.dataCode}} --{{SubCategory.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">PriceFromWareHouse</label>
+                    <select class="form-control" formControlName="PriceFromWareHouse"
+                      (change)="onWarehouseFromChange($event)">
+                      <option value="00000000-0000-0000-0000-000000000000">--Select WareHouse--</option>
+                      <option *ngFor="let wareHouse of WareHouseFrom" [value]="wareHouse.id">
+                        {{wareHouse.wareHouseCode}} -- {{wareHouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.WareHouseFrom.errors?.notEqual">
+                      Please select warehouse from
+                    </div> -->
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Priceto Change</label>
+                    <input class="form-control" type="text" formControlName="PricetoChange">
+
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.PriceUpdateSchedulerNumber.errors">  Please enter warehouse code</div> -->
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Amount</label>
+                    <input class="form-control" type="text" formControlName="Amount">
+
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.PriceUpdateSchedulerNumber.errors">  Please enter warehouse code</div> -->
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="PriceChangeLevel"
+                        id="PriceChangeLevel">
+                      <label class="custom-control-label" for="PriceChangeLevel" [attr.readonly]="true">
+                        PriceChange Level
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="IncreaseDecrease"
+                        id="IncreaseDecrease">
+                      <label class="custom-control-label" for="IncreaseDecrease" [attr.readonly]="true">
+                        IncreaseDecrease
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="UseExistingWareHousePrice"
+                        id="UseExistingWareHousePrice">
+                      <label class="custom-control-label" for="UseExistingWareHousePrice" [attr.readonly]="true">
+                        UseExisting WareHouse Price
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="PercentValue"
+                        id="PercentValue">
+                      <label class="custom-control-label" for="PercentValue" [attr.readonly]="true">
+                        PercentValue
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group text-center">
+          <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||!this.IsActive">Save</button>
+          <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive"
+            (click)="onSave('Close')">Save & Close</button>
+          <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+        </div>
+        <div *ngIf="!this.IsActive" style="text-align: center;">
+          <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

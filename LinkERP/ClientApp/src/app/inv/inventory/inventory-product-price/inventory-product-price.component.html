@@ -1,0 +1,25 @@
+ 
+<div class="card" style="padding: 15px;">
+
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <!-- <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="price"}' data-toggle="tab"
+         (click)="AccessTab='price'" role="tab">Generic</a> -->
+         <!-- <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Deptors"}' data-toggle="tab"
+         (click)="AccessTab='Deptors'" role="tab">Debtor Specific</a> -->
+    </div>
+  </nav>
+<div >
+
+<app-inventory-price *ngIf="AgLoad" [InventryID]="this.InventryID" [BindInventoryPrice]="this.BindInventoryProductPrice"   (OnAddPrice)="OnAddPrice($event)" (OnCancelPrice)="OnCancelPrice($event)" (OnDeletePrice)="OnDeletePrice($event)" [IsInventoryActive]="this.IsInventoryActive" [IsProductPrice]="true" >
+
+</app-inventory-price>  
+</div>
+<!-- <div  *ngIf="AccessTab=='Deptors'"> 
+    <div *ngIf="AccessTab=='Deptors'">
+        <app-inventory-debtor-price [InventryID]="this.InventryID" [IsInventoryActive]="this.IsInventoryActive">
+      
+        </app-inventory-debtor-price>
+      </div>
+</div> -->
+</div>

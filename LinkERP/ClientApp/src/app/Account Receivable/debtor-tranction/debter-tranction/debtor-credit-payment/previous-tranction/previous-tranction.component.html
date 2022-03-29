@@ -1,0 +1,58 @@
+<div class="table-responsive table-padd">
+  <div class="card-body pb-0">
+    <form  class="Form-Horizontal">
+      <div class="ag-theme-balham">
+      </div>
+     
+<div class="card-body position-relative">
+<h1>Previous Transaction</h1>
+<div class="row">
+<div class="col-12 col-md-12">
+<div class="row">
+  <div class="table-responsive table-padd"  style="overflow-y:auto;height:300px">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Invoice No</th>
+          <th>Amount </th>
+          <th>Date</th> 
+          <th>Amount</th>
+          <th>Receipt</th>
+          <th>Date </th> 
+          <th>Amount</th>
+                               
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="Selecting" *ngFor="let previous of PreviousTranction" [ngClass]="{ 'Selected': false}">
+          <td>{{previous.salesOrderNo}}</td>
+          <td>{{previous.invoiceTotal}}</td>
+          <td>{{previous.paymentDate}}</td>  
+          <td>{{previous.receptAllocated}}</td>
+          <td>{{previous.receiptNumber}}</td>
+          <td>{{previous.allocatedDate}}</td>
+          <td>{{previous.allocatedAmount}}</td>  
+         
+          
+      
+                        
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+<div class="col-12 col-md-12">
+<div class="form-group text-center">
+</div>
+</div>
+</div>
+</div>
+
+      <!-- <div class="form-group text-center">
+        <button class="btn add-btn mr-1" type="button" (click)="SaveAllocation()">Save</button>
+        <button class="btn btn-danger" data-dismiss="modal" type="button"  #closePrevious (click)="closePreviousPopUp()">Close</button>
+      </div> -->
+    </form>
+  </div>
+</div>

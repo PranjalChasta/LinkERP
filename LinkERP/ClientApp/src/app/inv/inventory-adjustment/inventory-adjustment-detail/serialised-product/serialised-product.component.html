@@ -1,0 +1,147 @@
+<div>
+  <form [formGroup]="InventoryAdjustmentSerialTrackingForm" name="InventoryAdjustmentSerialTrackingForm"
+    class="Form-Horizontal">
+
+    <div class="row">
+      <div class="col-12 col-md-2">
+        <div class="form-group">
+          <label class="col-form-label"> Bin</label>
+          <select class="form-control" formControlName="BulkNo">
+            <option value="null">--Select Bin--</option>
+            <option *ngFor="let binlists of BinList" [value]="binlists.id">
+              {{binlists.binCode}} -- {{binlists.binName}}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="col-12 col-md-2">
+        <div class="form-group">
+          <label class="col-form-label">Conv Quantity</label>
+          <input class="form-control text-right" placeholder="" type="text" appTwoDigitDecimaNumber
+            formControlName="Quantity">
+
+        </div>
+      </div>
+      <div class="col-8 col-md-2">
+        <div class="form-group">
+          <label class="col-form-label"> Serial No</label>
+          <input class="form-control textarea" placeholder="" type="text" formControlName="SerialNo">
+
+        </div>
+      </div>
+      <div class="col-12 col-md-2">
+        <div class="form-group">
+          <label class="col-form-label"> Start No</label>
+          <input class="form-control textarea" placeholder="" type="text" formControlName="StartNo" OnlyNumber="true">
+
+        </div>
+      </div>
+      <div class="col-12 col-md-2">
+        <div class="form-group">
+          <label class="col-form-label">Transaction Date</label>
+          <!--<input class="form-control" type="text"  bsDatepicker [bsConfig]="datePickerConfig"
+    formControlName="PurchaseDate">-->
+          <app-date-time-picker formControlName="PurchaseDate" [showTimePicker]="false"></app-date-time-picker>
+        </div>
+      </div>
+      <div class="col-12 col-md-2">
+        <div class="form-group">
+          <label class="col-form-label"> Qty/Line</label>
+          <input class="form-control textarea" placeholder="" type="text" formControlName="QtyPerLine" OnlyNumber="true"
+            readonly>
+
+        </div>
+      </div>
+      <div class="form-group text-center">
+        <button class="btn add-btn mr-1" type="button" (click)="AutoSerial()"
+          [disabled]="this.CurrentStatus!='New'">Auto Serial</button>
+        <button class="btn btn-danger" type="button" (click)="DeletePopup(confirmDelete)"
+          [disabled]="this.CurrentStatus!='New'">Delete All</button>
+      </div>
+    </div>
+  </form>
+</div>
+<div>
+  <div style="text-align: right;padding-right: 20px;">
+    <button (click)="addnew()" type="button" class="btn add-btn mb-1" [disabled]="this.CurrentStatus!='New'">
+      Add Serial
+    </button>
+  </div>
+  <!--<div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">-->
+  <div class="table-responsive table-padd" style="overflow-y: scroll;min-height: 350px;max-height: 350px;">
+    <!-- <div style="float: right;">
+      <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+        <label style="width: 70px;">Sort By</label>
+        <select class="form-control" (change)="onColumnNameSelected($event.target.value)" [(ngModel)]="ColumnName">
+          <option value="-1" style="text-align: center;">---Select Column---</option>
+          <option value="SerialNo">SerialNo/Colour</option>
+          <option value="TransactionDateIn">Transaction Date</option>
+          <option value="QuantityOnHand">Quantity</option>
+        </select>
+      </div>
+      <br />
+    </div> -->
+    <table class="table table-bordered table-striped" *ngIf="SerialList && SerialList.length>0">
+      <thead>
+        <tr>
+          <th>Bin</th>
+          <th>Product Code</th>
+          <th>Description</th>
+          <th>SerialNo/Colour</th>
+          <th>Transaction <br/>Date</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of SerialList; let i = index">
+          <td>
+            <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option value="null">--Select Bin--</option>
+              <option *ngFor="let binlists of BinList" [value]="binlists.id">
+                {{binlists.binCode}} -- {{binlists.binName}}
+              </option>
+            </select>
+          </td>
+          <td>{{detailslist.productCode}}</td>
+          <td>{{detailslist.productName}}</td>
+          <td>
+            <input class="form-control" placeholder="" type="text" [(ngModel)]="detailslist.serialNo">
+          </td>
+          <td>
+            <!--<input class="form-control" type="text" placeholder="Date" bsDatepicker [bsConfig]="datePickerConfig"
+            [(ngModel)]="detailslist.transactionDateIn" [value]="detailslist.transactionDateIn | date:'yyyy-MM-dd'">-->
+            <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.transactionDateIn">
+            </app-date-time-picker>
+          </td>
+          <td>
+            <input class="form-control" [(ngModel)]="detailslist.quantity" type="number" OnlyNumber="true"
+              (input)="onSearchChange($event.target.value,i)">
+          </td>
+          <td width="50" class="text-center" *ngIf="detailslist.id && this.CurrentStatus!='Closed'">
+            <a (click)="DeleteInventoryAdjustmentDeatilMatrix(detailslist.id)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+          <td width="50" class="text-center" *ngIf="!detailslist.id && this.CurrentStatus!='Closed'">
+            <a (click)="Deleteindex(i)">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="text-align: right;padding-right: 80px;">
+    <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+  </div>
+  <div class="form-group text-center" *ngIf="SerialList && SerialList.length>0">
+    <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Save')"
+      [disabled]="this.submitted || this.CurrentStatus!='New'">Save Changes</button>
+    <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Close')"
+      [disabled]="this.submitted || this.CurrentStatus!='New'">Save & Close</button>
+    <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+
+  </div>
+  <ng-template #confirmDelete>
+    <app-confirm-dialog-popup (OnCancel)="ConfirmDialogClose()" (OnDelete)="DeleteAll()"></app-confirm-dialog-popup>
+  </ng-template>

@@ -1,0 +1,140 @@
+<form [formGroup]="DocumentTemplateForm" name="DocumentTemplateForm" (ngSubmit)="onSave('Save')"
+      class="Form-Horizontal">
+  <h1> Document Template <span *ngIf="Mode=='Edit'">({{DocumentTemplateForm.get('TemplateName').value}})</span></h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Document Template</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'">
+        <a>
+          {{Mode}} Document
+          Template
+        </a>
+      </li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Document Template
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">
+                  Add
+                  Document
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [IsExport]="true"
+                             [paginationPageSize]="this.PageSize" (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="DocumentTemplate"}'
+           data-toggle="tab" (click)="AccessTab='DocumentTemplate'" role="tab">Document Template</a>
+        <!-- <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Report"}'
+           data-toggle="tab" (click)="AccessTab='Report'" role="tab">Report</a> -->
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+           data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <!--<div class="card" *ngIf="Mode=='Edit'">
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Template Name</label>
+                  <input class="form-control" type="text" [(ngModel)]="TemplateName" [attr.disabled]="true"
+                         [ngModelOptions]="{standalone: true}">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>-->
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='DocumentTemplate'">
+      <div class="card-header">
+        {{Mode}} Document Template
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Name <span class="mandatoryFieldColor">*</span></label>
+                    <!-- <input class="form-control textarea" *ngIf=!addreadonly placeholder=""
+                           [ngClass]="{ 'is-invalid': this.Submitted && f.TemplateName.errors}" type="text"
+                           formControlName="TemplateName"> -->
+                    <input style="width: 500px;" class="form-control textarea" [ngClass]="{ 'is-invalid': Submitted && f.TemplateName.errors}"
+                           type="text" formControlName="TemplateName">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.TemplateName.errors">Please enter name</div>
+                  </div>
+                </div>
+                <div class="col-lg-12 col-md-34">
+                  <div class="form-gourp">
+                    <label>Template</label>
+                    <!-- <textarea class="form-control txtarea" formControlName="TemplateData"
+                      name="Template Data"></textarea> -->
+                    <ckeditor formControlName="TemplateData" required [config]="ckeConfig" debounce="500"
+                              (change)="onChange($event)">
+                    </ckeditor>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group text-center">
+        <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save </button>
+        <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive"
+                (click)="onSave('Close')">
+          Save & Close
+        </button>
+        <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+      </div>
+      <div *ngIf="!this.IsActive" style="text-align: center;">
+        <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Report'">
+      <app-report-document-template [DocumentTemplateID]="SelectedDocumentTemplate"></app-report-document-template>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedDocumentTemplate" [write_Access]="this.write_Access"  [IsActive]="IsActive"
+                         [delete_Access]="this.delete_Access">
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedDocumentTemplate" [HeaderNames]="this.HeaderNames"  [IsActive]="IsActive"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access">
+      </app-attachment-files>
+    </div>
+  </div>
+
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

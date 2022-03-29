@@ -1,0 +1,475 @@
+<form class="Form-Horizontal" style="background-color: white;">
+  <h1>New </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Profile</a></li>
+
+    </ol>
+  </nav>
+
+  <div class="tab">
+    <button class="tablinks" onclick="openCity(event, 'Private')" id="defaultOpen">Private</button>
+    <button class="tablinks" onclick="openCity(event, 'Current Services')">Current Services</button>
+  </div>
+
+  <div id="Private" class="tabcontent">
+    <span onclick="this.parentElement.style.display='none'" class="topright"></span>
+
+    <button (click)="dataprivate()" class="btn add-btn mr-1">Save</button>
+    <fieldset class="border p-2" id="group1">
+      <legend class="w-auto">General</legend>
+      <div>
+        <tr>
+          <td>
+            <label for="eid">Employee ID:&nbsp;</label>
+          </td>
+          <td>
+            <input type="text" id="eid" name="Employeeid" [(ngModel)]="newPrivatedatamodel.Employeeid">
+          </td>
+          <td><label></label></td>
+          <td>
+            <button type="button" class="btn btn-info btn-lg center" (click)="openModal()">Add Notes</button>
+            <div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display':display}">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title">Add Notes</h4>
+                    <button type="button" class="close" aria-label="Close" (click)="onCloseHandled()"><span
+                        aria-hidden="true">&times;</span></button>
+                  </div>
+                  <div class="modal-body">
+                    <form #f="ngForm" >
+                      <textarea name="comment" ngModel required  type="text" [(ngModel)]="newPrivatedatamodel.comment"
+                        class="form-control"></textarea>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-primary m-2" (click)="onSave(f)">Save</button>
+                        <button type="button" class="btn btn-danger m-2" (click)="onCloseHandled()">Close</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="fname">First Name:&nbsp;</label>
+          </td>
+          <td>
+            <input type="text" id="fname" name="firstname" size="70" [(ngModel)]="newPrivatedatamodel.firstname">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="mname">Middle Name:&nbsp;</label>
+          </td>
+          <td>
+            <input type="text" id="mname" name="middlename" size="70" [(ngModel)]="newPrivatedatamodel.middlename">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="sname">Surname:&nbsp;</label>
+          </td>
+          <td>
+            <input type="text" id="sname" name="surname" size="70" [(ngModel)]="newPrivatedatamodel.surname">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="dob">Date of Birth:&nbsp;</label>
+          </td>
+          <td>
+            <input type="date" name="dateofbirth" id="dob" [(ngModel)]="newPrivatedatamodel.dateofbirth">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label>Gender:&nbsp;</label>
+          </td>
+          <td>
+            <select name="gender" [(ngModel)]="newPrivatedatamodel.gender" style="width: 162px;">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">other</option>
+            </select>
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="mstatus">Marital Status:&nbsp;</label>
+          </td>
+          <td>
+            <select name="mstatus" [(ngModel)]="newPrivatedatamodel.mstatus" style="width: 162px;">
+              <option value="Married">Married</option>
+              <option value="Unmerried">Unmerried</option>
+            </select>
+          </td>
+        </tr>
+      </div>
+    </fieldset>
+
+    <fieldset class="border p-2" id="group2">
+      <legend class="w-auto">Address</legend>
+      <div>
+        <tr>
+          <td>
+            <label for="Add">Address:&nbsp; </label>
+          </td>
+          <td>
+            <input type="text" id="Add1" name="Add" [(ngModel)]="newPrivatedatamodel.Add1">
+          </td>
+          <td>
+            <label for="PAdd">Postal Address:&nbsp; </label>
+          </td>
+          <td>
+            <input type="text" id="PAdd1" name="PAdd1" [(ngModel)]="newPrivatedatamodel.PAdd1">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td><label></label></td>
+          <td>
+            <input type="text" id="Add2" name="Add" [(ngModel)]="newPrivatedatamodel.Add2">
+          </td>
+          <td><label></label></td>
+          <td>
+            <input type="text" id="PAdd2" name="PAdd2" [(ngModel)]="newPrivatedatamodel.PAdd2">
+          </td>
+        </tr>
+      </div>
+
+      <div>
+        <tr>
+          <td><label></label></td>
+          <td>
+            <input type="text" id="Add3" name="Add" [(ngModel)]="newPrivatedatamodel.Add3">
+          </td>
+          <td><label></label></td>
+          <td>
+            <input type="text" id="PAdd3" name="PAdd3" [(ngModel)]="newPrivatedatamodel.PAdd3">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="cun">Country:&nbsp;</label>
+          </td>
+          <td>
+            <select name="Country" [(ngModel)]="newPrivatedatamodel.CountryDetails" style="width: 162px;" #mySelect
+              (change)='onOptionsSelectedCountry(mySelect.value)'>
+              <option *ngFor="let countryname of Countries" [(ngValue)]="countryname"
+                [selected]="countryname.countryID === newPrivatedatamodel.CountryDetails">
+                {{countryname.countryCode}} &nbsp;&nbsp;
+                {{countryname.name}}
+
+              </option>
+            </select>
+          </td>
+          <td>
+            <input type="text" name="Country1" id="cun1" size="47" value="CountryDetails.name"
+              [(ngModel)]="newPrivatedatamodel.CountryName">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="state">State:&nbsp;</label>
+          </td>
+          <td>
+            <select name="state" [(ngModel)]="newPrivatedatamodel.StateDetails" style="width: 162px;" #mySelect
+              (change)='onOptionsSelectedState(mySelect.value)'>
+              <option value="Select Value">Select Value</option>
+              <option *ngFor="let state of CountryStates" [(ngValue)]="state"
+                [selected]="state.stateID === newPrivatedatamodel.StateDetails">
+                {{state.stateCode}}
+                {{state.name}}
+              </option>
+
+            </select>
+          </td>
+          <td>
+            <input type="text" name="state1" id="state1" size="47" value="StateDetails.name"
+              [(ngModel)]="newPrivatedatamodel.StateName">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="city">City:&nbsp;</label>
+          </td>
+          <td>
+            <select name="city" [(ngModel)]="newPrivatedatamodel.CityDetails" style="width: 162px;" #mySelect
+              (change)='onOptionsSelecteCity(mySelect.value)'>
+              <option value="select Value">select Value</option>
+              <option *ngFor="let city of StateCity" [(ngValue)]="city"
+                [selected]="city.cityID === newPrivatedatamodel.CityDetails">
+                {{city.cityCode}}
+                {{city.name}}
+              </option>
+
+            </select>
+          </td>
+          <td>
+            <input type="text" name="city1" id="city1" size="47" value="CityDetails.name"
+              [(ngModel)]="newPrivatedatamodel.CityName">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <label for="pcode">Post Code:&nbsp;</label>
+        <input type="text" name="postcode" id="pcode" [(ngModel)]="newPrivatedatamodel.postcode">
+      </div>
+    </fieldset>
+
+    <fieldset class="border p-2" id="group3">
+      <legend class="w-auto">Contact Information</legend>
+      <div>
+        <label for="phoneh">Phone [H]:&nbsp;</label>
+        <input type="text" id="phoneh" name="phoneh" [(ngModel)]="newPrivatedatamodel.phoneh">
+      </div>
+      <div>
+        <label for="phoneo">Phone [O]:&nbsp;</label>
+        <input type="text" id="phoneo" name="phoneo" [(ngModel)]="newPrivatedatamodel.phoneo">
+      </div>
+      <div>
+        <label for="phonem">Phone [M]:&nbsp;</label>
+        <input type="text" id="phonem" name="phonem" [(ngModel)]="newPrivatedatamodel.phonem">
+      </div>
+      <div>
+        <label for="email">Email:&nbsp;</label>
+        <input type="email" id="email" name="email" [(ngModel)]="newPrivatedatamodel.email">
+      </div>
+    </fieldset>
+  </div>
+
+  <div id="Current Services" class="tabcontent">
+    <span onclick="this.parentElement.style.display='none'" class="topright"></span>
+    <button (click)="dataservice()" class="btn add-btn mr-1">Save</button>
+    <fieldset class="border p-2" id="group4">
+      <legend class="w-auto">Contact Information</legend>
+      <div>
+        <tr>
+          <td>
+            <label for="startdate">Start Date:&nbsp; </label>
+          </td>
+          <td>
+            <input type="date" id="startdate" name="startdate" [(ngModel)]="newServicemodel.startdate">
+          </td>
+          <td>
+            <label for="status">Status:&nbsp; </label>
+          </td>
+          <td>
+            <select name="status" [(ngModel)]="newServicemodel.status" style="width: 162px;">
+              <option value="Active">Active</option>
+              <option value="NotActive">Not Active</option>
+            </select>
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="contractdate">Contract Date:&nbsp; </label>
+          </td>
+          <td>
+            <input type="date" id="contractdate" name="contractdate" [(ngModel)]="newServicemodel.contractdate">
+          </td>
+          <td>
+            <label for="servicetype">Service Type:&nbsp; </label>
+          </td>
+          <td>
+            <select name="servicetype" [(ngModel)]="newServicemodel.servicetype" style="width: 162px;">
+              <option value="contract">Contract</option>
+              <option value="Permanent">Permanent</option>
+            </select>
+          </td>
+          <td>
+            <label for="fulltime">Full Time:</label>
+          </td>
+          <td>
+            <h3> <input type="radio" value="yes" name="fulltime" [(ngModel)]="newServicemodel.fulltime">Yes&nbsp;&nbsp;
+            </h3>
+          </td>
+          <td>
+            <h3><input type="radio" value="no" name="fulltime" [(ngModel)]="newServicemodel.fulltime"> No</h3>
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="terminationdate">Termination Date:&nbsp; </label>
+          </td>
+          <td>
+            <input type="date" id="terminationdate" name="terminationdate"
+              [(ngModel)]="newServicemodel.terminationdate">
+          </td>
+          <td>
+            <label for="terminationreason">Termination Reason:&nbsp; </label>
+          </td>
+          <td>
+            <input type="text" id="terminationreason" name="terminationreason"
+              [(ngModel)]="newServicemodel.terminationreason">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="shiftid">Shift Id:&nbsp;</label>
+          </td>
+          <td>
+            <select name="shiftid" [(ngModel)]="newServicemodel.shiftid" style="width: 162px;">
+              <option value="9:00:00 AM TO 6:00:00 PM">Day</option>
+              <option value="6:00:00 PM TO 11:00:00 PM">Night</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" name="dayshift" id="dayshift" size="47" [(ngModel)]="newServicemodel.shiftid">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <tr>
+          <td>
+            <label for="posionid">Position Id:&nbsp;</label>
+          </td>
+          <td>
+            <select name="Manager" [(ngModel)]="newServicemodel.posionid" style="width: 162px;">
+              <option value="GeneralManager">014</option>
+              <option value="Manager">015</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" name="GeneralManager" id="posionid" size="47" [(ngModel)]="newServicemodel.posionid">
+          </td>
+        </tr>
+      </div>
+      <div>
+        <label for="territory">Territory:&nbsp;</label>
+        <input type="text" name="territory" id="territory" [(ngModel)]="newServicemodel.territory">
+      </div>
+      <div>
+        <label for="branch">Branch:&nbsp;</label>
+        <input type="text" name="branch" id="branch" [(ngModel)]="newServicemodel.branch">
+      </div>
+      <div>
+        <label for="costcenter">Cost Center:&nbsp;</label>
+        <input type="text" name="costcenter" id="costcenter" [(ngModel)]="newServicemodel.costcenter">
+      </div>
+    </fieldset>
+
+    <fieldset class="border p-2" id="group5">
+      <legend class="w-auto">Super</legend>
+      <tr>
+        <td>
+          <label for="deductsuper">Deduct Super:</label>
+        </td>
+        <td>
+          <h3>
+            <span><input type="radio" value="yes" title="Yes" name="deductsuper"
+                [(ngModel)]="newServicemodel.deductsuper" />Yes &nbsp; </span>
+            <span><input title="No" type="radio" value="no" name="deductsuper"
+                [(ngModel)]="newServicemodel.deductsuper" />No</span>
+          </h3>
+        </td>
+        <td></td>
+        <td></td>
+        <td>
+          <label for="employeecontributionCompulsory">Employee Contribution(Compulsory)%:</label>
+        </td>
+        <td>
+          <input type="number" id="employeecontributionCompulsory" name="employeecontributionCompulsory" value="0.00"
+            step="0.01" [(ngModel)]="newServicemodel.employeecontributionCompulsory">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="superid">Super ID:&nbsp;</label>
+        </td>
+        <td>
+          <input type="text" id="superid" name="superid" [(ngModel)]="newServicemodel.superid">
+        </td>
+        <td></td>
+        <td></td>
+        <td>
+          <label for="employeecontributionExcess">Employee Contribution(Excess)%:</label>
+        </td>
+        <td>
+          <input type="number" id="employeecontributionExcess" name="employeecontributionExcess" value="0.00"
+            step="0.01" [(ngModel)]="newServicemodel.employeecontributionExcess">
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+        </td>
+        <td></td>
+        <td></td>
+        <td>
+          <label for="employercontributionCompulsory">Employer Contribution(Compulsory)%:</label>
+        </td>
+        <td>
+          <input type="text" id="employercontributionCompulsory" name="employercontributionCompulsory"
+            [(ngModel)]="newServicemodel.employercontributionCompulsory">
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          <label for="employercontributionExcess">Employer Contribution(Excess)%:</label>
+        </td>
+        <td>
+          <input type="number" id="employercontributionExcess" name="employercontributionExcess" value="0.00"
+            step="0.01" [(ngModel)]="newServicemodel.employercontributionExcess">
+        </td>
+      </tr>
+    </fieldset>
+
+    <fieldset class="border p-2" id="group6">
+      <legend class="w-auto">Tax</legend>
+      <div>
+        <label for="taxscale">Tax Scale:&nbsp;</label>
+        <select name="taxscale" [(ngModel)]="newServicemodel.taxscale" style="width: 162px;">
+          <option value="FJRES">FJRES</option>
+          <option value="NotActive">Not Active</option>
+        </select>
+      </div>
+      <div>
+        <label for="taxid">Tax ID:&nbsp;</label>
+        <input type="text" id="taxid" name="taxid" [(ngModel)]="newServicemodel.taxid">
+      </div>
+      <div>
+        <label for="Spousetaxid">Spouse Tax ID:&nbsp;</label>
+        <input type="text" id="Spousetaxid" name="Spousetaxid" [(ngModel)]="newServicemodel.Spousetaxid">
+      </div>
+      <div>
+        <label for="Spousename">Spouse Name:&nbsp;</label>
+        <input type="text" id="Spousename" name="Spousename" size="100" [(ngModel)]="newServicemodel.Spousename">
+      </div>
+    </fieldset>
+  </div>
+</form>

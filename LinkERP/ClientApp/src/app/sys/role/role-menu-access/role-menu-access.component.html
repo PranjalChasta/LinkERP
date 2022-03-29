@@ -1,0 +1,75 @@
+<form [formGroup]="RoleMenusAccessForm" name="RoleMenusAccessForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="row">
+    <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label class="col-form-label">Menu</label>
+        <select class="form-control" formControlName="Modules" (change)="onModuleSelected($event.target.value)">
+          <option value="-1">--Select Menu--</option>
+          <option *ngFor="let module of Modules" [value]="module.id">{{module.id}} - {{module.moduleName}}</option>
+        </select>
+      </div>
+    </div>
+    <!--<div class="col-12 col-md-6">
+      <div class="form-group">
+        <label class="w-100"> &nbsp;</label>
+        <button class="btn add-btn" type="button" (click)="AddRoleModuleAccess()">Add</button>
+      </div>
+    </div>-->
+  </div>
+  <div class="tab-content pt-2 pb-1" id="nav-tabContent">
+    <div class="table-responsive table-padd">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Menu ID</th>
+            <th>Name</th>
+            <th class="text-center">Read <input type="checkbox" (change)="checkAll($event,'ReadAccess')" [(ngModel)]="ReadAccess" [ngModelOptions]="{standalone: true}" /></th>
+            <th class="text-center">Write <input type="checkbox" (change)="checkAll($event,'WriteAccess')" [(ngModel)]="WriteAccess" [ngModelOptions]="{standalone: true}" /></th>
+            <th class="text-center">Delete <input type="checkbox" (change)="checkAll($event,'DeleteAccess')" [(ngModel)]="DeleteAccess" [ngModelOptions]="{standalone: true}" /></th>
+            <th class="text-center">All <input type="checkbox" (change)="checkAll($event,'AllAccess')" [(ngModel)]="AllAccess" [ngModelOptions]="{standalone: true}" /></th>
+            <!--<th class="text-center">None <input type="checkbox" (change)="checkAll($event,'NoAccess')" /></th>-->
+          </tr>
+        </thead>
+        <tbody formArrayName="RoleMenuAccess">
+          <tr *ngFor="let roleMenusAccess of RoleMenusAccessForm.get('RoleMenuAccess').controls; let i = index" [formGroupName]="i">
+            <td width="100">{{roleMenusAccess.get('MenuId').value}}</td>
+            <td> {{roleMenusAccess.get('MenuName').value}}</td>
+            <td width="50" class="text-center"><input type="checkbox" formControlName="ReadAccess" (change)="OnReadSelected(i, $event);SelectAllOnAllOptionSelected(i); onOptionSelected(roleMenusAccess.get('MenuId').value, $event, 'ReadAccess', false)" /></td>
+            <td width="50" class="text-center"><input type="checkbox" formControlName="WriteAccess" (change)="OnWriteSelected(i, $event);SelectAllOnAllOptionSelected(i); onOptionSelected(roleMenusAccess.get('MenuId').value, $event,'WriteAccess', false)" /></td>
+            <td width="50" class="text-center"><input type="checkbox" formControlName="DeleteAccess" (change)="OnDeleteSelected(i, $event);SelectAllOnAllOptionSelected(i); onOptionSelected(roleMenusAccess.get('MenuId').value, $event,'DeleteAccess', false)" /></td>
+            <td width="50" class="text-center"><input type="checkbox" formControlName="AllAccess" (change)="onAllAccessSelected(i, $event); onOptionSelected(roleMenusAccess.get('MenuId').value, $event,'AllAccess', false)" /></td>
+            <!--<td width="50" class="text-center"><input type="checkbox" formControlName="NoAccess" (change)="onOptionSelected(roleMenusAccess.get('MenuId').value, $event,'NoAccess', false)" /></td>-->
+            <!--<td class="action-tools" width="50">
+              <a (click)="DeleteRoleModule(i, roleMenusAccess.get('ModuleID').value)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+            </td>-->
+          </tr>
+        </tbody>
+      </table>
+
+      <!--<table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Menu ID</th>
+            <th>Name</th>
+            <th class="text-center">Read <input type="checkbox" /></th>
+            <th class="text-center">Write <input type="checkbox" /></th>
+            <th class="text-center">Delete <input type="checkbox" /></th>
+            <th class="text-center">All <input type="checkbox" /></th>
+            <th class="text-center">None <input type="checkbox" /></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let roleMenusAccess of SelectedRoleMenuAccess; let i = index">
+            <td width="100">{{roleMenusAccess.lbS_SYS_Menu.moduleID}}</td>
+            <td>{{roleMenusAccess.lbS_SYS_Menu.menuName}}</td>
+            <td width="50" class="text-center">{{roleMenusAccess.readAccess}}</td>
+            <td width="50" class="text-center">{{roleMenusAccess.writeAccess}}</td>
+            <td width="50" class="text-center">{{roleMenusAccess.deleteAccess}}</td>
+            <td width="50" class="text-center">{{roleMenusAccess.allAccess}}</td>
+            <td width="50" class="text-center">{{roleMenusAccess.noAccess}}</td>
+          </tr>
+        </tbody>
+      </table>-->
+    </div>
+  </div>
+</form>

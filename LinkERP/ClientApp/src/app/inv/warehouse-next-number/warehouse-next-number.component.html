@@ -1,0 +1,108 @@
+<!--<h1> Warehouse-Number</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">System Settings</li>
+    <li class="breadcrumb-item active" aria-current="page">Warehouse-Number</li>
+  </ol>
+</nav>-->
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="WareHouseNumberForm" name="WareHouseNumberForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Warehouse-Number
+              <!-- <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1">Add Warehouse-Number</button>
+              </div> -->
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                            [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Warehouse-Number
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <!-- <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label ">Name</label>
+                  <input class="form-control" placeholder="Warehouse Code" formControlName="WarehouseID" type="text">
+                </div>
+              </div> -->
+              <!-- <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Name</label>
+                  <select name="Country" class="form-control" formControlName="WareHouseName">
+
+                    <option value="-1">--Select Warehouse--</option>
+                     <option *ngFor="let WareHouse of WareHouseDetails"  [value]="WareHouse.id">
+                      {{WareHouse.wareHouseName}}
+                    </option>
+                  </select>
+                </div>
+              </div> -->
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label ">Next Number</label>
+                  <input class="form-control  text-right"  formControlName="NextNumber"  type="text" appTwoDigitDecimaNumber>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label ">NextNumber-Prefix</label>
+                  <input *ngIf=!addreadonly class="form-control"  formControlName="NextNumberPrefix" type="text">
+                  <input *ngIf=addreadonly class="form-control" formControlName="NextNumberPrefix" type="text" readonly>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label ">Description</label>
+                  <textarea *ngIf=!addreadonly class="form-control"  formControlName="Description" type="text">
+                </textarea>
+                  <textarea *ngIf=addreadonly class="form-control"  formControlName="Description" type="text" readonly>
+                </textarea>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access || !IsActiveParent">Save</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!IsActiveParent" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

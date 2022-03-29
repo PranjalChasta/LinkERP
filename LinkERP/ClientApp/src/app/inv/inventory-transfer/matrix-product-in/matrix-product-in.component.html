@@ -1,0 +1,86 @@
+<div>
+  <div style="float: right;">
+    <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+      <label style="width: 70px;">Sort By</label>
+      <select class="form-control" (change)="onColumnNameSelected($event.target.value)" [(ngModel)]="colName">
+        <option value="-1" style="text-align: center;">---Select Column---</option>
+        <option value="Color">Color</option>
+        <option value="Size">Size</option>
+        <option value="RequestedQty">Requested Qty</option>
+        <option value="ShippedQty">Shipped Qty</option>
+        <option value="ReceivedQty">Received Qty</option>
+        <option value="PreviouslyReceviedQty">Recently Received Qty</option>
+      </select>
+    </div>
+    <br />
+  </div>
+  <div
+    *ngIf="this.invStatusService.status =='Shipped' || this.invStatusService.status =='Requested' || this.invStatusService.status =='PartiallyReceived' || this.invStatusService.status =='Completed'"
+    class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th *ngIf="CurrentStatus=='Shipped'">Bin</th>
+          <th>Color</th>
+          <th>Size</th>
+          <!--  <th>Purchase Date</th> -->
+          <th>Requested Quantity</th>
+          <th>Shipped Quantity</th>
+          <th>Received Quantity</th>
+          <th>Previously Recevied Qty</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let matrixDetails of this.MatrixGrid; let i = index">
+          <td *ngIf="CurrentStatus=='Shipped'" style="width: 100px;">
+            <select class="form-control" [(ngModel)]="matrixDetails.binID">
+              <option [ngValue]="null" selected disabled>--Select Bin--</option>
+              <option *ngFor="let binlist of BinList" [value]="binlist.id">
+                {{binlist.binName}}
+              </option>
+            </select>
+          </td>
+          <td>
+            <label>{{matrixDetails.productMatrixColumnname}}</label>
+          </td>
+          <td>
+            <label>{{matrixDetails.productMatrixRowname}}</label>
+          </td>
+          <!-- <td>
+            
+            <label>{{matrixDetails.transactionDateIn | date:'yyyy-MM-dd'}}</label>
+          </td> -->
+          <td>
+            <input class="form-control" placeholder="Quantity" [(ngModel)]="matrixDetails.requestedQty" type="text"
+              OnlyNumber="true" (input)="onMatrixSearchChange($event.target.value,i)" readonly>
+          </td>
+          <td>
+            <input class="form-control" placeholder="ShippedQty" [(ngModel)]="matrixDetails.shippedQty" type="text"
+              OnlyNumber="true" (input)="onMatrixSearchChange($event.target.value,i)"
+              [readonly]="!(CurrentStatus=='Requested')">
+          </td>
+          <td>
+            <input class="form-control" placeholder="ReceivedQty" [(ngModel)]="matrixDetails.receivedQty" type="text"
+              OnlyNumber="true"  (input)="onSearchreceiveChange($event.target.value,matrixDetails.id,i)"
+              [readonly]="!(CurrentStatus=='Shipped' || CurrentStatus=='PartiallyReceived')  || matrixDetails.previouslyReceviedQty>=matrixDetails.shippedQty">
+          </td>
+          <td>
+            {{matrixDetails.previouslyReceviedQty}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="text-align: right;padding-right: 80px;">
+      <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+    </div>
+    <div class="form-group text-center">
+      <button class="btn add-btn mr-1" *ngIf="MatrixGrid && MatrixGrid.length>0" type="button"
+        (click)="SaveOutStock('Save')" [disabled]="this.IsSubmit || this.invStatusService.status =='Completed'">Save
+        Changes</button>
+      <button class="btn add-btn mr-1" *ngIf="MatrixGrid && MatrixGrid.length>0" type="button"
+        (click)="SaveOutStock('Close')" [disabled]="this.IsSubmit  || this.invStatusService.status =='Completed'">Save &
+        Close</button>
+      <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+    </div>
+  </div>
+</div>

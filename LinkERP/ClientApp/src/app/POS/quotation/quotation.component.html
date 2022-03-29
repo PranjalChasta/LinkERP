@@ -1,0 +1,363 @@
+<h1>Quotation</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Quotation</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit' || Mode=='Copy'">
+      <a>
+        {{Mode}}
+        Quotation
+      </a>
+    </li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="QuotationForm" name="QuotationForm" (ngSubmit)="OnSubmit()" class="Form-Horizontal">
+  <div class="card-body p-0" *ngIf="Mode=='Add' || Mode=='Edit' || Mode=='Copy'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Quotation"}'
+          data-toggle="tab" (click)="AccessTab='Quotation'" role="tab">Quotation</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="QuotationDetails"}'
+          data-toggle="tab" (click)="AccessTab='QuotationDetails'" role="tab">Quotation Details</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div class="card" *ngIf="(Mode=='Add' || Mode=='Edit' || Mode=='Copy') && AccessTab=='Quotation'">
+      <div class="card-header">
+        {{Mode}} Quotation
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Debtor<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" (change)="onDebtorChange($event.target.value)" formControlName="Debtor"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Debtor.errors?.notEqual}">
+                      <option value="-1">--Select Debtor--</option>
+                      <option *ngFor="let debtor of Debtor" [value]="debtor.id">
+                        {{debtor.debtorCode}}-{{debtor.debtorAccountName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Debtor.errors?.notEqual">
+                      Please select Debtor
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Debtor Contact Name</label>
+                    <input class="form-control" type="text" formControlName="DebtorContactName" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Transaction Date</label>
+                    <app-date-time-picker formControlName="TransactionDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Quotation Notes 1</label>
+                    <input class="form-control" type="text" formControlName="QuotationNotes1" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Quotation Notes 2</label>
+                    <input class="form-control" type="text" formControlName="QuotationNotes2" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Warehouse<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="Warehouse"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Warehouse.errors?.notEqual}">
+                      <option value="-1">--Select Warehouse--</option>
+                      <option *ngFor="let warehouse of Warehouse" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} - {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Warehouse.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Expected Delivery Date</label>
+                    <app-date-time-picker formControlName="ExpectedDeliveryDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Invoice Total</label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                      formControlName="InvoiceTotal">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Opportunity Status</label>
+                    <select class="form-control" formControlName="OpportunityStatus"
+                      (change)="onOpportunityChange($event.target.value)">
+                      <option value="-1">--Select Opportunity Status--</option>
+                      <option *ngFor="let opportunity of opportunityList" [value]="opportunity.id">
+                        {{opportunity.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Opportunity Status Reason</label>
+                    <select class="form-control" formControlName="OpportunityStatusReason">
+                      <option value="-1">--Select Opportunity Status Reason--</option>
+                      <option *ngFor="let opportunityStatusReason of opportunityStatusReasonList"
+                        [value]="opportunityStatusReason.id">
+                        {{opportunityStatusReason.dataName}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Quote Competitor Winner</label>
+                    <input class="form-control" type="text" formControlName="QuoteCompetitorWinner" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Quote Competitor Price Diff</label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                      formControlName="QuoteCompetitorPriceDiff" appTwoDigitDecimaNumber>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Sales Person</label>
+                    <input class="form-control" type="text" formControlName="SalesPerson" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Company</label>
+                    <input class="form-control" type="text" formControlName="Company" maxlength="50" disabled>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Address 1</label>
+                    <input class="form-control" type="text" formControlName="Address1" maxlength="50" disabled>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Address 2</label>
+                    <input class="form-control" type="text" formControlName="Address2" maxlength="50" disabled>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Address 3</label>
+                    <input class="form-control" type="text" formControlName="Address3" maxlength="50" disabled>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Address 4</label>
+                    <input class="form-control" type="text" formControlName="Address4" maxlength="50" disabled>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Post Code</label>
+                    <input class="form-control" type="text" formControlName="PostCode" maxlength="50" disabled>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Phone</label>
+                    <input class="form-control" type="text" formControlName="Phone" maxlength="50" disabled>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Fax</label>
+                    <input class="form-control" type="text" formControlName="Fax" maxlength="50" disabled>
+                  </div>
+                </div>
+                <!--<div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email</label>
+                    <input class="form-control" type="text" formControlName="Email" maxlength="50">
+                  </div>
+                </div>-->
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email Address<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Email.errors}" type="text" formControlName="Email">
+                  </div>
+                  <div class="errorlbl" *ngIf="submitted && f.Email.errors?.pattern">Please enter valid email (example: info@domain.com)</div>
+                </div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email Address</label>
+                    <!-- <input class="form-control" email [ngClass]="{ 'is-invalid': this.submitted && f.Email.errors}"
+                      formControlName="Email" type="text" maxlength="255">
+                    <div *ngIf="this.submitted && f.Email.errors" class="invalid-feedback">
+                      <div *ngIf="f.Email.errors.required">Please Enter Email Address</div>
+                    </div>
+                    <div *ngIf="f.Email.errors">
+                      <div *ngIf="f.Email.errors.email && !f.Email.errors.required" style="color: red;">
+                        Please enter valid email (example: info@domain.com)</div>
+                    </div> -->
+                    <input class="form-control" formControlName="Email" type="text" maxlength="255" disabled>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Contact Name</label>
+                    <input class="form-control" type="text" formControlName="ContactName" maxlength="50" disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button *ngIf="this.Mode=='Edit'" class="btn add-btn mr-1" type="button"
+                [disabled]="!this.write_Access ||  !this.IsActive ||!IsCloseQuotation" (click)="Email(email)">
+                Email
+              </button>
+              <button *ngIf="this.Mode=='Edit'" class="btn add-btn mr-1" type="button"
+                [disabled]="!this.write_Access ||  !this.IsActive ||!IsCloseQuotation"  (click)="ConvertToSalesOrder()">
+                Convert to Sales Order
+              </button>
+              <button *ngIf="this.Mode=='Edit'" class="btn add-btn mr-1" type="button"
+                [disabled]="!this.write_Access ||  !this.IsActive ||!IsCloseQuotation" (click)="Copy()">
+                Copy Quote
+              </button>
+              <button *ngIf="this.Mode=='Edit'" class="btn add-btn mr-1" type="button"
+                [disabled]="!this.write_Access ||  !this.IsActive ||!IsCloseQuotation" (click)="Close()">
+                Close Quote
+              </button>
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive ||!IsCloseQuotation"
+                (click)="SaveAction='Save'">
+                Save
+              </button>
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive ||!IsCloseQuotation"
+                (click)="SaveAction='SaveNClose'">
+                Save & Close
+              </button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!this.IsActive" style="text-align: center;">
+          <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+        </div>
+        <div *ngIf="!this.IsCloseQuotation" style="text-align: center;">
+          <label class="errorlbl">Quotation has been close</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Quotation
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" [disabled]="!this.write_Access" class="btn add-btn mb-1">
+                  Add
+                  Quotation
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" (OnActionClick)="OnActionClick($event)" [Currentpage]="this.Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="PageSize"
+                  (OnPageSizeChange)="OnPageSizeChange($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="Mode=='Edit' && AccessTab=='QuotationDetails'">
+    <app-quotation-details *ngIf="Mode=='Edit'" (Cancel)="Cancel()" [QuotationMainID]="this.QuotationID"
+      [WarehouseID]="this.wareHouseId" [SelectedQuotationID]="this.SelectedQuotationID" [IsActive]="this.IsActive">
+    </app-quotation-details>
+  </div>
+  <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+    <app-general-notes [RecID]="this.SelectedQuotationID" [write_Access]="this.write_Access"
+      [delete_Access]="this.delete_Access" [IsActive]="this.IsActive">
+    </app-general-notes>
+  </div>
+  <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+    <app-attachment-files [RecID]="this.SelectedQuotationID" [HeaderNames]="this.HeaderNames"
+      [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="this.IsActive">
+    </app-attachment-files>
+  </div>
+</form>
+<ng-template #email>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <div class="table-responsive table-padd">
+        <div class="card-body pb-0">
+          <form [formGroup]="QuotationEmailForm" name="QuotationEmailForm" class="Form-Horizontal">
+            <div class="row">
+              <!-- <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">From</label>
+                  <input class="form-control" formControlName="FromEmail" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.FromEmail.errors}">
+                </div>
+              </div> -->
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">To</label>
+                  <input class="form-control" formControlName="ToEmail" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.ToEmail.errors}">
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">Subject</label>
+                  <input class="form-control" formControlName="Subject" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.Subject.errors}">
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label">Message Body</label>
+                  <textarea class="form-control" formControlName="MessageBody" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.MessageBody.errors}"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="button" (click)="SendEmail()">Ok</button>
+              <button class="btn btn-danger" type="button" (click)="closePopUp()">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

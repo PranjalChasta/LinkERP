@@ -1,0 +1,58 @@
+<form [formGroup]="ReportDocumentTemplateForm" name="ReportDocumentTemplateForm" (ngSubmit)="OnAddReportName()" class="Form-Horizontal">
+  <div class="card">
+    <div class="card-body position-relative">
+      <div class="row">
+        <div class="col-12 col-md-6">
+          <div class="form-group">
+            <label class="col-form-label">Report</label>
+            <select class="form-control" formControlName="Report">
+              <option value="-1">--Select Report--</option>
+              <option *ngFor="let reportName of ReportNames" [value]="reportName.id">{{reportName.reportName}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="form-group">
+            <label class="w-100"></label>
+            <button class="btn add-btn sml-btn" type="button" (click)="OnAddReportName()">Add</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card-body position-relative">
+          <div class="ag-theme-balham" style="width: 100%; height:500px;">
+            <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="ReportDocumentTemplateColumns" [RowData]="ReportDocumentTemplates" [IsSearch]="true" [Currentpage]="Currentpage"
+                         [IsExport]="true" [paginationPageSize]="10" (OnActionClick)="OnActionClick($event)">
+            </app-ag-grid>
+          </div>
+        </div>
+      </div>
+      <!--<div class="tab-content pt-2 pb-1" id="nav-tabContent">
+        <div class="table-responsive table-padd">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Organisation Code</th>
+                <th>Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="RoleCompanyAccess">
+              <tr *ngFor="let roleCompanyAccess of ReportDocumentTemplateForm.get('RoleCompanyAccess').controls; let i = index"
+                  [formGroupName]="i">
+                <td width="100">{{roleCompanyAccess.get('CompanyCode').value}}</td>
+                <td>{{roleCompanyAccess.get('Name').value}}</td>
+                <td class="action-tools" width="50">
+                  <a (click)="DeleteRoleOrganisations(i, roleCompanyAccess.get('CompanyID').value)">
+                    <i class="fa fa-trash-o"
+                       aria-hidden="true"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>-->
+    </div>
+  </div>
+</form>

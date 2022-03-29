@@ -1,0 +1,156 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryVendorForm" name="InventoryVendorForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory Vendor
+
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1"
+                  [disabled]="!this.write_Access || !this.IsInventoryActive">Add Inventory Vendor</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [IsColumnsToFit]="false"
+                  [RowData]="this.RowData" [IsSearch]="true" [IsExport]="true" [paginationPageSize]="this.PageSize"
+                  [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Inventory Vendors
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Vendor Name <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" maxlength="50"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.Vendor.errors?.notEqual}" formControlName="Vendor">
+                    <option value="-1">--Select Vendors--</option>
+                    <option *ngFor="let vendornames of Vendor" [value]="vendornames.id">
+                      {{vendornames.vendorCode}} - {{vendornames.vendorAccountName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Vendor.errors?.notEqual">
+                    Please select vendor
+                  </div>
+                </div>
+              </div>
+              <!--<div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Vendor WareHouse</label>
+                  <select class="form-control" formControlName="VendorWareHouse">
+                    <option value="-1">--Select Vendor WareHouse--</option>
+                    <option>House1</option>
+                    <option>House2</option>
+                  </select>
+                </div>
+              </div>-->
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Purchase UOM <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.PurchaseUOM.errors?.notEqual}"
+                    formControlName="PurchaseUOM">
+                    <option value="-1">--Select Unit of Measure--</option>
+                    <option *ngFor="let UOM of UOMList" [value]="UOM.id">
+                      {{UOM.dataCode}} - {{UOM.dataName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.PurchaseUOM.errors?.notEqual">
+                    Please select uom
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Vendor SKU </label>
+                  <input class="form-control  textarea" maxlength="255"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.VendorSKU.errors}" type="text"
+                    formControlName="VendorSKU">
+                  <!-- <div class="errorlbl" *ngIf="submitted && f.VendorSKU.errors">Please enter vendor sku</div> -->
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Vendor BarCode </label>
+                  <input class="form-control textarea" maxlength="255"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.VendorBarCode.errors}" type="text"
+                    formControlName="VendorBarCode">
+                  <!--  <div class="errorlbl" *ngIf="submitted && f.VendorBarCode.errors">Please enter barcode</div> -->
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label"> Last Purchased Unit Price </label>
+                  <input class="form-control text-right" formControlName="LastPurchasedUnitPrice" type="text"
+                    appFourDigitDecimaNumber
+                    [ngClass]="{ 'is-invalid': this.submitted && f.LastPurchasedUnitPrice.errors}">
+
+                  <!-- <div class="errorlbl" *ngIf="submitted && f.LastPurchasedUnitPrice.errors">Please enter unit price</div> -->
+                </div>
+              </div>
+
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <!-- <label class="col-form-label">Quantity1</label> -->
+                  <label class="col-form-label">Last Purchased Date</label>
+                  <app-date-time-picker formControlName="LastPurchasedDate" [showTimePicker]="false">
+                  </app-date-time-picker>
+                  <!--<input class="form-control" type="text" bsDatepicker
+                  [bsConfig]="{ dateInputFormat:appDate,showWeekNumbers:false }"
+                  formControlName="LastPurchasedDate">-->
+
+                </div>
+              </div>
+              <div class="col-12 col-md-3" style="margin-top: 25px;">
+                <div class="form-group">
+                  <input type="checkbox" [checked]="this.InventoryVendorForm.get('Default').value"
+                    formControlName="Default" />
+                  <label style="margin-left: 5px;"> Default</label>
+                  <!-- <div class="custom-control custom-switch swtch" [class.disabled]="!this.InventoryVendorForm.get('Default').value">
+                    <input type="checkbox" class="custom-control-input" formControlName="Default" id="DefaultItem">
+                    <label class="custom-control-label" for="DefaultItem">Default</label>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit"
+              [disabled]="!this.write_Access||!this.IsActive ||!this.IsInventoryActive">Save</button>
+            <button class="btn add-btn mr-1" type="button"
+              [disabled]="!this.write_Access ||  !this.IsActive || !this.IsInventoryActive"
+              (click)="onSave('Close')">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!this.IsActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+          <div *ngIf="!this.IsInventoryActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this product to Active to make changes</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

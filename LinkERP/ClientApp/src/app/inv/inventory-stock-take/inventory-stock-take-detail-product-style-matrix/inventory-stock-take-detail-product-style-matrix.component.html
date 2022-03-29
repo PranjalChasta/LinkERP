@@ -1,0 +1,181 @@
+<h1> Stock Take Detail ProductStyle Matrix   </h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">System Settings</li>
+    <li class="breadcrumb-item active" aria-current="page">Stock Take Detail ProductStyleMatrix</li>
+  </ol>
+</nav>
+
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="StockTakeDetailProductStyleMatrixForm" name="StockTakeDetailProductStyleMatrixForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Stock Take Details Product Style Matrix
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1">
+                  Add Stock Take Details Product Style Matrix
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true" [paginationPageSize]="10" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Stock Take Detail Product Style Matrix
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <!-- <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Stock No </label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.StockTakeNo.errors?.notEqual }"
+                          formControlName="StockTakeNo">
+                    <option value="-1">--Select Stock No --</option>
+                    <option *ngFor="let stockTakes of StockTake" [value]="stockTakes.id">
+                      {{stockTakes.stockTakeStatus}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.Submitted && f.StockTakeNo.errors?.notEqual">
+                    Please select stock no
+                  </div>
+                </div>
+              </div> -->
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product Name</label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.ProductID.errors?.notEqual }"
+                          formControlName="ProductID">
+                    <option value="-1">--Select Product Name --</option>
+                    <option *ngFor="let products of ProductsList" [value]="products.id">
+                      {{products.productName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.Submitted && f.ProductID.errors?.notEqual">
+                    Please select product name
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Bin Name </label>
+                  <select class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.BinID.errors?.notEqual }"
+                          formControlName="BinID">
+                    <option value="-1">--Select Bin Name --</option>
+                    <option *ngFor="let binnames of BinName" [value]="binnames.id">
+                      {{binnames.binName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.Submitted && f.BinID.errors?.notEqual">
+                    Please select bin name
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product Matrix Row</label>
+                  <select class="form-control" formControlName="ProductMatrixRow">
+                    <option value="-1">--Select ProductMatrix Row  --</option>
+                    <option *ngFor="let productmatrixrows of ProductMatrixRow" [value]="productmatrixrows.id">
+                      {{productmatrixrows.styleMatrixCode}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product Matrix Column </label>
+                  <select class="form-control" formControlName="ProductMatrixColumn">
+                    <option value="-1">--Select Product Matrix Column --</option>
+                    <option *ngFor="let productMatrixColumns of ProductMatrixColumn" [value]="productMatrixColumns.id">
+                      {{productMatrixColumns.styleMatrixName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-8 col-md-2">
+                <div class="form-group">
+                  <label class="col-form-label">Transaction Date In </label>
+                  <input class="form-control" type="text"  bsDatepicker [bsConfig]="datePickerConfig"
+                         formControlName="TransactionDateIn"
+                         [value]="StockTakeDetailProductStyleMatrixForm.get('TransactionDateIn').value | date:'MM/dd/yyyy'">
+                </div>
+              </div>
+              <div class="col-8 col-md-2">
+                <div class="form-group">
+                  <label class="col-form-label">Expiry Date  </label>
+                  <input class="form-control" type="text"  bsDatepicker [bsConfig]="datePickerConfig"
+                         formControlName="ExpiryDate"
+                         [value]="StockTakeDetailProductStyleMatrixForm.get('ExpiryDate').value | date:'MM/dd/yyyy'">
+                </div>
+              </div>
+
+              <div class="col-8 col-md-2">
+                <div class="form-group">
+                  <label class="col-form-label">&nbsp; Serial No</label>
+                  <input class="form-control"  maxlength="50" [ngClass]="{ 'is-invalid': this.Submitted && f.SerialNo.errors}"
+                         type="text" formControlName="SerialNo">
+                </div>
+                <div class="errorlbl" *ngIf="this.Submitted && f.SerialNo.errors">  Please enter serial no</div>
+              </div>
+
+              <div class="col-8 col-md-2">
+                <div class="form-group">
+                  <label class="col-form-label">&nbsp; Count Quantity </label>
+                  <input class="form-control text-right"  type="text"
+                         formControlName="CountQuantity">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">&nbsp; Source Reference </label>
+                  <input class="form-control"  maxlength="50" [ngClass]="{ 'is-invalid': this.Submitted && f.SourceReference.errors}" type="text"
+                         formControlName="SourceReference">
+                </div>
+                <div class="errorlbl" *ngIf="this.Submitted && f.SourceReference.errors">  Please enter source reference</div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">&nbsp; Current Available Quantity </label>
+                  <input class="form-control text-right" type="text"
+                         formControlName="CurrentAvailableQuantity">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">&nbsp; Variance Quantity </label>
+                  <input class="form-control text-right"  type="text"
+                         formControlName="VarianceQuantity">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit">Save</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

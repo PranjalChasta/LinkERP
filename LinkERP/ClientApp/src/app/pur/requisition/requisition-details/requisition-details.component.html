@@ -1,0 +1,311 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="RequisitionDetailsForm" name="RequisitionDetailsForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+
+  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Requisition-Details
+
+              <div class="add-row">
+                <button (click)="AddNew()" *ngIf="this.IsCreatedBY && this.RequisitionStatus=='New'"
+                        class="btn add-btn mb-1" type="button" [disabled]="!this.write_Access || !this.IsReqActive">
+                  Add
+                  Requisition-Details
+                </button>
+              </div>
+            </div>
+            <div>
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Product Type</th>
+                      <th>Product</th>
+                      <th>UOM</th>
+                      <th>Quantity</th>
+                      <th>Status</th>
+                      <th>Details</th>
+                      <th class="text-center" *ngIf="this.isApprover">
+                        Approve<input type="checkbox"
+                                      [checked]="IsAllApproved" [disabled]="!this.write_Access || !this.IsReqActive"
+                                      (change)="checkAll($event,'Approved')" />
+                      </th>
+                      <th class="text-center" *ngIf="this.isApprover">
+                        Reject<input type="checkbox"
+                                     [checked]="IsAllRejected" [disabled]="!this.write_Access || !this.IsReqActive"
+                                     (change)="checkAll($event,'Rejected')" />
+                      </th>
+                      <th>Info</th>
+                      <!-- <th class="text-center">Remove<input type="checkbox" [checked]="IsAllNew"
+                          (change)="checkAll($event,'New')" /></th> -->
+                      <th *ngIf="this.IsCreatedBY && (this.RequisitionStatus=='New' ||  this.IsAllReject) && this.RequisitionStatus!='Closed'">
+                        Edit
+                      </th>
+                      <th *ngIf="this.IsCreatedBY && this.RequisitionStatus=='New'">Delete</th>
+
+                      <!--<th class="text-center">None <input type="checkbox" (change)="checkAll($event,'NoAccess')" /></th>-->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let detailslist of RowData; let i = index"
+                        [ngStyle]="detailslist.checkStatus=='Rejected' && RequisitionStatus!='New'?{'background-color':'red'} : {'background-color': 'white'}">
+                      <td width="100">{{detailslist.productType}}</td>
+                      <td> {{detailslist.productDescription}}</td>
+                      <td> {{detailslist.uom}}</td>
+                      <td>{{detailslist.quantity}}</td>
+                      <td> {{detailslist.deleteStatus}}</td>
+                      <td>
+                        <div *ngIf="this.IsReqActive && detailslist.productStyleMatrixEnabled">
+
+                          <a (click)="ProductMatrix(matrix,i)">
+                            <i class="bi fa fa-align-justify"
+                               aria-hidden="true"></i>
+                          </a>
+
+                        </div>
+                      </td>
+                      <td *ngIf="this.isApprover" width="50" class="text-center">
+                        <input type="checkbox"
+                               [disabled]="detailslist.checkStatus=='Rejected' && RequisitionStatus!='New' "
+                               [checked]="detailslist.requisitionLineStatus=='Approved'"
+                               (change)="onOptionSelected(i, $event, 'Approved')" />
+                      </td>
+                      <td *ngIf="this.isApprover" width="50" class="text-center">
+                        <input type="checkbox"
+                               [checked]="detailslist.requisitionLineStatus=='Rejected'"
+                               [disabled]="detailslist.checkStatus=='Rejected' && RequisitionStatus!='New' "
+                               (change)="onOptionSelected(i, $event,'Rejected')" />
+                      </td>
+                      <td width="50" class="text-center">
+                        <img *ngIf="detailslist.allowPurchase!=true && detailslist.productType.toString().toUpperCase() == 'INV'"
+                             width="24" src="assets/images/info_icon.jpg"
+                             title='This item does not have the "Allow Purchase" flag enabled, therefore, PO will not be created if Requisition is converted' />
+                        <!-- <img *ngIf="detailslist.allowPurchase==true" width="24" src="assets/images/greentick.png" title='"Allow Purchase" flag is enabled for this item' /> -->
+                      </td>
+                      <!-- <td width="50" class="text-center"><input type="checkbox"
+                          [checked]="detailslist.requisitionLineStatus=='New'"
+                          [disabled]="detailslist.requisitionLineStatus=='Approved'"
+                          (change)="onOptionSelected(i, $event,'New')" /></td> -->
+                      <td class="action-tools" width="50"
+                          *ngIf="this.IsReqActive && this.IsCreatedBY && (this.RequisitionStatus=='New' ||  this.IsAllReject) && this.RequisitionStatus!='Closed'">
+                        <a (click)="EditRoleModule(i)"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                      </td>
+                      <td class="action-tools" width="50"
+                          *ngIf="this.IsReqActive && this.IsCreatedBY &&  this.RequisitionStatus=='New'">
+                        <a (click)="DeleteRoleModule(i)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+            <div class="form-group text-center" *ngIf="this.isApprover && this.RowData && this.RowData.length>0">
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access  || !this.IsReqActive"
+                      (click)="UpdateStatus()">
+                Save Changes
+              </button>
+              <button class="btn add-btn mr-1" type="button" *ngIf="this.IsCreatedBY &&this.RequisitionStatus=='New' "
+                      [disabled]="!this.write_Access || !this.IsReqActive" (click)="RequstionStatus('2')">
+                Submit
+              </button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access || !this.IsReqActive"
+                      *ngIf="this.isApprover && this.IsNextApprover" (click)="RequstionStatus('3')">
+                Delegate
+              </button>
+              <!--  <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover" (click)="RequstionStatus('5')">Approve</button>
+                <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover" (click)="RequstionStatus('6')">Reject</button> -->
+            </div>
+            <div *ngIf="!this.IsReqActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+            <div>
+
+            </div>
+            <!--  <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                             [paginationPageSize]="10"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div> -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+
+
+    <div class="card-header">
+      {{Mode}} Requisition-Details
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+
+
+              <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> LineNo </label>
+                    <input class="form-control textarea" placeholder="ratio" type="text" OnlyNumber="true"
+                    formControlName="LineNo">
+                  </div>
+                </div> -->
+
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product Type <span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control" formControlName="ProductType"
+                          (change)="productTypeStatus($event.target.value)" id="select1" name="select1">
+                    <!--   <option value="INV" >--INV--</option>  -->
+                    <option *ngFor="let productStatus of productType" [value]="productStatus.value">
+                      <!--  {{productStatus.value}} -  -->
+                      {{productStatus.name}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.ProductType.errors?.notEqual">
+                    Please select ProductType
+                  </div>
+                </div>
+              </div>
+              <!--  *ngIf="IsInventory"  -->
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Product</label>
+                  <!-- <select [ngClass]="{ 'is-invalid': this.submitted && f.Product.errors?.notEqual}" class="form-control"
+                  (change)="onProductChange($event.target.value)"   formControlName="Product">
+                    <option value="-1">--Select Product--</option>
+                    <option *ngFor="let InventoryList of inventoryList" [value]="InventoryList.id">
+                      {{InventoryList.productCode}} - {{InventoryList.productName}}
+                    </option>
+                  </select> -->
+                  <!-- <purchase-order-search formControlName="Product"
+                  (OnPurchaseOrderSelectedChanged)="onProductChange($event.target.value)"></purchase-order-search> -->
+                  <product-search [ModuleName]="'SelectProductsByID'" [VendorId]="this.VenderId" [Action]="this.Action" (change)="productChange($event)" formControlName="ProductID" [ngClass]="{ 'is-invalid': this.Submitted && f.ProductID.errors?.notEqual }">
+                  </product-search>
+                  <div class="errorlbl" *ngIf="this.Submitted && f.ProductID.errors?.notEqual">
+                    Please select Product name
+                  </div>
+                </div>
+              </div>
+              <!--   *ngIf="!IsInventory" -->
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> ProductDescription </label>
+                  <input class="form-control textarea" placeholder="Description" type="text"
+                         formControlName="ProductDescription">
+                  <!-- <input  *ngIf="productValuestatus" class="form-control textarea" placeholder="Description" type="text"
+                  formControlName="ProductDescription"> -->
+                </div>
+              </div>
+
+
+
+
+
+
+              <!-- <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Unit of Measure </label>
+                  <select class="form-control" formControlName="UnitOfMeasure">
+                    <option value="-1">--Select Unit of Measure--</option>
+                    <option *ngFor="let UOM of UOMList" [value]="UOM.id">
+                      {{UOM.dataCode}} - {{UOM.dataName}}
+                    </option>
+                  </select>
+                </div>
+              </div> -->
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Unit of Measure </label>
+                  <select class="form-control" formControlName="UnitOfMeasure">
+                    <option value="-1">--Select Unit of Measure--</option>
+                    <option *ngFor="let UOM of UOMList" [value]="UOM.uomidFrom">
+                      {{UOM.uomFromName}}
+                    </option>
+                  </select>
+
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Quantity </label>
+                  <input class="form-control text-right" type="text" appTwoDigitDecimaNumber formControlName="Quantity">
+                </div>
+              </div>
+
+
+              <!--  <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Requisition-LineStatus </label>
+                    <input class="form-control textarea" placeholder="Requisition" type="text"
+                    formControlName="RequisitionLineStatus">
+                  </div>
+                </div> -->
+              <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Requisition-LineStatus </label>
+                    <select class="form-control" formControlName="RequisitionLineStatus">
+                       <option value="-1" >--Select Requisition-line Status--</option>
+                      <option *ngFor="let productStatus of requisitionLineStatus" [value]="productStatus.value">
+
+                         {{productStatus.name}}
+                      </option>
+                    </select>
+                  </div>
+                </div> -->
+
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <!--  -->
+            <button class="btn add-btn mr-1" type="submit"
+                    [disabled]="!this.write_Access || !this.IsActive">
+              Save
+            </button>
+
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!this.IsActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+          <div class="form-group text-center">
+
+            <!--  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+
+  <ng-template #matrix>
+    <div class="modal-content">
+      <div class="modal-body">
+        <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+
+        <app-requestion-product-matrix [RequisitionID]="SelectedRequisitionID" [ProductID]="ProductID"
+                                       [SelectedRequisitionDetail_ID]="SelectedRequisitionDetail_ID" [WareHouseToID]="WareHouseToID"
+                                       [RequisitionStatus]="RequisitionStatus" [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()">
+        </app-requestion-product-matrix>
+      </div>
+    </div>
+  </ng-template>
+</form>

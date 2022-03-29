@@ -1,0 +1,50 @@
+<div class="card">
+  <div class="card-header">
+    Order Discount
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="row">
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Product Code</label>
+            <input name="ProductCode" class="form-control" placeholder="Product Code" type="text"
+              [(ngModel)]="ProductCode" [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Product Name</label>
+            <input name="ProductName" class="form-control" placeholder="Product Name" type="text"
+              [(ngModel)]="ProductName" [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Tax Code</label>
+            <input name="TaxCode" class="form-control" placeholder="Tax Code" type="text" [(ngModel)]="TaxName"
+              [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Quantity In Stock</label>
+            <input name="QtyInStock" class="form-control" placeholder="Qty In Stock" type="number"
+              [(ngModel)]="QtyInStock" [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">UnitPrice</label>
+            <input name="UnitPrice" class="form-control" placeholder="UnitPrice" type="number" [(ngModel)]="Unitprice"
+              [ngModelOptions]="{standalone: true}" [disabled]="true">
+          </div><br />
+          <div class="col-6 col-md-6">
+            <label class="col-form-label">Revised UnitPrice</label>
+            <input name="RevUnitPrice" class="form-control" placeholder="Revised UnitPrice" 
+              [(ngModel)]="RevUnitprice" [ngModelOptions]="{standalone: true}" appFourDigitDecimaNumber>
+          </div>
+        </div>
+        <br />
+        <div class="form-group text-center">
+          <button class="btn add-btn mr-1" type="submit" (click)="OnSave()">
+            OK
+          </button>
+          <button class="btn btn-danger" type="button" (click)="Close()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,303 @@
+<div>
+  <div style="text-align: right;padding-right: 20px;">
+    <button (click)="addNewStockTake()" type="button" [disabled]="this.StockTakeStatus!='New' || !IsActive"
+            class="btn add-btn mb-1">
+      Add
+    </button>
+  </div>
+</div>
+<div style="height: 100%;display: flex;justify-content: center;">
+  <div class="Form-Horizontal" style="width: 90%; max-height: 600px;overflow-y: auto;">
+    <div class="table-responsive table-padd">
+      <table class="table table-bordered table-striped">
+        <!-- *ngIf="this.AgLoad && RowData && RowData.length>0" -->
+        <thead>
+          <tr>
+            <th class="hdrs">Product</th>
+            <!--<th class="hdrs">Bin</th>-->
+            <th class="hdrs" *ngIf="showInStock">In Stock</th>
+            <th class="hdrs">Count Quantity</th>
+            <th class="hdrs">Variance Quantity</th>
+            <th class="hdrs">Delete Status</th>
+            <th class="hdrs">
+              Details
+            </th>
+            <th class="hdrs" *ngIf="this.StockTakeStatus=='New'">
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let detailslist of RowData; let i = index">
+            <td style="width:50%;">
+              <!--<select class="form-control" [(ngModel)]="detailslist.productID"
+      (change)="onProductChange($event.target.value,i)" [disabled]="this.StockTakeStatus!='New'">
+      <option value="-1">--Select Product--</option>
+      <option *ngFor="let product of inventoryList" [value]="product.id">
+        {{product.productName}}
+      </option>
+    </select>-->
+              <div data-toggle="tooltip"
+                   data-placement="bottom"
+                   [title]="detailslist.productName">
+                <product-search [ModuleName]="'InvStockTake'" [(ngModel)]="detailslist.productID" (change)="onProductChange($event,i)" [disabled]="this.StockTakeStatus!='New'">
+                </product-search>
+              </div>
+            </td>
+            <!--<td style="width: 150px;">
+    <select class="form-control" [(ngModel)]="detailslist.binNo"
+      [disabled]="this.StockTakeStatus!='New'">
+      <option value="-1">--Select Bin--</option>
+      <option *ngFor="let binlist of WareHouseBinlist" [value]="binlist.id">
+        {{binlist.binName}}
+      </option>
+    </select>
+  </td>-->
+            <td style="width: 150px;" *ngIf="showInStock">
+              <!-- <select class="form-control" [(ngModel)]="detailslist.binNo" (change)="onUomChange($event.target.value,i)"
+      [disabled]="this.StockTakeStatus!='New'">
+      <option value="-1">--Select Bin--</option>
+      <option *ngFor="let binlist of WareHouseBinlist" [value]="binlist.id">
+        {{binlist.binName}}
+      </option>
+    </select> -->
+              <input class="form-control text-right" type="text" disabled [(ngModel)]="detailslist.currentAvailableQuantity_text">
+              <!-- [(ngModel)]="detailslist.inStock" -->
+            </td>
+            <td style="width: 100px;">
+              <input class="form-control text-right" placeholder="Count Quantity"
+                     [(ngModel)]="detailslist.countQuantity_text" type="text" appTwoDigitDecimaNumber
+                     (input)="OnquantityChange($event.target.value,i)" [readonly]="this.StockTakeStatus!='New'">
+            </td>
+            <td style="width: 100px;">
+              <input class="form-control text-right" placeholder="Variance Quantity"
+                     [(ngModel)]="detailslist.varianceQuantity_text" type="text" appTwoDigitDecimaNumber
+                     [readonly]="true">
+            </td>
+            <td style="width: 100px;" class="hdrs">
+              {{detailslist.deleteStatus}}
+            </td>
+            <td style="width: 100px;">
+              <div *ngIf="this.IsActive && detailslist.id" class="hdrs">
+                <a (click)="SerialiseDetail(serialise,product,other,i)">
+                  <i class="bi fa fa-align-justify hdrs"
+                     aria-hidden="true"></i>
+                </a>
+              </div>
+            </td>
+            <td width="50" style="width: 150px;" class="text-center hdrs" *ngIf="this.IsActive && !detailslist.id  && this.StockTakeStatus=='New'">
+              <button class="btn add-btn mr-1 " type="button" (click)="Deleteindex(i)">Remove</button>
+            </td>
+            <td width="50" style="width: 150px;" *ngIf="this.IsActive && detailslist.id && this.StockTakeStatus=='New'" class="hdrs">
+              <a (click)="DeleteInventoryStockTakeDetail(detailslist.id, detailslist.productStatus)">
+                <i class="fa fa-trash-o hdrs"
+                   aria-hidden="true"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="form-group text-center" *ngIf="this.AgLoad && RowData && RowData.length>0">
+  <button class="btn add-btn mr-1" [disabled]="this.StockTakeStatus!='New' || !IsActive" type="button" (click)="UpdateChanges()">
+    Save
+    Stocktake
+  </button>
+  <button class="btn add-btn mr-1" type="button" *ngIf="this.StockTakeStatus=='New' && isStockCreater"
+          [disabled]="!this.write_Access || !IsActive" (click)="OnUpdateStockTakeStatus('CountCompleted')">
+    Count Completed
+  </button>
+  <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access || !IsActive"
+          *ngIf="this.StockTakeStatus=='CountCompleted' && isStockApprover"
+          (click)="OnUpdateStockTakeStatus('Approved')">
+    Approve
+  </button>
+  <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access || !IsActive"
+          *ngIf="this.StockTakeStatus=='CountCompleted' && isStockReject"
+          (click)="OnUpdateStockTakeStatus('Rejected')">
+    Reject
+  </button>
+  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+</div>
+<div class="form-group text-center" *ngIf="RowData && RowData.length==0">
+  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+</div>
+<div *ngIf="!this.IsActive" style="text-align: center;">
+  <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+</div>
+<ng-template #serialise>
+  <div class="modal-content">
+    <div class="modal-body" style="overflow-x: auto;" >
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <!-- <p>Lot/Bin-Serial Tracking for {{productFor}}</p> -->
+      <p>  <b>{{productName}}</b></p>
+      <app-stock-take-serialised-product [ProductID]="this.SelectedProductID"
+                                         [StockTakeStatus]="StockTakeStatus"
+                                         [SelectedStockTakeDetailID]="SelectedStockTakeDetailID" [SelecteWareHouseID]="SelectedWareHouseID"
+                                         [StockTakeNo]="this.StockTakeNo" [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()">
+      </app-stock-take-serialised-product>
+    </div>
+  </div>
+</ng-template>
+<ng-template #product>
+  <div class="modal-content">
+    <div class="modal-body"  style="overflow-x: auto;">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <p>  <b>{{productName}}</b></p>
+      <app-stock-take-style-matrix-row [ProductID]="this.SelectedProductID" [SelecteWareHouseID]="SelectedWareHouseID" [StockTakeStatus]="StockTakeStatus"
+                                       [StockTakeNo]="this.StockTakeNo" [SelectedStockTakeDetailID]="SelectedStockTakeDetailID"
+                                       [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()">
+      </app-stock-take-style-matrix-row>
+
+    </div>
+  </div>
+</ng-template>
+<ng-template #other>
+  <div class="modal-content2">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <p>  <b>{{productName}}</b></p>
+      <app-stock-take-other [ProductID]="this.SelectedProductID" [SelectedStockTakeDetailID]="SelectedStockTakeDetailID" [StockTakeStatus]="StockTakeStatus"
+                            [SelecteWareHouseID]="SelectedWareHouseID" [StockTakeNo]="this.StockTakeNo"
+                            [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()">
+      </app-stock-take-other>
+    </div>
+  </div>
+</ng-template>
+<!-- <form [formGroup]="InventoryStockTakeDetailForm" name="InventoryStockTakeDetailForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+
+  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory-StockTake-Detail
+
+              <div class="add-row">
+                <button (click)="addNewStockTake()" class="btn add-btn mb-1" *ngIf="this.StockTakeStatus=='New' && isStockCreater"  type="button" [disabled]="!this.write_Access" >Add  Inventory Stock-TakeDetail</button>
+              </div>
+            </div>
+
+            <div class="form-group text-center" *ngIf="this.AgLoad && RowData && RowData.length>0">
+              <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges()">Save Changes</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Cancel</button>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                             [paginationPageSize]="10"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <div class="card-header">
+        {{Mode}}  Inventory Stock Take Detail
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> ProductID </label>
+                    <select class="form-control" formControlName="ProductID" >
+                      <option value="-1">--Select BindInventory To--</option>
+                      <option *ngFor="let inventory of BindInventory" [value]="inventory.id">
+                        {{inventory.productName}}
+                      </option>
+                    </select>
+                   <div class="errorlbl" *ngIf="this.submitted && f.ProductID.errors?.notEqual">
+                      Please select Product
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Bin No  </label>
+                    <select class="form-control" formControlName="BinNo" [ngClass]="{ 'is-invalid': this.submitted && f.BinNo.errors}">
+                      <option value="-1">--Select BindWareHouseBin To--</option>
+                      <option *ngFor="let bin of BindWareHouseBin" [value]="bin.id">
+                        {{bin.binName}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label"> Current Available Quantity  </label>
+                    <input class="form-control textarea" placeholder="Available Quantity" type="text" OnlyNumber="true"
+                    formControlName="CurrentAvailableQuantity">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4" >
+                  <div class="form-group">
+                    <label class="col-form-label"> Count Quantity  </label>
+                    <input class="form-control textarea" placeholder="Count Quantity" type="text" OnlyNumber="true"
+                    formControlName="CountQuantity">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4"  style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label"> Variance Quantity </label>
+                    <input class="form-control textarea" placeholder="Variance Quantity" type="text" OnlyNumber="true"
+                    formControlName="VarianceQuantity">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label"> Cost </label>
+                    <input class="form-control textarea" placeholder="Cost" type="text" OnlyNumber="true"
+                    formControlName="Cost">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4" style="display: none;">
+                  <div class="form-group">
+                    <label class="col-form-label"> Total Cost Variance </label>
+                    <input class="form-control textarea" placeholder="Total" type="text" OnlyNumber="true"
+                    formControlName="TotalCostVariance">
+                  </div>
+                </div>
+
+
+
+              </div>
+            </div>
+
+
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access" >Save</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+</form> -->

@@ -1,0 +1,360 @@
+<form [formGroup]="VendorPriceSchemeForm" name="VendorPriceSchemeForm" (ngSubmit)="onSave('Save')"
+  class="Form-Horizontal"></form>
+<h1> Vendor Price Scheme <span *ngIf="Mode == 'Edit'">({{VendorPriceSchemeForm.get('ProductDescription').value}})</span>
+</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Vendor Price Scheme</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <a>
+        {{Mode}} Vendor Price
+        Scheme
+      </a>
+    </li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="VendorPriceSchemeForm" name="VendorPriceSchemeForm" (ngSubmit)="onSave('Save')"
+  class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Vendor Price Scheme
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">
+                  Add Vendor Price Scheme
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsColumnsToFit]="false" [IsExport]="true" [paginationPageSize]="this.PageSize"
+                  [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Vendor"}' data-toggle="tab"
+          (click)="AccessTab='Vendor'" role="tab">Vendor</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Purhcase Order"}'
+          data-toggle="tab" (click)="AccessTab='Purhcase Order'" role="tab">List of PO</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Finalise"}'
+          data-toggle="tab" (click)="AccessTab='Finalise'" role="tab">Finalise</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Vendor'">
+      <div class="card-header">
+        {{Mode}} Vendor Price Scheme
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Deals Type</label>
+                    <select class="form-control" formControlName="DealsType" maxlength="50"
+                      (change)="dealtypestatus($event.target.value)" id="select1" name="select1">
+                      <!-- <option value="-1">--Select Deals Type--</option> -->
+                      <option *ngFor="let dealstypes of dealsType" [value]="dealstypes.value">
+                        {{dealstypes.name}}
+                      </option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.Submitted && f.DealsType.errors?.notEqual">
+                      Please select deals type
+                    </div> -->
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor Name<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.VendorID.errors?.notEqual }"
+                      formControlName="VendorID">
+                      <option value="-1">--Select Vendor Name --</option>
+                      <option *ngFor="let vendornames of VendorName" [value]="vendornames.id">
+                        {{vendornames.vendorCode}} -- {{vendornames.vendorAccountName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.VendorID.errors?.notEqual">
+                      Please select vendor name
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Product Name<span class="mandatoryFieldColor">*</span></label>
+                    <!-- <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.ProductID.errors?.notEqual }"
+                      (change)="OnProductChange($event.target.value)" formControlName="ProductID">
+                      <option value="-1">--Select Product Name --</option>
+                      <option *ngFor="let products of Product" [value]="products.id">
+                        {{products.productCode}} -- {{products.productName}}
+                      </option>
+                    </select> -->
+                    <product-search [ModuleName]="'VendorPriceScheme'"  (change)="OnProductChange($event)" formControlName="ProductID" [ngClass]="{ 'is-invalid': this.Submitted && f.ProductID.errors?.notEqual }" >
+                    </product-search>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ProductID.errors?.notEqual">
+                      Please select product name
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Product Description<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" 
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.ProductDescription.errors}" type="text"
+                      formControlName="ProductDescription" maxlength="255">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ProductDescription.errors">
+                      Please enter product
+                      description
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">UOM Name<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.UOM.errors?.notEqual }"
+                      formControlName="UOM">
+                      <option value="-1">--Select UOM Name --</option>
+                      <option *ngFor="let uoms of InventoryUnitOfMeasure" [value]="uoms.uomidFrom">
+                        {{uoms.uomFromName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.UOM.errors?.notEqual">
+                      Please select uom name
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Quantity<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.Quantity.errors}" formControlName="Quantity"
+                      type="text" appTwoDigitDecimaNumber>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Quantity.errors"> Please enter quantity</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Valid From<span class="mandatoryFieldColor">*</span></label>
+                    <!--  <input class="form-control" type="text" formControlName="ValidFrom" bsDatepicker
+                    [bsConfig]="datePickerConfig"
+                    [value]="VendorPriceSchemeForm.get('ValidFrom').value | date:'MM/dd/yyyy'"
+                            > -->
+                    <!--<input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+                            [ngClass]="{ 'is-invalid': this.Submitted && !this.IsdateValid}"
+                    formControlName="ValidFrom"
+                    [value]="VendorPriceSchemeForm.get('ValidFrom').value | date:'MM/dd/yyyy'"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.ValidFrom.errors}">-->
+                    <app-date-time-picker formControlName="ValidFrom" [showTimePicker]="false"
+                      [isInvalid]="(this.Submitted && f.ValidFrom.errors)">
+                    </app-date-time-picker>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ValidFrom.errors"> Please enter ValidFrom Date
+                    </div>
+
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Valid To<span class="mandatoryFieldColor">*</span></label>
+                    <!--<input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && !this.IsdateValid}" formControlName="ValidTo" type="text" bsDatepicker
+                    [bsConfig]="datePickerConfig"
+                    [value]="VendorPriceSchemeForm.get('ValidTo').value | date:'MM/dd/yyyy'">-->
+                    <app-date-time-picker formControlName="ValidTo" [showTimePicker]="false"
+                      [isInvalid]="(this.Submitted && f.ValidTo.errors)"></app-date-time-picker>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ValidTo.errors"> Please enter ValidTo Date</div>
+                    <div class="errorlbl" *ngIf="this.Submitted && !this.IsdateValid">Valid to date should be greater
+                      than valid from date</div>
+
+                  </div>
+
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Supplier Unit Price<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.SupplierUnitPrice.errors}"
+                      formControlName="SupplierUnitPrice" step="0.00" type="text" appFourDigitDecimaNumber>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.SupplierUnitPrice.errors">
+                      Please enter supplier
+                      unit of price
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Discount </label>
+                    <input class="form-control text-right" type="text" min="0" step="0.00" OnlyNumber="true"
+                      appTwoDigitDecimaNumber formControlName="DiscountValue">
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; FreeDeals Quantity</label>
+                    <input class="form-control text-right" appTwoDigitDecimaNumber type="text"
+                      formControlName="FreeDealsQuantity">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="form-group">
+                      <label class="col-form-label">FreeDeals UOM </label>
+                      <select class="form-control" formControlName="FreeDealsUOM">
+                        <option value="-1">--Select FreeDeals UOM --</option>
+                        <option *ngFor="let uoms of InventoryUnitOfMeasure" [value]="uoms.uomidFrom">
+                          {{uoms.uomFromName}}
+                        </option>
+                      </select>
+
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="this.Mode=='Edit'" class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; FreeDeals Quantity Redeemed</label>
+                    <input class="form-control text-right" appTwoDigitDecimaNumber type="text"
+                      formControlName="FreeDealsQuantityRedeemed">
+                  </div>
+                </div>
+
+                <div *ngIf="this.Mode=='Edit'" class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Status</label><br>
+                    <label style="font-size: 14px;"
+                      class="col-form-label status"><b>{{this.VendorPriceSchemeForm.get('Status').value}}</b></label>
+                  </div>
+                </div>
+                <!-- <div class="col-8 col-md-2">
+                  <div class="form-border">
+                    <h3 class="form-heading">Percentage/Value</h3>
+                    <div class="col-8 col-md-2">
+                      <div class="form-group">
+                      </div>
+                      <div class="onoffswitchPerFlag">
+                        <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                               id="myonoffswitchPerFlag" formControlName="DiscountType">
+                        <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                          <span class="onoffswitchPerFlag-inner"></span>
+                          <span class="onoffswitchPerFlag-switch"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+                <div class="col-4 col-md-4">
+                  <div class="form-border">
+                    <h3 class="form-heading">Discount<span class="mandatoryFieldColor">*</span></h3>
+                    <div class="row">
+                      <div class="col-12 col-md-7">
+                        <div class="form-group">
+                          <label class="col-form-label">Discount<span class="mandatoryFieldColor">*</span></label>
+                          <!-- <input class="form-control text-right"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.Discount.errors}"
+                            (keypress)="onlyNumberKey($event)" formControlName="Discount" type="text"
+                            appTwoDigitDecimaNumber> -->
+                          <input [ngClass]="{ 'is-invalid': this.submitted && f.Discount.errors}"
+                            (keypress)="onlyNumberKey($event)" class="form-control text-right" type="text" min="0"
+                            step="0.00" OnlyNumber="true" appTwoDigitDecimaNumber formControlName="DiscountValue">
+                          <div class="errorlbl" *ngIf="submitted && f.Discount.errors">Please enter discount value</div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-5">
+                        <div class="onoffswitchPerFlag">
+                          <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                            id="myonoffswitchPerFlag" formControlName="DiscountType">
+                          <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                            <span class="onoffswitchPerFlag-inner"></span>
+                            <span class="onoffswitchPerFlag-switch"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--<div class="col-8 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="DiscountType"
+                             id="DiscountTypeEnabled">
+                      <label class="custom-control-label" for="DiscountTypeEnabled">
+                        DiscountType Enabled
+                      </label>
+                    </div>
+                  </div>
+                </div>-->
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <!-- <button class="btn add-btn mr-1" type="button" *ngIf="Mode !='Add'" [disabled]="!this.IsActive ||  !this.IsvalidTo" (click)="finaliseThisDeal(finalise)">Finalise</button> -->
+              <button class="btn add-btn mr-1" type="submit"
+                [disabled]="!this.write_Access||  !this.IsActive ||  !this.IsvalidTo || !this.IsReferenced">
+                Save
+              </button>
+              <button class="btn add-btn mr-1" type="button"
+                [disabled]="!this.write_Access ||  !this.IsActive ||  !this.IsvalidTo || !this.IsReferenced"  (click)="onSave('Close')">
+                Save &
+                Close
+              </button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+            <div *ngIf="!this.IsvalidTo" style="text-align: center;">
+              <label class="errorlbl">Valid to date is completed</label>
+            </div>
+            <div *ngIf="!this.IsReferenced" style="text-align: center;">
+              <label class="errorlbl">Vendor price scheme has been referenced in  Purchase Order</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Purhcase Order'">
+      <app-purchased-order-scheme [VendorId]="SelectedVendor" [VendorPriceSchemeID]="selectedVendorPriceSchemeID">
+      </app-purchased-order-scheme>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Finalise'">
+      <app-finalise [VendorPriceSchemeID]="selectedVendorPriceSchemeID" [IsParentActive]="IsActive">
+      </app-finalise>
+    </div>
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedVendor" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedVendor" [HeaderNames]="this.HeaderNames"
+        [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+</form>
+
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

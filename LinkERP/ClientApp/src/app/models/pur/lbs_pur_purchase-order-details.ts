@@ -1,0 +1,46 @@
+import { BaseEntity } from "../base-entity";
+
+export class LbsPurPurchaseOrderDetails extends BaseEntity {
+    ID
+    CompanyID
+    PurchaseOrderID
+    LineNo
+    PurchaseLineStatus
+    ProductType
+    ProductID
+    ProductDescription
+    UnitOfMeasure
+    ClassificationID
+    OrderedQuantity
+    ReceivedQuantity
+    UnitCost
+    DiscountType
+    DiscountAmount
+    DiscountedUnitCost
+    LineTotalCostTaxEclusive
+    TaxID
+    TaxRate
+    LineTotalTaxAmount
+    LineTotalCostTaxInclusive
+    CurrencyID
+    FXRate
+    ForeignExchangeUnitCost
+    LineTotalForeignExchangeCostTaxExclusive
+    LineTotalForeignExchangeCostTaxInclusive
+    LineTotalForeignAmount
+    LineTotalHomeAmount
+    SupplierSKU
+    AllowPartialReceiving
+    RequisitionID
+    ConvertedOrderedQuantity
+    CovertedReceivedQuantity
+    HomeUnitCost
+    DiscountedUnitCostHome
+    LineTotalCostTaxExclusiveHome
+    LineTotalTaxAmountHome
+    LineTotalCostTaxInclusiveHome
+    DiscountedUnitCostForeign
+    LineTotalForeignExchangeTaxAmount
+    VendorPriceSchemeID
+    HomeConvertedUnitCost
+}

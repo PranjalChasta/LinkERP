@@ -1,0 +1,169 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+
+<!-- <nav aria-label="breadcrumb" *ngIf="Mode != 'State'">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Configuration</a></li>
+    
+  </ol>
+</nav> -->
+<!-- <form>
+  <div class="card">
+    <div class="card-header">
+      Debtor Tranction List
+    </div>
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card"> -->
+            <!-- <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label class="col-form-label">Module</label>
+                <select class="form-control" (change)="OnDebtorChange($event)">
+                  <option value="-1">--Select Debtor Name--</option>
+                  <option *ngFor="let debtors of AllDebtores" [value]="debtors.id">
+                    {{debtors.debtorAccountName}} -  {{debtors.debtorCode}}
+                  
+                  </option>
+                </select>
+              </div>
+            </div> -->
+            <!-- <div class="card-body position-relative">
+              <h1 *ngIf="AgLoad" style="text-align: center;">Debits</h1>
+              <button class="btn add-btn mr-1" type="button"  (click)="AutomaticAllocation()">Automatic Allocation</button>
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                            [IsEditable]="true"
+                             [paginationPageSize]="10"
+                             (OnActionClick)="OnActionClick(email,$event)"
+                            
+                             >
+                </app-ag-grid>
+              </div>
+              <div class="form-group text-center" *ngIf="AgLoad">
+                <button class="btn add-btn mr-1" (click)="SaveDebtorTransactionAllocations()">Save</button> -->
+                <!-- <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button> -->
+              <!-- </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form> -->
+<!-- <ng-template #email >
+  <div class="modal-content" id="myModal" role="dialog" >
+    <div class="modal-body">
+      <a style="float: right;" type="button" data-dismiss="modal"  (click)="closePopUp()" class="close-modal">X</a>
+      <div class="table-responsive table-padd">
+        <div class="card-body pb-0">
+          <form  class="Form-Horizontal">
+            <div class="ag-theme-balham" style="width: 100%; height:500px;">
+              <app-ag-grid *ngIf="AgMoDalLoad"
+                           [ColumnDefs]="this.ColumnForMoldal"
+                           [RowData]="RowData"
+                           [IsSearch]="true"
+                           [IsExport]="true"
+                           [IsEditable]="true"
+                           [paginationPageSize]="10"
+                           (OnActionClick)="OnActionClick(email,$event)"
+                           (OnEditStoped)="OnEditMoldaStoped($event)"
+                           >
+              </app-ag-grid>
+            </div>
+
+
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="button" (click)="SaveDebtorTransactionAllocations()">Save</button>
+              <button class="btn btn-danger" data-dismiss="modal" type="button"  #closeBtn (click)="closePopUp()">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>
+
+
+ -->
+
+ <div class="modal-content">
+  <div class="modal-body">
+    <div class="card">
+      <div class="card-header">
+        DEBIT
+      </div>
+      <div class="card-body position-relative">
+        <div class="row">
+          <!-- <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label class="col-form-label">Search</label>
+              <input type="text" class="form-control" />
+            </div>
+          </div> -->
+          <div class="col-12 col-md-6">
+            <div class="form-group">
+              <label class="w-100"></label>
+              <!-- //<button class="btn add-btn sml-btn" type="button" (click)="SearchPurchaseOrder()">Search</button> -->
+            </div>
+          </div>
+          <div class="col-12 col-md-12">
+            <div class="row">
+              <div class="table-responsive table-padd"  style="overflow-y:auto;height:300px">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Invoice No</th>
+                      <th>Date</th>
+                      <th>Period</th> 
+                      <th>Amount</th>
+                      <th>Allocated Amount</th>
+                      <th>Un Allocated Amount</th>
+                      <th>Notes </th> 
+                      <th>Aged out</th>                   
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="Selecting" *ngFor="let debit of DebtorDebitTranction" [ngClass]="{ 'Selected': false}">
+                      <td>{{debit.transactionReferenceNumber}}</td>
+                      <td>{{debit.dueDate}}</td>
+                      <td></td>  
+                      <td>{{debit.transactionAmountHome}}</td>
+                      <td>{{debit.allocatedAmountHome}}</td>
+                      <td style="color: red;">{{debit.unAllocatedAmountHome}}</td>  
+                      <td></td>  
+                      <td></td>  
+                     
+                      <!-- <td>{{good.isInvoiced}}</td>  
+                      <td>{{good.deleteStatus}}</td>  -->
+               
+                                    
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-12">
+            <div class="form-group text-center">
+              <!--<button class="btn add-btn mr-1" type="button" (click)="SelectProduct()">
+                Select Product
+              </button>-->
+              <!-- <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--<a style="float: right;" data-dismiss="modal" #closeBtn (click)="Close()" class="close-modal">X</a>-->
+
+  </div>
+</div>

@@ -1,0 +1,175 @@
+<h1>Requisition Quotation Analysis</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Requisition Quotation Analysis</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Requisition Quotation Analysis</a></li>
+  </ol>
+</nav>
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="RequisitionQuotationAnalysisForm" name="RequisitionQuotationAnalysisForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Requisition Quotation
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add Requisition Quotation</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true"
+                              [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Quotation"}' data-toggle="tab"
+          (click)="AccessTab='Quotation'" role="tab">Quotation</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+          <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+          (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit'&& AccessTab=='Quotation'">
+      <div class="card-header">
+        {{Mode}} Requisition Quotation
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Requisition<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control" formControlName="RequisitionDetailID" [ngClass]="{ 'is-invalid': this.submitted && f.RequisitionDetailID.errors?.notEqual}">
+                      <option value="-1">--Select Requisition--</option>
+                      <option *ngFor="let request of RequisitionDetails" [value]="request.id">
+                        {{request.requisitionLineStatus}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.RequisitionDetailID.errors?.notEqual">
+                      Please select requisition
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Unit of Measure<span class="mandatoryFieldColor">*</span> </label>
+                    <!--  <input class="form-control" placeholder="Unit of Measure " type="text"
+            formControlName="UnitofMeasure"> -->
+                    <select class="form-control" formControlName="UnitofMeasure" [ngClass]="{ 'is-invalid': this.submitted && f.UnitofMeasure.errors?.notEqual}">
+                      <option value="-1">--Select Unit of Measure--</option>
+                      <option *ngFor="let UOM of UOMList" [value]="UOM.id">
+                        {{UOM.dataCode}} - {{UOM.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.UnitofMeasure.errors?.notEqual">
+                      Please select unit of measure
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Product <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="ProductID" [ngClass]="{ 'is-invalid': this.submitted && f.ProductID.errors?.notEqual}">
+                      <option value="-1">--Select Product--</option>
+                      <option *ngFor="let inventory of BindInventory" [value]="inventory.id">
+                        {{inventory.productCode}} - {{inventory.productName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.ProductID.errors?.notEqual">
+                      Please select product
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor <span class="mandatoryFieldColor">*</span></label>
+                    <!--  <input class="form-control" placeholder="Unit of Measure " type="text"
+            formControlName="UnitofMeasure"> -->
+                    <select class="form-control" formControlName="VendorID" [ngClass]="{ 'is-invalid': this.submitted && f.VendorID.errors?.notEqual}">
+                      <option value="-1">--Select Vendor--</option>
+                      <option *ngFor="let vendor of Vendor" [value]="vendor.id">
+                        {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.VendorID.errors?.notEqual">
+                      Please select vendor
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Product Description<span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.ProductDescription.errors}" formControlName="ProductDescription" type="text" maxlength="255">
+                    <div class="errorlbl" *ngIf="this.submitted && f.ProductDescription.errors">  Please enter product code</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Unit Price<span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control text-right" min="0" step="0.00" [ngClass]="{ 'is-invalid': this.submitted && f.UnitPrice.errors}" formControlName="UnitPrice" type="text" appFourDigitDecimaNumber>
+                    <div class="errorlbl" *ngIf="this.submitted && f.UnitPrice.errors">  Please enter unit price</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+
+                    <div class="custom-control custom-switch swtch"
+                         [class.disabled]="!this.RequisitionQuotationAnalysisForm.get('PreferredVendor').value">
+                      <input type="checkbox" class="custom-control-input" formControlName="PreferredVendor"
+                             id="PreferredVendor">
+                      <label class="custom-control-label" for="PreferredVendor">Preferred Vendor</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access||  !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedRequisitionquotationID"
+                         [write_Access]="this.write_Access"
+                         [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedRequisitionquotationID"
+                            [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

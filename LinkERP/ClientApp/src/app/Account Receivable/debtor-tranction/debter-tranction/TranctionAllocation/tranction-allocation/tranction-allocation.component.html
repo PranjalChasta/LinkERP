@@ -1,0 +1,92 @@
+<form  class="Form-Horizontal">
+  <div class="col-12 col-md-12">
+    <div class="row">
+      <div class="table-responsive table-padd" >
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>    
+              <th>Amount </th>
+              <th>AllocatedAmountHome</th>
+              <th>Un AllocatedAmountHome</th>        
+            </tr>
+          </thead>
+          <tbody>
+            <tr >
+              <td>{{AmountToDisplay}}</td>
+              <td>{{AllocatedAmountToDisplay}}</td>
+              <td>{{UnlocatedAmountToDisplay}}</td>
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-12">
+    <div class="row">
+      <div class="table-responsive table-padd"  style="overflow-y:auto;height:300px">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>              
+              <th>Invoice Number</th>
+              <th>Date</th> 
+              <th>Period</th>  
+              <th>Due Date</th>  
+              <th>Amount</th>  
+              <th>Allocated Amount </th>  
+              <th>Un Allocated Amount </th> 
+              <th>This Allocation</th>                       
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let detailslist of LBS_ACR_DebtorTransactions; let i = index">
+
+              <td>
+                <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.transactionReferenceNumber"  name="transactionReferenceNumber" [ngModelOptions]="{standalone: true}">
+              </td>
+              <td>
+                <app-date-time-picker [disabled]="Disabledpupup" [showTimePicker]="false" [(ngModel)]="detailslist.transactionDate" [ngModelOptions]="{standalone: true}" ></app-date-time-picker>
+              </td>
+              <td>
+                <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.period"  name="period" [ngModelOptions]="{standalone: true}">
+               
+              </td>
+              <td>
+                <app-date-time-picker [disabled]="Disabledpupup"  [showTimePicker]="false" [(ngModel)]="detailslist.dueDate" [ngModelOptions]="{standalone: true}"></app-date-time-picker>
+              
+              <td>
+                <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.transactionAmountHome"  name="transactionAmountHome" [ngModelOptions]="{standalone: true}">
+               
+              </td>
+              <td>
+                <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.allocateAmountToDisplay"  name="allocatedAmountHome" [ngModelOptions]="{standalone: true}">
+              </td>
+              <td>
+                <input style="color: red;" [disabled]="Disabledpupup" class="form-control text-right" [(ngModel)]="detailslist.unAllocatedAmountHome"  name="unAllocatedAmountHome" (click)="OnClickAlocateAmount(i)"  type="text" [ngModelOptions]="{standalone: true}">
+              </td> 
+              <td>
+                <input [disabled]="Restictclick" (click)="OnClickAlocateAmount(i)" class="form-control text-right" class="form-control text-right"  [(ngModel)]="detailslist.amountToallocate"  name="allocatedAmountHome" [ngModelOptions]="{standalone: true}" >
+              </td>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-12">
+    <div class="form-group text-center">
+      <!--<button class="btn add-btn mr-1" type="button" (click)="SelectProduct()">
+        Select Product
+      </button>-->
+      <!-- <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button> -->
+    </div>
+  </div>
+
+
+<!-- >>>>>>>>>> -->
+
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="button" (click)="SaveAllocation()">Save</button>
+            <button class="btn btn-danger" data-dismiss="modal" type="button"  #closeBtn (click)="closePopUp()">Close</button>
+          </div>
+        </form>
+   
+

@@ -1,0 +1,289 @@
+<form [formGroup]="LandedCostForm" name="LandedCostForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1>Landed Cost<span *ngIf="Mode == 'Edit'">({{LandedCostForm.get('ShipmentNo').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">
+      <a style="color: black !important;" [routerLink]='["/home"]'>Purchase</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+      <a style="color: black !important;" (click)="Cancel()">
+        Landed
+        Cost
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <a style="color: black !important;">
+        {{Mode}} Landed
+        Cost
+      </a>
+    </li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="LandedCostForm" name="LandedCostForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div #sectionNeedToScroll></div>
+  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Landed Cost
+              <div class="add-row">
+                <button type="button" (click)="AddNew()" [disabled]="!this.write_Access" class="btn add-btn mb-1">
+                  Add
+                  LandedCost
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="this.PageSize" (OnPageSizeChange)="OnPageSizeChange($event)"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="LandedCost"}'
+          data-toggle="tab" (click)="AccessTab='LandedCost'" role="tab">Landed Cost</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="LandedCostPurchaseOrder"}'
+          data-toggle="tab" (click)="AccessTab='LandedCostPurchaseOrder'" role="tab">Purchase Order</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [class.disabled]="!enableNextTab"
+          [ngClass]='{"active": AccessTab=="LandedCostInvoice"}' data-toggle="tab"
+          (click)="AccessTab='LandedCostInvoice'" role="tab">Invoices</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [class.disabled]="!enableNextTab"
+          [ngClass]='{"active": AccessTab=="LandedCostImports"}' data-toggle="tab"
+          (click)="AccessTab='LandedCostImports'" role="tab">Value of Taxable Import</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [class.disabled]="!enableNextTab"
+          [ngClass]='{"active": AccessTab=="ImportCost"}' data-toggle="tab" (click)="AccessTab='ImportCost'"
+          role="tab">Import Cost</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="ShipmentLines"}'
+          [class.disabled]="!enableShippingLinesTab" data-toggle="tab" (click)="AccessTab='ShipmentLines'"
+          role="tab">Shipment Lines</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" data-toggle="tab" [class.disabled]="!enableStockBookedInTab"
+          [ngClass]='{"active": AccessTab=="StockBookedIn"}' (click)="AccessTab='StockBookedIn'" role="tab">
+          Stock Booked
+          In
+        </a>
+
+        <!-- <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a> -->
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='LandedCost'">
+
+      <div class="card-header">
+
+        {{Mode}} Landed Cost
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+                <div *ngIf="this.Mode=='Edit'" class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Shipment No</label>
+                    <input class="form-control" type="text" [readonly]="true" [value]="this.NextShipmentNumber">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Shipping Agent<span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.ShipmentClearanceAgency.errors?.notEqual}"
+                      formControlName="ShipmentClearanceAgency">
+                      <option value="-1">--Select Vendor--</option>
+                      <option *ngFor="let vendor of vendors" [value]="vendor.id">
+                        {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.ShipmentClearanceAgency.errors?.notEqual">
+                      Please select shipping agent
+                    </div>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Warehouse <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="WarehouseID"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.WarehouseID.errors?.notEqual}">
+                      <option value="-1">--Select Unit of Warehouse--</option>
+                      <option *ngFor="let warehouse of WareHouse" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} - {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.WarehouseID.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Shipment Notes</label>
+                    <textarea class="form-control" formControlName="ShipmentNotes"></textarea>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Initiated Date</label>
+                    <app-date-time-picker formControlName="ShipInitDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">WayBill No<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="255" type="text"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.WayBillNo.errors}" formControlName="WayBillNo">
+                    <div class="errorlbl" *ngIf="this.submitted && f.WayBillNo.errors">
+                      Please select Way bill no
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Vessel<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="255"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.VesselName.errors}" type="text"
+                      formControlName="VesselName">
+                    <div class="errorlbl" *ngIf="this.submitted && f.VesselName.errors">
+                      Please select Vessel
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Container No<span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" maxlength="255" type="text"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.ContainerNo.errors}" formControlName="ContainerNo">
+                    <div class="errorlbl" *ngIf="this.submitted && f.ContainerNo.errors">
+                      Please select ContainerNo
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Departure Date</label>
+                    <app-date-time-picker formControlName="ShipmentDepartureDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Schedule Arrival Date</label>
+                    <app-date-time-picker formControlName="ShipmentArrivalDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Expected Arrival Date<span class="mandatoryFieldColor">*</span></label>
+                    <app-date-time-picker formControlName="ExpectedArrivalDate" [showTimePicker]="false"
+                      [isInvalid]="(submitted && f.ExpectedArrivalDate.errors)"></app-date-time-picker>
+                    <div class="errorlbl" *ngIf="submitted && f.ExpectedArrivalDate.errors">
+                      Please select Date
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Receipt Date</label>
+                    <app-date-time-picker formControlName="ShipmentReceiptDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </div>
+                </div>
+                <div *ngIf="this.Mode=='Edit'" class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Status</label><br>
+                    <label style="font-size: 14px;" class="col-form-label status"><b>{{this.Status}}</b></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <!-- <button *ngIf="this.Mode=='Edit'" class="btn add-btn mr-1" type="button" (click)="bookedIn()"
+                [disabled]="this.changeStatusBookedIn">Booked In
+              </button> -->
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access || !this.IsActive">
+                Save
+              </button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive"
+                (click)="onSave('Close')">
+                Save & Close
+              </button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <!-- <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div> -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='LandedCostPurchaseOrder'">
+      <app-landed-cost-purchase-order [CostID]="this.SelectedCostID" [Status]="this.Status"
+        [WarehouseID]="this.WarehouseID" (activeNextTab)="activeNextTab()" (cancleButtonClick)="Cancel()">
+      </app-landed-cost-purchase-order>
+    </div>
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='LandedCostInvoice'">
+      <app-landed-cost-invoices [CostID]="this.SelectedCostID" [Status]="this.Status"
+        (activeShippinglinesTab)=activeShippinglinesTab($event) (cancleButtonClick)="Cancel()">
+      </app-landed-cost-invoices>
+    </div>
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='LandedCostImports'">
+      <app-landed-cost-taxable-imports [CostID]="this.SelectedCostID" [Status]="this.Status"
+        (activeShippinglinesTab)=activeShippinglinesTab($event) (cancleButtonClick)="Cancel()">
+      </app-landed-cost-taxable-imports>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='ImportCost'">
+      <app-landed-cost-import-cost [CostID]="this.SelectedCostID" [Status]="this.Status"
+        (activeShippinglinesTab)=activeShippinglinesTab($event) (cancleButtonClick)="Cancel()">
+      </app-landed-cost-import-cost>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='ShipmentLines'">
+      <app-landed-cost-shipment-lines [CostID]="this.SelectedCostID" [WarehouseID]="this.WarehouseID"
+        [Status]="this.Status" (activeStockBookedInTab)="activeStockBookedInTab()" (cancleButtonClick)="Cancel()">
+      </app-landed-cost-shipment-lines>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='StockBookedIn'">
+      <app-landed-cost-stock-booked-in [CostID]="this.SelectedCostID" [WarehouseLocation]="WarehouseLocation"
+        (cancleButtonClick)="Cancel()"></app-landed-cost-stock-booked-in>
+    </div>
+
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='ShipmentBooking'">
+      <app-landed-cost-shipment-booking [CostID]="this.SelectedCostID">
+      </app-landed-cost-shipment-booking>
+    </div> -->
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedCostID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access">
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedCostID" [HeaderNames]="this.HeaderNames"
+        [write_Access]="this.write_Access" [delete_Access]="this.delete_Access">
+      </app-attachment-files>
+    </div> -->
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

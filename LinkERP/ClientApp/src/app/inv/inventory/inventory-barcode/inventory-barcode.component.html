@@ -1,0 +1,79 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="InventoryBarCodeForm" name="InventoryBarCodeForm" (ngSubmit)="onSave('Save')"
+  class="Form-Horizontal">
+  <div class="card-body p-0" *ngIf="Mode=='Add'|| Mode=='Edit'">
+
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <div class="card-header">
+        {{Mode}} Barcode
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Barcode <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.BarCode.errors}"
+                      maxlength="50" type="text" formControlName="BarCode">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.BarCode.errors"> Please enter barcode </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit"
+                [disabled]="!this.write_Access||  !this.IsActive ||  !this.IsInventoryActive">Save</button>
+              <button class="btn add-btn mr-1" type="button"
+                [disabled]="!this.write_Access ||  !this.IsActive ||  !this.IsInventoryActive"
+                (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+            <div *ngIf="!this.IsInventoryActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this product to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Barcode
+              <div class="add-row">
+                <button (click)="Addnew()" class="btn add-btn mb-1" type="button"
+                  [disabled]="!this.write_Access || !this.IsInventoryActive">Add Barcode</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [LineEditField]="this.LineEditField" [IsInlineEdit]="true"
+                  [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

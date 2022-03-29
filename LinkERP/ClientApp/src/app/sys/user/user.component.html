@@ -1,0 +1,493 @@
+<form [formGroup]="UserForm" name="UserForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1>
+    User <span *ngIf="Mode == 'Edit'">({{UserForm.get('LoginID').value}} - {{UserForm.get('LoginName').value}})</span>
+  </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">User</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'">
+        <a>{{Mode}} User</a>
+      </li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Users
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" type="button" [disabled]="!this.write_Access">
+                  Add
+                  User
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  [paginationPageSize]="this.PageSize" (OnPageSizeChange)="OnPageSizeChange($event)" [IsExport]="true"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Users"}' data-toggle="tab"
+          (click)="AccessTab='Users';GeCompanyAccessByLoginID()"  (change)="onCCompany()" role="tab">Users</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="UserRole"}'
+          data-toggle="tab" (click)="AccessTab='UserRole'" role="tab">User Role</a>
+        <!-- <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="SalesPerson"}'
+          data-toggle="tab" (click)="AccessTab='SalesPerson'" role="tab">Sales Person</a> -->
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+
+    <!-- <div class="card" *ngIf="Mode=='Edit'  && AccessTab=='Attachments'">
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">UserId</label>
+                  <input class="form-control" type="text" [(ngModel)]="InformationId" [attr.disabled]="true"
+                         [ngModelOptions]="{standalone: true}">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Name</label>
+                  <input class="form-control" type="text" [(ngModel)]="CurrentUserName" [attr.disabled]="true"
+                         [ngModelOptions]="{standalone: true}">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Users'">
+      <div class="card-header">
+        {{Mode}} User
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">User ID <span class="mandatoryFieldColor">*</span></label>
+                    <input *ngIf="!addreadonly" class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.LoginID.errors}" formControlName="LoginID"
+                      type="text">
+                    <input *ngIf="addreadonly" class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.LoginID.errors}" formControlName="LoginID"
+                      type="text">
+                    <div class="errorlbl" *ngIf="submitted && f.LoginID.errors">Please enter user id</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.LoginName.errors}"
+                      placeholder=" " formControlName="LoginName" type="text" maxlength="255" />
+                    <div class="errorlbl" *ngIf="submitted && f.LoginName.errors">Please enter name</div>
+                  </div>
+                </div>
+                <!--<div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label class="col-form-label">Password</label>
+                        <input type="password" class="form-control" placeholder="Password" formControlName="Password">
+                    </div>
+                </div>-->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Authentication Mode <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" (change)="onChangeAuthentication($event)"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.AuthenticationMode.errors?.notEqual}"
+                      formControlName="AuthenticationMode">
+                      <option value="-1">--Select Authentication--</option>
+                      <option *ngFor="let authontication of Authontications" [value]="authontication.id">
+                        {{authontication.name}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.AuthenticationMode.errors?.notEqual">
+                      Please select authentication mode
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Windows User Name</label>
+                    <input class="form-control" formControlName="WindowsUserName" type="text" maxlength="255">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Default Organisation</label>
+                    <select  class="form-control" formControlName="DefaultCompanyID" (change)="onChangeCompany($event.target.value)"
+                     >
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Organisation--</option>
+                      <option *ngFor="let company of Companies" [value]="company.companyID">{{company.companyCode}} -
+                        {{company.name}}</option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.DefaultCompanyID.errors?.notEqual">
+                      Please select Default Organisation
+                    </div> -->
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Default Warehouse</label>
+                    <select class="form-control" formControlName="WareHouseID">
+                    
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Default WareHouse--</option>
+                      <option *ngFor="let ware of WareHouse" [value]="ware.id">
+                        {{ware.wareHouseCode}} -- {{ware.wareHouseName}}
+                      </option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.WareHouseID.errors?.notEqual"> Please select Default
+                      WareHouse</div> -->
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp;Default Terminal</label>
+                    <select class="form-control" formControlName="TerminalID">
+                      <!-- [ngClass]="{ 'is-invalid': this.submitted && f.TerminalID.errors}"> -->
+                      <option value="00000000-0000-0000-0000-000000000000">--Select Default Terminal--</option>
+                      <option *ngFor="let ter of Terminals" [value]="ter.id">
+                        {{ter.description}}
+                      </option>
+                    </select>
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.TerminalID.errors">  Please select Default Terminal</div> -->
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Phone Number</label>
+                    <input class="form-control" formControlName="PhoneNumber" type="text" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Mobile Number</label>
+                    <input class="form-control" formControlName="MobileNumber" type="text" maxlength="50">
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email Address <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" email
+                      [ngClass]="{ 'is-invalid': this.submitted && f.EmailAddress.errors}"
+                      formControlName="EmailAddress" type="text" maxlength="255">
+                    <!-- <div class="errorlbl" *ngIf="this.submitted && f.EmailAddress.errors?.email">
+                      Please enter valid email (example: info@domain.com)
+                    </div> -->
+                    <div *ngIf="this.submitted && f.EmailAddress.errors" class="invalid-feedback">
+                      <div *ngIf="f.EmailAddress.errors.required">Please Enter Email Address</div>
+                    </div>
+                    <div *ngIf="f.EmailAddress.errors">
+                      <div *ngIf="f.EmailAddress.errors.email && !f.EmailAddress.errors.required" style="color: red;">
+                        Please enter valid email (example: info@domain.com)</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Tax Number</label>
+                    <input class="form-control" formControlName="TaxNumber" type="text" maxlength="50">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Leave Approval WorkFlow <span
+                        class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.LeaveWorkFlow.errors?.notEqual}"
+                      formControlName="LeaveWorkFlow">
+                      <option value="00000000-0000-0000-0000-000000000000" selected>--Select Approval WorkFlow--</option>
+                      <option *ngFor="let workflowdeatils of workflowdeatil" [value]="workflowdeatils.id">
+                        {{workflowdeatils.workFlowCode}} - {{workflowdeatils.workFlowName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.LeaveWorkFlow.errors?.notEqual">
+                      Please select approval workFlow
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Time Approval WorkFlow <span
+                        class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.TimeWorkFlow.errors?.notEqual}"
+                      formControlName="TimeWorkFlow">
+                      <option value="00000000-0000-0000-0000-000000000000" selected>--Select Approval WorkFlow--</option>
+                      <option *ngFor="let workflowdeatils of workflowdeatil" [value]="workflowdeatils.id">
+                        {{workflowdeatils.workFlowCode}} - {{workflowdeatils.workFlowName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.TimeWorkFlow.errors?.notEqual">
+                      Please select approval workFlow
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Performance Appraisal WorkFlow <span
+                        class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.PerformanceWorkFlow.errors?.notEqual}"
+                      formControlName="PerformanceWorkFlow">
+                      <option value="00000000-0000-0000-0000-000000000000" selected>--Select Performance Appraisal WorkFlow--</option>
+                      <option *ngFor="let workflowdeatils of workflowdeatil" [value]="workflowdeatils.id">
+                        {{workflowdeatils.workFlowCode}} - {{workflowdeatils.workFlowName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.PerformanceWorkFlow.errors?.notEqual">
+                      Please select performance workFlow
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Purchase WorkFlow <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.PurchaseWorkFlow.errors?.notEqual}"
+                      formControlName="PurchaseWorkFlow">
+                      <option value="00000000-0000-0000-0000-000000000000" selected>--Select Purchase WorkFlow--</option>
+                      <option *ngFor="let workflowdeatils of workflowdeatil" [value]="workflowdeatils.id">
+                        {{workflowdeatils.workFlowCode}} - {{workflowdeatils.workFlowName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.PurchaseWorkFlow.errors?.notEqual">
+                      Please select purchase workFlow
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Request WorkFlow <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.RequestWorkFlow.errors?.notEqual}"
+                      formControlName="RequestWorkFlow">
+                      <option value="00000000-0000-0000-0000-000000000000" selected>--Select Request WorkFlow--</option>
+                      <option *ngFor="let  workflowdeatils of workflowdeatil" [value]="workflowdeatils.id">
+                        {{workflowdeatils.workFlowCode}} - {{workflowdeatils.workFlowName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.RequestWorkFlow.errors?.notEqual">
+                      Please select request workFlow
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Training WorkFlow <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.TrainingWorkFlow.errors?.notEqual}"
+                      formControlName="TrainingWorkFlow">
+                      <option value="00000000-0000-0000-0000-000000000000" selected>--Select Training WorkFlow--</option>
+                      <option *ngFor="let  workflowdeatils of workflowdeatil" [value]="workflowdeatils.id">
+                        {{workflowdeatils.workFlowCode}} - {{workflowdeatils.workFlowName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.TrainingWorkFlow.errors?.notEqual">
+                      Please select training workFlow
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-4 col-md-4">
+                  <div class="form-border">
+                    <h3 class="form-heading">Discount Section</h3>
+                    <div class="row">
+                      <div class="col-12 col-md-7">
+                        <div class="form-group">
+                          <label class="col-form-label">Discount</label>
+                          <input class="form-control text-right"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.Discount.errors}"
+                            (keypress)="onlyNumberKey($event)" formControlName="Discount" type="text"
+                            appTwoDigitDecimaNumber>
+                          <div class="errorlbl" *ngIf="submitted && f.Discount.errors">Please enter discount</div>
+                        </div>
+                      </div>
+                      <!--<div class="col-12 col-md-6">
+                        <div class="form-group">
+                          <div class="custom-control custom-switch swtch" [class.disabled]="!this.UserForm.get('DiscountPercentValue').value">
+                            <input type="checkbox" class="custom-control-input" formControlName="DiscountPercentValue" id="DefaultPercent">
+                            <label class="custom-control-label" for="DefaultPercent">Discount Percent/Value</label>
+                            <div class="errorlbl" *ngIf="submitted && f.DiscountPercentValue.errors">Please enter discount percent value</div>
+                          </div>
+                        </div>
+                      </div>-->
+                      <div class="col-12 col-md-5">
+                        <div class="onoffswitchPerFlag">
+                          <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                            id="myonoffswitchPerFlag" formControlName="DiscountPercentValue">
+                          <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                            <span class="onoffswitchPerFlag-inner"></span>
+                            <span class="onoffswitchPerFlag-switch"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-8" *ngIf="Mode=='Edit'">
+                  <div class="form-border">
+                    <h3 class="form-heading">Status</h3>
+                    <div class="row">
+                      <div class="col-12 col-md-4">
+                        <div class="form-group" style="margin-top:20px;">
+                          <div class="custom-control custom-switch swtch"
+                            [class.disabled]="!this.UserForm.get('LogOnStatus').value">
+                            <input type="checkbox" class="custom-control-input" formControlName="LogOnStatus"
+                              id="DefaultItem">
+                            <label class="custom-control-label" for="DefaultItem">Log On Status</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <div class="form-group" style="margin-top:20px;">
+                          <div class="custom-control custom-switch swtch"
+                            [class.disabled]="!UserForm.get('ForcePasswordChange').value" *ngIf="Mode=='Edit'">
+                            <input type="checkbox" class="custom-control-input" formControlName="ForcePasswordChange"
+                              id="ForcePasswordChange">
+                            <label class="custom-control-label" for="ForcePasswordChange">Force Password Change</label>
+                          </div>
+                        </div>
+                      </div>
+                      <!--<div class="col-12 col-md-4">
+                        <div class="form-group" style="margin-top:20px;">
+                          <div class="custom-control custom-switch swtch" [class.disabled]="!this.UserForm.get('ResetPassword').value">
+                            <input type="checkbox" class="custom-control-input" formControlName="ResetPassword" id="ResetPassword">
+                            <label class="custom-control-label" for="ResetPassword">Reset Password</label>
+                          </div>
+                        </div>
+                      </div>-->
+                      <!--<div class="col-12 col-md-6">
+                        <div class="form-group">
+                          <div class="upld-img">
+                            <label class="float-left w-100">Upload Photo</label>
+                            <figure>
+                              <div class="custom-file file-field">
+                                <input type="file" class="custom-file-input form-control" id="customFile">
+                                <label class="custom-file-label" for="customFile"><img src="assets/images/no-user-image.jpg" alt="" /></label>
+                              </div>
+                            </figure>
+                          </div>
+                        </div>
+
+                        <div class="form-group" style="display:none">
+                          <label for="file" class="col-form-label">Upload Image </label>
+                          <input class="form-control" type='file' formControlName="LoginAvator" (change)="onSelectFile($event)"
+                                 accept="image/*">
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group">
+                        </div>
+                      </div>-->
+                    </div>
+                  </div>
+                </div>
+
+                <!--<div class="col-6 col-md-12">
+                  <div class="form-border">
+                    <h3 class="form-heading">Profile Photo</h3>
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group">
+                          <div class="upld-img">
+                            <label class="float-left w-100">Upload Photo</label>
+                            <figure>
+                              <div class="custom-file file-field">
+                                <input type="file" class="custom-file-input form-control" id="customFile">
+                                <label class="custom-file-label" for="customFile"><img src="assets/images/no-user-image.jpg" alt="" /></label>
+                              </div>
+                            </figure>
+                          </div>
+                        </div>
+                        <div class="form-group" style="display:none">
+                          <label for="file" class="col-form-label">Upload Image </label>
+                          <input class="form-control" type='file' formControlName="LoginAvator" (change)="onSelectFile($event)"
+                                 accept="image/*">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>-->
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">
+                Save <i class="fa fa-spinner fa-spin" *ngIf="Loading"></i>
+              </button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive"
+                (click)="onSave('Close')">
+                Save & Close
+              </button>
+              <button class="btn add-btn mr-1" type="button" (click)="ResetPassword()"
+                [disabled]="!this.write_Access ||  !this.IsActive" *ngIf="Mode=='Edit'">
+                Reset Password
+              </button>
+
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='UserRole'">
+      <app-user-role [SelectedUserID]="SelectedUserID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [DefaultCompanyID]="DefaultCompanyID" [IsActive]="IsActive">
+      </app-user-role>
+    </div>
+    <!-- <div *ngIf="Mode=='Edit' && AccessTab=='SalesPerson'">
+      <app-sales-person [RecID]="this.SelectedUserID" [IsActive]="IsActive">
+      </app-sales-person>
+    </div> -->
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedUserID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedUserID" [HeaderNames]="this.HeaderNames"
+        [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>

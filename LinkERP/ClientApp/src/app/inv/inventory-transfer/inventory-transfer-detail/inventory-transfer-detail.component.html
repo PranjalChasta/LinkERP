@@ -1,0 +1,394 @@
+<!--
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryTransferDetailForm" name="InventoryTransferDetailForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory Transfer Detail
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add Inventory Transfer Detail</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                  <app-ag-grid *ngIf="AgLoad"
+                     [ColumnDefs]="this.ColumnDefs"
+                     [RowData]="this.RowData"
+                     [IsSearch]="true"
+                     [IsExport]="true"
+                     [paginationPageSize]="5"
+                     (OnActionClick)="OnActionClick($event)"
+                     >
+                  </app-ag-grid>
+                </div>
+          </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <div class="card-header">
+        {{Mode}}  Inventory Transfer Detail
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Line Number</label>
+                    <input class="form-control textarea" [ngClass]="{ 'is-invalid': this.submitted && f.LineNumber.errors}" placeholder="Line Number" type="text" formControlName="LineNumber">
+                     <div class="errorlbl" *ngIf="submitted && f.LineNumber.errors">Please enter Line number</div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Cost </label>
+                    <input class="form-control textarea" placeholder="Cost" type="text" formControlName="Cost">
+                    <div class="errorlbl" *ngIf="submitted && f.VendorSKU.errors">Please enter Product Description</div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Requested Qty</label>
+                    <input class="form-control textarea" placeholder="Requested Qty" type="text" formControlName="RequestedQty">
+                    <div class="errorlbl" *ngIf="submitted && f.VendorSKU.errors">Please enter Product Description</div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Shipped Qty </label>
+                    <input class="form-control textarea" placeholder="Shipped Qty" type="text" formControlName="ShippedQty">
+                   <div class="errorlbl" *ngIf="submitted && f.VendorSKU.errors">Please enter Product Description</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Received Qty </label>
+                    <input class="form-control textarea" placeholder="Received Qty" type="text" formControlName="ReceivedQty">
+                    <div class="errorlbl" *ngIf="submitted && f.VendorSKU.errors">Please enter Product Description</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Inventory Transfer</label>
+                    <select class="form-control" formControlName="TransferID">
+                      <option value="-1">--Select Inventory Transfer--</option>
+                      <option *ngFor="let transfer of inventoryTransfer" [value]="transfer.id">
+                        {{transfer.transferReason}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div>
+
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> Product</label>
+                    <select class="form-control" formControlName="Product">
+                      <option value="-1">--Select Product--</option>
+                      <option *ngFor="let InventoryList of inventoryList" [value]="InventoryList.id">
+                        {{InventoryList.productName}}
+                      </option>
+                    </select>
+                   <div class="errorlbl" *ngIf="this.submitted && f.PurchaseUOM.errors?.notEqual">
+                      Please select Product Type
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label"> UOM</label>
+                    <select class="form-control" formControlName="PurchaseUOM">
+                      <option value="-1">--Select Unit of Measure--</option>
+                      <option *ngFor="let UOM of UOMList" [value]="UOM.id">
+                        {{UOM.dataName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.PurchaseUOM.errors?.notEqual">
+                      Please select UOM
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access">Save</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</form>-->
+
+<!-- <div *ngIf="this.CurrentStatus=='New'">
+  <div style="text-align: right;padding-right: 20px;">
+    <button (click)="addNewInvTranserDetail()" type="button" class="btn add-btn mb-1">Add Another Item
+    </button>
+  </div>
+</div> -->
+<div>
+ <!--  <div style="text-align: right;padding-right: 20px;">
+    <button (click)="addNewStockTake()" type="button" [disabled]="this.StockTakeStatus!='New' || !IsActive"
+            class="btn add-btn mb-1">
+      Add
+    </button>
+  </div> -->
+  <div *ngIf="this.CurrentStatus=='New'" style="text-align: right;padding-right: 20px;">
+    <button (click)="addNewInvTranserDetail()" [disabled]="!this.IsActive" type="button" class="btn add-btn mb-1">Add
+    </button>
+  </div>
+</div>
+
+<div class="table-responsive table-padd">
+  <table class="table table-bordered table-striped" *ngIf="this.AgLoad && RowData && RowData.length>0">
+    <thead>
+      <tr>
+        <th style="width:350px;">Product</th>
+        <th style="width: 150px;">UOM</th>
+        <th>Requested Qty</th>
+        <th>Shipped Qty</th>
+        <th>This Receiving Qty</th>
+        <th *ngIf="this.CurrentStatus == 'PartiallyReceived'">
+          Total Received
+        </th>
+        <th style="width: 82px;">Cost</th>
+        <th  >
+          Details
+        </th>
+        <th>DeleteStatus</th>
+        <th *ngIf="this.CurrentStatus=='New'"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let detailslist of RowData; let i = index">
+        <td  style="width:300px;">
+          <!-- <select class="form-control" [(ngModel)]="detailslist.productID"
+            (change)="onProductChange($event.target.value,i)" [disabled]="this.CurrentStatus!='New'">
+            <option value="-1">--Select Product--</option>
+            <option *ngFor="let product of inventoryList" [value]="product.id">
+              {{product.productCode}} - {{product.productName}}
+            </option>
+          </select>  -->
+          <div data-toggle="tooltip"
+          data-placement="bottom" 
+          [title]= "detailslist.productName" >
+          <product-search [ModuleName]="'InvTransferDetail'" [(ngModel)]="detailslist.productID"  (change)="onProductChange($event,i)" [disabled]="this.CurrentStatus!='New'">
+          </product-search>
+        </div>
+        </td>
+        <td style="width: 150px;">
+          <!-- <input class="form-control" [(ngModel)]="detailslist.uomName" type="text" readonly> -->
+          <select class="form-control" [(ngModel)]="detailslist.uom" (change)="onUomChangenew($event.target.value,i)" [ngModelOptions]="{standalone: true}"
+            [disabled]="this.CurrentStatus!='New'">
+            <option value="-1">--Select UOM--</option>
+            <option *ngFor="let UOM of detailslist.uomlist" [value]="UOM.uomidFrom">
+              {{UOM.uomFromName}}
+            </option>
+          </select>
+        </td>
+        <td style="width: 100px;" ><input class="form-control text-right" placeholder="Requested Quantity"
+            [(ngModel)]="detailslist.requestedQty_text" OnlyNumber="true" appFourDigitDecimaNumber  type="text"  (input)="OnrequestChangenew(i)"
+            [readonly]="isReqQtyReadOnly || detailslist.deleteStatus=='InActive'" maxlength="4"></td>
+        <td style="width: 100px;" ><input class="form-control text-right" placeholder="Shipped Quantity"
+            [(ngModel)]="detailslist.shippedQty_text" OnlyNumber="true" appTwoDigitDecimaNumber type="text"
+            [readonly]="isShipQtyReadOnly || detailslist.deleteStatus=='InActive'" maxlength="4">
+        </td>
+        <td  style="width: 100px;" ><input class="form-control  text-right" placeholder="Received Quantity" appTwoDigitDecimaNumber
+            [(ngModel)]="detailslist.receivedQty_text" (input)="onReceivedQtyChange($event.target.value,i)" OnlyNumber="true"
+            type="text" maxlength="4"
+            [readonly]="isRecQtyReadOnly || detailslist.previouslyReceviedQty>=detailslist.shippedQty || detailslist.deleteStatus=='InActive'">
+        </td>
+        <td appTwoDigitDecimaNumber  style="width: 100px;" *ngIf="this.CurrentStatus == 'PartiallyReceived'">
+          <input class="form-control text-right" placeholder="0" appTwoDigitDecimaNumber
+          [(ngModel)]="detailslist.previouslyReceviedQty_text" type="text" readonly>
+         <!--  {{detailslist.previouslyReceviedQty_text}} -->
+        </td>
+        <!-- && detailslist.previouslyReceviedQty>=detailslist.shippedQty && this.CurrentStatus =='Shipped' -->
+
+        <td  style="width: 100px;">
+          <input class="form-control text-right" placeholder="0" appTwoDigitDecimaNumber
+            [(ngModel)]="detailslist.cost_text" type="text" readonly>
+          </td>
+          <!-- *ngIf="this.CurrentStatus !='Completed'" -->
+        <td  *ngIf="this.IsActive"  style="width: 100px;">
+
+          <div 
+            *ngIf="this.CurrentStatus !='New' && detailslist.serialisedProduct && detailslist.id && detailslist.deleteStatus=='Active'">
+            <a *ngIf="this.CurrentStatus=='Shipped' || this.CurrentStatus=='Received' || this.CurrentStatus=='PartiallyReceived' || CurrentStatus=='Completed' "
+              (click)="SerialiseDetailIn(serialiseIn,i)"><i class="bi fa fa-align-justify" aria-hidden="true"></i></a>
+            <a *ngIf="this.CurrentStatus=='Requested'" (click)="SerialiseDetailOut(SerialiseOut,i)"><i
+                class="bi fa fa-align-justify" aria-hidden="true"></i></a>
+          </div>
+          <div *ngIf="detailslist.productStyleMatrixEnabled && detailslist.id && detailslist.deleteStatus=='Active'">
+            <!-- this.CurrentStatus=='New'||  -->
+             <a *ngIf="this.CurrentStatus=='New'"  (click)="ProductMatrix(product,i)"><i class="bi fa fa-align-justify" aria-hidden="true"></i></a>
+            <a *ngIf="this.CurrentStatus=='Requested' " (click)="SerialiseDetailOut(ProductOut,i)"><i
+              class="bi fa fa-align-justify" aria-hidden="true"></i></a>
+              <a *ngIf="this.CurrentStatus=='Shipped' || this.CurrentStatus=='Received' || this.CurrentStatus=='PartiallyReceived'|| CurrentStatus=='Completed'"  (click)="ProductMatrix(productin,i)"><i class="bi fa fa-align-justify" aria-hidden="true"></i></a>
+          </div>
+          <div
+            *ngIf="this.CurrentStatus !='New' && (!detailslist.serialisedProduct && !detailslist.productStyleMatrixEnabled  )&& detailslist.id && detailslist.deleteStatus=='Active'">
+
+            <a *ngIf="this.CurrentStatus=='Shipped' || this.CurrentStatus=='Received' || this.CurrentStatus=='PartiallyReceived' || CurrentStatus=='Completed' "
+              (click)="SerialiseDetailIn(otherIn,i)"><i class="bi fa fa-align-justify" aria-hidden="true"></i></a>
+
+            <a *ngIf="this.CurrentStatus=='Requested'" (click)="SerialiseDetailOut(otherOut,i)"><i
+                class="bi fa fa-align-justify" aria-hidden="true"></i></a>
+          </div>
+        </td>
+        <td  *ngIf="this.IsActive" style="width: 100px;">
+          {{detailslist.deleteStatus}}
+        </td>
+        <td width="50" class="text-center" *ngIf="!detailslist.id && this.CurrentStatus=='New'">
+          <button class="btn add-btn mr-1" type="button" (click)="Deleteindex(i)" [disabled]="!this.IsActive">Remove</button></td>
+        <td *ngIf="detailslist.id && this.CurrentStatus=='New'">
+          <a *ngIf="this.IsActive" (click)="DeleteInventoryTransferDeatil(detailslist.id)"><i class="fa fa-trash-o"
+              aria-hidden="true"></i></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div>
+  
+</div>
+<div class="form-group text-center" *ngIf="this.AgLoad && RowData && RowData.length>0">
+  <button class="btn add-btn mr-1" type="button" [disabled]="this.CurrentStatus =='Completed' || this.submitted || !this.write_Access || !this.IsActive"
+          (click)="AddEditChanges('Save')">
+    Save
+  </button>
+  <button class="btn add-btn mr-1" type="button" (click)="AddEditChanges('Close')"
+          [disabled]="this.CurrentStatus =='Completed' || this.submitted || !this.write_Access || !this.IsActive">
+    Save & Close
+  </button>
+  <button *ngIf="this.CurrentStatus !='Received' && this.IsdetailSave" [disabled]="this.CurrentStatus =='Completed' || !this.write_Access || !this.IsActive || !this.enablebtn" class="btn add-btn mr-1"
+          type="button" (click)="UpdateStatus()">
+    {{statusButton}}
+  </button>
+  <button [disabled]="!this.IsActive" *ngIf="this.CurrentStatus =='PartiallyReceived' || !this.write_Access || !this.IsActive" class="btn add-btn mr-1" type="button"
+          (click)="PartiallyReceiveCloseBtn(commnetPopupForPR)">
+    Complete
+  </button>
+  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+</div>
+
+
+<div *ngIf="!this.IsActive" style="text-align: center;">
+  <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+</div>
+<ng-template #serialiseIn>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <p>  <b>{{productName}}</b></p>
+      <app-serialised-product-transfer-in [TransferID]="TransferID" [ProductID]="this.SelectedProductID"
+        [SelectedTransferDetail_ID]="SelectedTransferDetail_ID" [Status]="statusButton"  [CurrentStatus]="this.CurrentStatus"
+        [WareHouseFromID]="this.WareHouseFromID" [WareHouseToID]="this.WareHouseToID"
+        [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()"></app-serialised-product-transfer-in>
+    </div>
+  </div>
+</ng-template>
+<ng-template #otherIn>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <p>  <b>{{productName}}</b></p>
+      <app-inventorytransfer-other-in [TransferID]="TransferID" [ProductID]="this.SelectedProductID"
+        [SelectedTransferDetail_ID]="SelectedTransferDetail_ID" [Status]="statusButton" [CurrentStatus]="this.CurrentStatus"
+        [WareHouseFromID]="this.WareHouseFromID" [WareHouseToID]="this.WareHouseToID"
+        [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()">
+      </app-inventorytransfer-other-in>
+    </div>
+  </div>
+</ng-template>
+<ng-template #product>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <app-matrix-product-transfer [TransferID]="TransferID" [ProductID]="this.SelectedProductID"
+        [SelectedTransferDetail_ID]="SelectedTransferDetail_ID" [WareHouseFromID]="this.WareHouseFromID"
+        [WareHouseToID]="this.WareHouseToID" [CurrentStatus]="this.CurrentStatus" [SelectedQuantity]="SelectedQuantity"
+        (OnCancel)="Closenote()">
+      </app-matrix-product-transfer>
+    </div>
+  </div>
+</ng-template>
+<ng-template #productin>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <app-matrix-product-in [TransferID]="TransferID" [ProductID]="this.SelectedProductID"
+        [SelectedTransferDetail_ID]="SelectedTransferDetail_ID" [WareHouseFromID]="this.WareHouseFromID"
+        [WareHouseToID]="this.WareHouseToID" [CurrentStatus]="this.CurrentStatus" [SelectedQuantity]="SelectedQuantity"
+        (OnCancel)="Closenote()">
+      </app-matrix-product-in>
+    </div>
+  </div>
+</ng-template>
+<ng-template #otherOut>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <p>  <b>{{productName}}</b></p>
+      <app-inventorytransfer-other-out [TransferID]="TransferID" [ProductID]="this.SelectedProductID"
+        [SelectedTransferDetail_ID]="SelectedTransferDetail_ID" [WareHouseFromID]="this.WareHouseFromID"
+        [WareHouseToID]="this.WareHouseToID" [SelectedQuantity]="SelectedQuantity" [RequestedQuantity]="this.RequestedQuantity" (OnCancel)="Closenote()">
+      </app-inventorytransfer-other-out>
+    </div>
+  </div>
+</ng-template>
+<ng-template #SerialiseOut>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <p>  <b>{{productName}}</b></p>
+      <app-serialised-product-transfer-out [TransferID]="TransferID" [ProductID]="this.SelectedProductID"
+        [SelectedTransferDetail_ID]="SelectedTransferDetail_ID" [WareHouseFromID]="this.WareHouseFromID"
+        [WareHouseToID]="this.WareHouseToID" [RequestedQuantity]="this.RequestedQuantity" [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()">
+      </app-serialised-product-transfer-out>
+    </div>
+  </div>
+</ng-template>
+<ng-template #ProductOut>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+      <p>  <b>{{productName}}</b></p>
+      <app-matrix-product-out [TransferID]="TransferID" [ProductID]="this.SelectedProductID"
+        [SelectedTransferDetail_ID]="SelectedTransferDetail_ID" [WareHouseFromID]="this.WareHouseFromID"
+        [WareHouseToID]="this.WareHouseToID" [SelectedQuantity]="SelectedQuantity" [RequestedQuantity]="this.RequestedQuantity" (OnCancel)="Closenote()">
+      </app-matrix-product-out>
+    </div>
+  </div>
+</ng-template>
+<ng-template #commnetPopupForPR style="width:600px;">
+  <div class="modal-body">
+    <div class="message-popup">
+      <a data-dismiss="modal" #closeBtn (click)="Closenote()" style="float: right;" class="close-modal">X</a>
+      <h1 class="text-center">Comment</h1>
+      <div class="form-group">
+        <textarea style="margin-left: 150px;" [(ngModel)]="comment"></textarea>
+      </div>
+      <div class="btn-group mb-3 mt-2 cmn-btn-grp">
+        <button style="margin-left: 150px;" class="btn add-btn mr-1" (click)="completeTransfer()">Complete
+          Transfer</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

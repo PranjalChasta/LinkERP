@@ -1,0 +1,174 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<!-- <form [formGroup]="OrderDetailKitForm" name="OrderDetailKitForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Order Detail Kit
+              <div class="add-row">
+                <button (click)="AddOrderDetailKit()" type="button" class="btn add-btn mb-1">
+                  Add Order Detail Kit
+                </button>
+                <button class="btn btn-danger mb-1 ml-1" type="button" (click)="BackToDetails()">Close</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.OrderDetailKit" [IsSearch]="true"
+                  [IsExport]="true" [IsColumnsToFit]="false" [paginationPageSize]="this.PageSize"
+                  [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Order Detail Kit
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Unit Price </label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.UnitPrice.errors}" type="text"
+                    appFourDigitDecimaNumber formControlName="UnitPrice">
+                  <div class="errorlbl" *ngIf="this.submitted && f.UnitPrice.errors">
+                    Please select unit price
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Unit Cost </label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.UnitCost.errors}" type="text"
+                    appFourDigitDecimaNumber formControlName="UnitCost">
+                  <div class="errorlbl" *ngIf="this.submitted && f.UnitCost.errors">
+                    Please select Unit Cost
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Sales Quantity</label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.SalesQuantity.errors}" type="text"
+                    appTwoDigitDecimaNumber formControlName="SalesQuantity">
+                  <div class="errorlbl" *ngIf="this.submitted && f.SalesQuantity.errors">
+                    Please select quantity
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Return Quantity </label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.ReturnQuantity.errors}" type="text"
+                    appTwoDigitDecimaNumber formControlName="ReturnQuantity">
+                  <div class="errorlbl" *ngIf="this.submitted && f.ReturnQuantity.errors">
+                    Please select return quantity
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Conversion Ratio</label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.ConversionRatio.errors}" type="text"
+                    appTwoDigitDecimaNumber formControlName="ConversionRatio">
+                  <div class="errorlbl" *ngIf="this.submitted && f.ConversionRatio.errors">
+                    Please select conversion ratio
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit">
+              Save
+            </button>
+            <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')">
+              Save & Close
+            </button>
+            <button class="btn btn-danger" type="button" (click)="Close()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup> -->
+<div>
+  <div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Item </th>
+          <th>Quantity</th>
+          <th>Conversion Ratio</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of KitItem  let i = index; ">
+
+          <td>
+            <input class="form-control" placeholder="columnName" [(ngModel)]="detailslist.productName" readonly
+            appTwoDigitDecimaNumber>
+          </td>
+          <td>
+            <input class="form-control" placeholder="columnName" [(ngModel)]="detailslist.quantity"
+            appTwoDigitDecimaNumber >
+          </td>
+           <td>
+            <input class="form-control" [(ngModel)]="detailslist.conversionRatio" type="text" readonly appTwoDigitDecimaNumber>
+          </td>
+          <!-- <td>
+            <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option value="00000000-0000-0000-0000-000000000000">--Select Bin--</option>
+              <option *ngFor="let binlists of BinList" [value]="binlists.id">
+                {{binlists.binCode}} -- {{binlists.binName}}
+              </option>
+            </select> -->
+          <!-- </td> -->
+          <td>
+            <input class="form-control"  type="text"
+              appFourDigitDecimaNumber readonly>
+            </td>
+            <td>
+            <input class="form-control"  type="text"
+              appTwoDigitDecimaNumber (input)="onSearchChange($event.target.value,i)" readonly>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div style="text-align: right;padding-right: 80px;">
+  <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+  <div class="form-group text-center" *ngIf="KitItem.length>0">
+
+    <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Close')">Ok</button>
+    <button class="btn btn-danger" type="button" (click)="OnCancel()">Close</button>
+  </div>
+</div>

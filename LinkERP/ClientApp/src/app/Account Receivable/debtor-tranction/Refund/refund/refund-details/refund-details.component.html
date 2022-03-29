@@ -1,0 +1,116 @@
+<div>
+  <div style="text-align: right;padding-right: 20px;">
+    <button [disabled]="IsCloseRefund" (click)="AddNewRfundDetailLine()" type="button" class="btn add-btn mb-1">Add
+    </button>
+  </div>
+</div>
+
+<div class="table-padd">
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <!-- <th>Line Num</th> -->
+        <th>RefundNumber</th>
+        <th >  </th>
+        <th>RefundDate </th>
+        <th>Debtor</th>
+        <th>HomeRefundAmount</th>
+        <th *ngIf="!IsCloseShift">  </th>
+        <th>Payment Type</th>
+        
+        <!-- <th>Bank Acc. No</th> -->
+        
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr   *ngFor="let detailslist of RefundDetailsData; let i = index">
+
+        <td>
+          <input [disabled]="IsCloseRefund" class="form-control text-right"  [(ngModel)]="detailslist.refundNumber"  name="ReceiptNumber" [ngModelOptions]="{standalone: true}">
+        </td>
+        <td 
+        style="cursor: pointer;"><i class="glyphicon glyphicon-eject"  (click)="OpenPrevious(Previous,detailslist.id,detailslist.homeAmount,detailslist.debtorID,i)" aria-hidden="true"></i>
+   </td> 
+        <td> 
+          <app-date-time-picker [disabled]="IsCloseRefund"  [showTimePicker]="false" [(ngModel)]="detailslist.refundDate" [ngModelOptions]="{standalone: true}" ></app-date-time-picker>
+        </td>
+          <!-- <input  class="form-control text-right" type="text" [(ngModel)]="detailslist.debtor" name="debtor" [ngModelOptions]="{standalone: true}"> -->
+          <!-- <select [disabled]="IsCloseShift" class="form-control" (change)="OnDebtorChange($event,i)" [(ngModel)]="detailslist.debtorID" name="DebtorID" [ngModelOptions]="{standalone: true}">
+            <option value="-1">--Select Debtor Name--</option>
+            <option *ngFor="let debtors of AllDebtores" [value]="debtors.id">
+              {{debtors.debtorAccountName}} -  {{debtors.debtorCode}}
+            
+            </option>
+          </select> -->
+          <td >
+          <debtor-search [disabled]="IsCloseRefund"  [ModuleName]=" 'DebtorSearch' " [Action]="'SelectAll'" [(ngModel)]="detailslist.debtorID"
+          (change)="debtorChange($event)"   name="debtor" [ngModelOptions]="{standalone: true}"></debtor-search>
+        </td>
+        <td>
+          <input [disabled]="IsCloseRefund"   class="form-control text-right"  [(ngModel)]="detailslist.homeRefundAmount"  name="HomeAmount" [ngModelOptions]="{standalone: true}">
+        </td>
+       
+        <td  *ngIf="!IsCloseShift"
+           style="cursor: pointer;"><i class="glyphicon glyphicon-eject"  (click)="OpenRefund(Refund,detailslist.id,detailslist.debtorID,detailslist.refundMainID,i)" aria-hidden="true"></i>
+      </td> 
+        <td>
+          <!-- <input [(ngModel)]="detailslist.paymentType"  name="paymentType" class="form-control text-right"  [ngModelOptions]="{standalone: true}"> -->
+          <select [disabled]="IsCloseRefund"  class="form-control" (change)="OnPaymentTypeChange($event,i)" [(ngModel)]="detailslist.paymentType"  name="PaymentType" [ngModelOptions]="{standalone: true}" >
+            <option value="00000000-0000-0000-0000-000000000000">--Select paymentType--</option>
+            <option *ngFor="let tenderTypes of TenderTypes" [value]="tenderTypes.id">
+             {{tenderTypes.description}}
+            
+            </option>
+          </select>
+        </td>
+    
+        <!-- <td>
+          <input [(ngModel)]="detailslist.fXAllocated"  name="fXAllocated" class="form-control text-right" [(ngModel)]="detailslist.paymentType"  name="paymentType" [ngModelOptions]="{standalone: true}">
+        </td>
+        <td>
+          <input [(ngModel)]="detailslist.fXAllocated"  name="fXAllocated" class="form-control text-right">
+        </td> -->
+        <!-- <td>
+          <input  [(ngModel)]="detailslist.bankAccountNumber"  name="bankAccountNumber" class="form-control text-right" [ngModelOptions]="{standalone: true}" class="form-control text-right">
+        </td> -->
+        <td width="50" class="text-center hdrs" *ngIf="RefundDetailsData.length>1">
+          <button  class="btn add-btn mr-1 " type="button" (click)="Deleteindex(i)">Remove</button>
+        </td>
+    </tbody>
+  </table>
+  <div style="margin-top: 13px;" class="form-group text-center">
+   
+    <!-- <button class="btn btn-danger" type="button" (click)="Close()">Close</button> -->
+  </div>
+</div>
+<div class="form-group text-center">
+  <button  [disabled]="IsCloseRefund"  class="btn add-btn mr-1" type="button" (click)="onSave('Save')">
+    Save
+  </button>
+  <button [disabled]="IsCloseRefund"  class="btn add-btn mr-1"  type="button"(click)="onSave('Save & Close')">
+    Save & Close
+  </button>
+
+  <button class="btn btn-danger" type="button" (click)="onSave('Close')">Close</button>
+</div>
+<ng-template #Refund>
+  <div class="modal-content">
+    <div class="modal-body">
+      
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()"class="close-modal">X</a>
+      <!-- <app-matrix-product-in [TransferID]="TransferID" [ProductID]="this.SelectedProductID"
+        [SelectedTransferDetail_ID]="SelectedTransferDetail_ID" [WareHouseFromID]="this.WareHouseFromID"
+        [WareHouseToID]="this.WareHouseToID" [CurrentStatus]="this.CurrentStatus" [SelectedQuantity]="SelectedQuantity"
+        (OnCancel)="Closenote()">
+      </app-matrix-product-in> -->
+      <app-refund-allocation
+      [RefundMainID]="this.RefundMainID"
+      [RefundDetailID]="this.RefundDetailID"
+       [DebtorID]="this.DebtorID" (OnCancel)="closePopUp()">
+
+      </app-refund-allocation>
+
+    </div>
+  </div>
+</ng-template>

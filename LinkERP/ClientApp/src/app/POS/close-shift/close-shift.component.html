@@ -1,0 +1,78 @@
+<div class="card" *ngIf="Menuaccess=='closeshift'">
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="col-12 col-md-12">
+          <div class="form-group">
+            <label class="col-form-label">Cashier</label><br />
+            <label class="col-form-label"><b>{{cashier}}</b></label>
+          </div>
+        </div>
+        <div class="col-12 col-md-12">
+          <div class="form-group">
+            <label class="col-form-label">Shift ID</label><br />
+            <label class="col-form-label"><b>{{shiftNo}}</b></label>
+          </div>
+        </div>
+        <div class="col-12 col-md-12">
+          <div class="form-group">
+            <label class="col-form-label">Date</label><br />
+            <label class="col-form-label"><b>{{currentDate}}</b></label>
+          </div>
+        </div>
+        <div>
+          <div class="card-body position-relative">
+            <div class="ag-theme-balham" style="width: 100%; height:500px;">
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th style="display: none;"></th>
+                      <th>Reconcile</th>
+                      <th>Payment Type</th>
+                      <th>Details</th>
+                      <th>Amount(Natural)</th>
+                      <th>Till Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let data of receiptData">
+                      <td style="display: none;">{{data.id}}</td>
+                      <td>
+                        <input name="selectId" type="checkbox" value="{{data.id}}"
+                          (change)="onCheckbxChange(data,$event)">
+                      </td>
+                      <td>{{data.paymentType}}</td>
+                      <td></td>
+                      <td>{{data.amount}}</td>
+                      <td><input type="text" [value]="data.tillAmount" class="form-control" #inputTarget
+                          (change)="ontillamtChange($event.target.value)"></td>
+                      <!-- <td><input type="textbox" (change)="onChange(data.tillAmount)"></td> -->
+                      <!-- (change)="ontextChange($event)"></td> -->
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="form-group text-right">
+                <button class="btn add-btn mr-1" type="button" (click)="NextClick()">Next>></button>
+                <button class="btn btn-danger" type="button" (click)="Cancel()">Cancel</button>
+                <!-- <a [routerLink]='["/pos/shift-list"]'>Shift List</a> -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="Menuaccess=='paymentcloseshift'">
+  <app-payment-close-shift [shiftID]="this.ShiftID" [shiftNumber]="this.shiftNo" [cashier]="this.cashier"
+    [paymentValues]="this.paymentValues" [systemAmount]="this.systemAmt" [tillAmount]="this.tillAmount"
+    [varianceAmount]="this.varianceAmt">
+  </app-payment-close-shift>
+</div>
+<div *ngIf="Menuaccess=='ShiftList' ">
+  <app-shift-list>
+  </app-shift-list>
+</div>

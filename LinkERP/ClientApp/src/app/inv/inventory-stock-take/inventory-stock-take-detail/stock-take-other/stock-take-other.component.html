@@ -1,0 +1,130 @@
+<div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+  <!-- <div style="float: right;">
+    <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+      <label style="width: 70px;">Sort By</label>
+      <select class="form-control" (change)="onColumnNameSelected($event.target.value)" [(ngModel)]="ColumnName">
+        <option value="-1" style="text-align: center;">---Select Column---</option>
+        <option *ngIf="IsuseExpiryDates" value="ExpiryDate">Expiry Date</option>
+        <option value="TransactionDateIn">Transaction Date</option>
+        <option value="CountQuantity">Count Qty</option>
+      </select>
+    </div>
+    <br />
+  </div> -->
+</div>
+<div style="text-align: right;padding-right: 20px;">
+  <button (click)="addnew()" type="button" class="btn add-btn mb-1" [disabled]="this.StockTakeStatus!='New'">
+    Add Row
+  </button>
+</div>
+<!--   max-height: 450px;height: 450px; overflow-y: scroll; -->
+<!--<div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">-->
+<div class="table-responsive table-padd" style="overflow: visible; "></div>
+<table class="table table-bordered table-striped" *ngIf="RowData && RowData.length>0">
+  <thead>
+    <tr>
+      <th>Bin</th>
+      <th *ngIf="IsuseExpiryDates">Expiry Date</th>
+      <th>Transaction <br />Date</th>
+      <th>Variance Quantity</th>
+      <th>Count Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let detailslist of RowData; let i = index">
+      <td *ngIf="!detailslist.binName">
+        <select class="form-control" [(ngModel)]="detailslist.binID">
+          <option value="null">--Select Bin--</option>
+          <option *ngFor="let binlists of WareHouseBinList" [value]="binlists.id">
+            {{binlists.binCode}} -- {{binlists.binName}}
+          </option>
+        </select>
+      </td>
+      <td *ngIf="detailslist.binName">
+        {{detailslist.binName}}
+      </td>
+      <td *ngIf="IsuseExpiryDates">
+        <!--  <input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+        [(ngModel)]="detailslist.expiryDate" [value]="detailslist.expiryDate | date:'yyyy-MM-dd'"> -->
+        <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.expiryDate"></app-date-time-picker>
+      </td>
+      <td>
+        <!--<input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+        [(ngModel)]="detailslist.transactionDateIn" [value]="detailslist.transactionDateIn | date:'yyyy-MM-dd'">-->
+        <app-date-time-picker [showTimePicker]="false" [(ngModel)]="detailslist.transactionDateIn">
+        </app-date-time-picker>
+      </td>
+      <td>
+        <input class="form-control" [(ngModel)]="detailslist.varianceQuantity" type="text" OnlyNumber="true" readonly />
+               
+      </td>
+      <td>
+        <input class="form-control" [(ngModel)]="detailslist.countQuantity" type="text" OnlyNumber="true"
+               (input)="onSearchChange($event.target.value,i)">
+      </td>
+      <!-- <td width="50" class="text-center" *ngIf="detailslist.id && this.StockTakeStatus!='Approved'">
+        <a (click)="DeleteInventorystocktakeDeatilMatrix(detailslist.id)">
+          <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+      </td> -->
+      <td width="50" class="text-center" *ngIf="!detailslist.id && this.StockTakeStatus!='Approved'">
+        <a (click)="Deleteindex(i, this.rowinserted, detailslist.countQuantity)">
+          <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<!-- </div> -->
+<div style="text-align: right;padding-right: 80px;">
+  <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+</div>
+<div class="form-group text-center" *ngIf="RowData && RowData.length>0">
+  <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Save')"
+          [disabled]="this.submitted || this.StockTakeStatus!='New'">
+    Save Changes
+  </button>
+  <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges('Close')"
+          [disabled]="this.submitted ||this.StockTakeStatus!='New'">
+    Save & Close
+  </button>
+  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+</div>
+<ng-template #confirmDelete>
+  <app-confirm-dialog-popup (OnCancel)="ConfirmDialogClose()" (OnDelete)="DeleteAll()"></app-confirm-dialog-popup>
+</ng-template>
+
+
+<!-- <div class="table-responsive table-padd" >
+  <form [formGroup]="InventoryStockTakeOther" name="InventoryStockTakeOther" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+    <div class="form-group">
+      <div class="form-group ng-invalid" style="width:200px;">
+        <label class="col-form-label">WareHouse</label>
+        <select class="form-control"
+        formControlName="BinID"  [ngClass]="{ 'is-invalid': this.submitted && f.BinID.errors?.notEqual}"
+         >
+          <option value="">--Select WareHouse--</option>
+          <option *ngFor="let binList of WareHouseBinList" [value]="binList.id">
+            {{binList.binCode}} --  {{binList.binName}}
+          </option>
+        </select>
+        <div class="errorlbl" *ngIf="this.submitted && f.BinID.errors?.notEqual">
+          Please select bin
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+
+      <label class="col-form-label">Count Quantity</label>
+      <input class="form-control" style="width: 100px;" type="text" appTwoDigitDecimaNumber
+             formControlName="CountQuantity">
+
+    </div>
+    <div class="form-group text-center" >
+      <button class="btn add-btn mr-1" type="submit"  >Save Changes</button>
+      <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')"  >Save & Close</button>
+      <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+    </div>
+  </form>
+</div>
+ -->

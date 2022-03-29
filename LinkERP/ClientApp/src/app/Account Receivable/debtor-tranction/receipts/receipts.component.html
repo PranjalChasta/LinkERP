@@ -1,0 +1,374 @@
+<form   [formGroup]="ReceiptForm" name="ReceiptForm" (ngSubmit)="onSave()">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Receipt
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1"> Add Receipt</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true"
+                             [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                           
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<div   *ngIf="Mode=='Add' || Mode=='Edit' ">
+  <div class="card-header">{{Mode}} Receipt</div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="row">
+
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label class="col-form-label">Batch Number </label>
+                <input class="form-control textarea" maxlength="255" type="text"  formControlName="BatchNumber"
+                >
+                <!-- <div class="errorlbl" *ngIf="this.submitted && f.BatchNumber.errors">Please enter debtor code</div> -->
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label class="col-form-label"> Description </label>
+                <input class="form-control textarea" maxlength="255" type="text" formControlName="Description">
+                
+              </div>
+            </div>
+            <div *ngIf="Mode=='Edit' " class="col-12 col-md-4">
+              <div class="form-group">
+                <label class="col-form-label"></label>
+                <button  [disabled]="IsCloseShift" (click)="CloseReceiptReceipt()" type="button" class="btn add-btn mb-1">Active Receipt
+                </button>
+                
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="text-align: right;padding-right: 20px;">
+              <button [disabled]="IsCloseShift" (click)="AddNewReceiptDetailLine()" type="button" class="btn add-btn mb-1">Add
+              </button>
+            </div>
+          </div>
+
+          <div class="table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <!-- <th>Line Num</th> -->
+                  <th>Receipt No</th>
+                  <th >  </th>
+                  <th>Date </th>
+                  <th>Due Date</th>
+                  <th>Debtor</th>
+                  <th>Home Amount </th>
+                  <th>FX Currency</th>
+                  <th>Home Allocated</th>
+                  <th *ngIf="!IsCloseShift">  </th>
+                  <th>FX Allocated</th>
+                  <th>Payment Type </th>
+                  <th>FX Amount</th>
+                  <!-- <th>Bank Acc. No</th> -->
+                  
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr   *ngFor="let detailslist of DebtorTranctionData; let i = index">
+
+                  <td style="width: 125px;">
+                    <input [disabled]="IsCloseShift" class="form-control text-right"  [(ngModel)]="detailslist.receiptNumber"  name="ReceiptNumber" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td 
+                  style="cursor: pointer;"><i class="glyphicon glyphicon-eject"  (click)="OpenPrevious(Previous,detailslist.id,detailslist.homeAmount,detailslist.debtorID,i)" aria-hidden="true"></i>
+             </td> 
+                  <td> 
+                    <app-date-time-picker [disabled]="IsCloseShift" [showTimePicker]="false" [(ngModel)]="detailslist.paymentDate" [ngModelOptions]="{standalone: true}" ></app-date-time-picker>
+                  </td>
+                  <td>
+                    <app-date-time-picker [disabled]="IsCloseShift" [showTimePicker]="false" [(ngModel)]="detailslist.paymentDate" [ngModelOptions]="{standalone: true}"></app-date-time-picker>
+                  
+                  <td>
+                    <!-- <input  class="form-control text-right" type="text" [(ngModel)]="detailslist.debtor" name="debtor" [ngModelOptions]="{standalone: true}"> -->
+                    <!-- <select [disabled]="IsCloseShift" class="form-control" (change)="OnDebtorChange($event,i)" [(ngModel)]="detailslist.debtorID" name="DebtorID" [ngModelOptions]="{standalone: true}">
+                      <option value="-1">--Select Debtor Name--</option>
+                      <option *ngFor="let debtors of AllDebtores" [value]="debtors.id">
+                        {{debtors.debtorAccountName}} -  {{debtors.debtorCode}}
+                      
+                      </option>
+                    </select> -->
+                    <debtor-search [ModuleName]=" 'DebtorSearch' " [Action]="'SelectAll'" [(ngModel)]="detailslist.debtorID"
+                    (change)="debtorChange($event)"   name="debtor" [ngModelOptions]="{standalone: true}"></debtor-search>
+                  </td>
+                  <td>
+                    <input [disabled]="IsCloseShift" class="form-control text-right"  [(ngModel)]="detailslist.homeAmount"  name="HomeAmount" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input [disabled]="IsCloseShift" class="form-control text-right" [(ngModel)]="detailslist.foreignAmount"  name="ForeignAmount"   type="text" [ngModelOptions]="{standalone: true}">
+                  </td> 
+                  <td>
+                    <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.allocatedAmount"  name="AllocatedAmount" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td  *ngIf="!IsCloseShift"
+                     style="cursor: pointer;"><i class="glyphicon glyphicon-eject"  (click)="OpenDebtor(Debtor,detailslist.id,detailslist.homeAmount,detailslist.allocatedAmount,detailslist.debtorID,i)" aria-hidden="true"></i>
+                </td> 
+                  <td>
+                    <input [disabled]="IsCloseShift" [(ngModel)]="detailslist.foreignAmount"  name="ForeignAmount" class="form-control text-right" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <!-- <input [(ngModel)]="detailslist.paymentType"  name="paymentType" class="form-control text-right"  [ngModelOptions]="{standalone: true}"> -->
+                    <select [disabled]="IsCloseShift" class="form-control" (change)="OnPaymentTypeChange($event,i)" [(ngModel)]="detailslist.paymentType"  name="PaymentType" [ngModelOptions]="{standalone: true}" >
+                      <option value="-1">--Select paymentType--</option>
+                      <option *ngFor="let tenderTypes of TenderTypes" [value]="tenderTypes.id">
+                       {{tenderTypes.description}}
+                      
+                      </option>
+                    </select>
+                  </td>
+                
+                  <td >
+                    <input [disabled]="IsCloseShift" [(ngModel)]="detailslist.foreignAmount"  name="fXAmount" class="form-control text-right" [ngModelOptions]="{standalone: true}" >
+                  </td>
+                  <!-- <td>
+                    <input [(ngModel)]="detailslist.fXAllocated"  name="fXAllocated" class="form-control text-right" [(ngModel)]="detailslist.paymentType"  name="paymentType" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input [(ngModel)]="detailslist.fXAllocated"  name="fXAllocated" class="form-control text-right">
+                  </td> -->
+                  <!-- <td>
+                    <input  [(ngModel)]="detailslist.bankAccountNumber"  name="bankAccountNumber" class="form-control text-right" [ngModelOptions]="{standalone: true}" class="form-control text-right">
+                  </td> -->
+                  <td width="50" class="text-center hdrs" >
+                    <button  class="btn add-btn mr-1 " type="button" (click)="Deleteindex(i)">Remove</button>
+                  </td>
+              </tbody>
+            </table>
+            <div style="margin-top: 13px;" class="form-group text-center">
+              <button [disabled]="IsCloseShift" class="btn add-btn mr-1" type="submit">SAVE
+              </button>
+              <button class="btn btn-danger" type="button"  (click)="Back()">BACK
+              </button>
+              <!-- <button class="btn btn-danger" type="button" (click)="Close()">Close</button> -->
+            </div>
+            <div style="margin-top: 13px;" class="form-group text-center">
+             
+              <!-- <button class="btn btn-danger" type="button" (click)="Close()">Close</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+
+
+<ng-template #Debtor >
+  <div class="modal-content" id="myModal" role="dialog" >
+    <div class="modal-body">
+      <a style="float: right;" type="button" data-dismiss="modal"  (click)="closePopUp()" class="close-modal">X</a>
+      <div class="table-responsive table-padd">
+        <div class="card-body pb-0">
+          <form  class="Form-Horizontal">
+            <div class="ag-theme-balham">
+            </div>
+           
+<!-- <<<<<<<<<<<<< -->
+<div class="card-body position-relative">
+  <div class="row">
+ 
+    <!-- <div class="col-12 col-md-4">
+      <div class="form-group">
+        <label class="col-form-label">Account No </label>
+        <input style="margin-top: 4px;" class="form-control textarea" maxlength="255" type="text" >
+        <label style="margin-top: 4px;" class="col-form-label">Code </label>
+        <input style="margin-top: 4px;" class="form-control textarea" maxlength="255" type="text" >
+        <label  style="margin-top: 4px;" class="col-form-label"> Name </label>
+        <input style="margin-top: 4px;" class="form-control textarea" maxlength="255" type="text" >
+        
+      </div>
+    </div> -->
+    <!-- <div class="col-12 col-md-6">
+      <div class="form-group">
+        <label class="col-form-label">Search</label>
+        <input type="text" class="form-control" />
+      </div>
+    </div> -->
+    <div class="col-12 col-md-12">
+      <div class="row">
+        <div class="table-responsive table-padd" >
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>    
+                <th>Amount </th>
+                <th>AllocatedAmountHome</th>
+                <th>Un AllocatedAmountHome</th>        
+              </tr>
+            </thead>
+            <tbody>
+              <tr >
+                <td>{{AmountToDisplay}}</td>
+                <td>{{AllocatedAmountToDisplay}}</td>
+                <td>{{UnlocatedAmountToDisplay}}</td>
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-12">
+      <div class="row">
+        <div class="table-responsive table-padd"  style="overflow-y:auto;height:300px">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>              
+                <th>Invoice Number</th>
+                <th>Date</th> 
+                <th>Period</th>  
+                <th>Due Date</th>  
+                <th>Amount</th>  
+                <th>Other Allocation </th>  
+                <th>Un Allocated Amount </th> 
+                <th>This Allocation</th>                       
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let detailslist of LBS_ACR_DebtorTransactions; let i = index">
+
+                <td style="width: 125px;">
+                  <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.transactionReferenceNumber"  name="transactionReferenceNumber" [ngModelOptions]="{standalone: true}">
+                </td>
+                <td>
+                  <app-date-time-picker [disabled]="Disabledpupup" [showTimePicker]="false" [(ngModel)]="detailslist.transactionDate" [ngModelOptions]="{standalone: true}" ></app-date-time-picker>
+                </td>
+                <td>
+                  <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.period"  name="period" [ngModelOptions]="{standalone: true}">
+                 
+                </td>
+                <td>
+                  <app-date-time-picker [disabled]="Disabledpupup"  [showTimePicker]="false" [(ngModel)]="detailslist.dueDate" [ngModelOptions]="{standalone: true}"></app-date-time-picker>
+                
+                <td>
+                  <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.transactionAmountHome"  name="transactionAmountHome" [ngModelOptions]="{standalone: true}">
+                 
+                </td>
+                <td>
+                  <input [disabled]="Disabledpupup" class="form-control text-right"  [(ngModel)]="detailslist.allocateAmountToDisplay"  name="allocatedAmountHome" [ngModelOptions]="{standalone: true}">
+                </td>
+                <td>
+                  <input style="color: red;" [disabled]="Disabledpupup" class="form-control text-right" [(ngModel)]="detailslist.unAllocatedAmountHome"  name="unAllocatedAmountHome" (click)="OnClickAlocateAmount(i)"  type="text" [ngModelOptions]="{standalone: true}">
+                </td> 
+                <td>
+                  <input [disabled]="Restictclick" (click)="OnClickAlocateAmount(i)" class="form-control text-right" class="form-control text-right"  [(ngModel)]="detailslist.amountToallocate"  name="allocatedAmountHome" [ngModelOptions]="{standalone: true}" >
+                </td>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-12">
+      <div class="form-group text-center">
+        <!--<button class="btn add-btn mr-1" type="button" (click)="SelectProduct()">
+          Select Product
+        </button>-->
+        <!-- <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- >>>>>>>>>> -->
+
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="button" (click)="SaveAllocation()">Save</button>
+              <button class="btn btn-danger" data-dismiss="modal" type="button"  #closeBtn (click)="closePopUp()">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+
+
+
+<ng-template #Previous >
+  <div class="modal-content" id="myModal" role="dialog" >
+    <div class="modal-body">
+      <a style="float: right;" type="button" data-dismiss="modal"  (click)="closePrevious()" class="close-modal">X</a>
+      <div class="table-responsive table-padd">
+        <div class="card-body pb-0">
+          <form  class="Form-Horizontal">
+            <div class="ag-theme-balham">
+            </div>
+           
+<div class="card-body position-relative">
+  <h1>Previous Transaction</h1>
+  <div class="row">
+    <div class="col-12 col-md-12">
+      <div class="row">
+        <div class="table-responsive table-padd"  style="overflow-y:auto;height:300px">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Invoice No</th>
+                <th>Amount </th>
+                <th>Date</th> 
+                <th>Amount</th>
+                <th>Receipt</th>
+                <th>Date </th> 
+                <th>Amount</th>
+                                     
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="Selecting" *ngFor="let previous of PreviousTranction" [ngClass]="{ 'Selected': false}">
+                <td>{{previous.salesOrderNo}}</td>
+                <td>{{previous.invoiceTotal}}</td>
+                <td>{{previous.paymentDate}}</td>  
+                <td>{{previous.receptAllocated}}</td>
+                <td>{{previous.receiptNumber}}</td>
+                <td>{{previous.allocatedDate}}</td>
+                <td>{{previous.allocatedAmount}}</td>         
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-12">
+      <div class="form-group text-center">
+      </div>
+    </div>
+  </div>
+</div>
+
+            <!-- <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="button" (click)="SaveAllocation()">Save</button>
+              <button class="btn btn-danger" data-dismiss="modal" type="button"  #closePrevious (click)="closePreviousPopUp()">Close</button>
+            </div> -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

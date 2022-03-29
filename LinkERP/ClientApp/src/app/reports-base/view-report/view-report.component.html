@@ -1,0 +1,78 @@
+<h1>{{HeaderName}} Reports</h1>
+<div class="card" [ngClass]="{'hide-form':displayReport}">
+  <div class="card-header main-search">
+    <div class="row">
+      <div class="col-8 col-md-4">
+        <select class="form-control" (change)="onReportNameSelected($event.target.value)" [(ngModel)]="ReportName">
+          <option value="-1">--Select Report--</option>
+          <option *ngFor="let reportName of ReportNames" [value]="reportName.id">{{reportName.reportName}}</option>
+        </select>
+      </div>
+
+      <!--<div class="col-12 col-md-3">
+        <button class="btn add-btn mr-1" type="button" (click)="GetProduct()">Get Product</button>
+
+      </div>-->
+      <!-- <div class="col-12 col-md-3">
+        <ol>
+          <li *ngFor="let reportControl of ReportControls">{{reportControl.controlType}}</li>
+        </ol>
+      </div> -->
+    </div>
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <form (ngSubmit)="onSubmit()" [formGroup]="form">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div *ngFor="let reportControl of ReportControls" class="col-4">
+                <app-report-form [ReportControl]="reportControl" [form]="form"></app-report-form>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center" *ngIf="ReportControls.length > 0">
+            <button class="btn add-btn mr-1" type="submit" [disabled]="!form.valid">View Report</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="displayReport">
+  <div class="card">
+    <div class="card-header">
+      Report
+      <div class="add-row">
+        <app-send-report-mail [ReportID]="ReportID" [ReportParameters]="reportParameters"></app-send-report-mail>
+        <button class="btn add-btn mr-1" type="button" (click)="cancel()">Back</button>
+      </div>
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <!--<div>{{strReportParameters}}</div>-->
+          <ssrs-reportviewer [reportserver]="reportServer" [reporturl]="reportUrl" [showparameters]="showParameters"
+            [parameters]="parameters" [language]="language" [width]="width" [height]="height" [toolbar]="toolbar">
+          </ssrs-reportviewer>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--
+ <div>
+  <form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div *ngFor="let reportControl of ReportControls" class="form-row">
+      <app-report-form [ReportControl]="reportControl" [form]="form"></app-report-form>
+    </div>
+    <div class="form-row">
+      <button type="submit" [disabled]="!form.valid">View Report</button>
+    </div>
+  </form>
+  <div *ngIf="payLoad" class="form-row">
+    <strong>Report Parameters</strong><br>{{payLoad}}
+  </div>
+</div>
+-->

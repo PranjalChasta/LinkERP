@@ -1,0 +1,146 @@
+<form [formGroup]="FrequencyForm" name="FrequencyForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal"></form>
+<h1> Frequency<span *ngIf="Mode == 'Edit'">({{FrequencyForm.get('Name').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Frequency</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Frequency</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="FrequencyForm" name="FrequencyForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-header">
+      Frequency
+      <div class="add-row">
+        <button (click)="AddNew()" class="btn add-btn mb-1" type="button" [disabled]="!this.write_Access">Add Frequency</button>
+      </div>
+    </div>
+    <div class="card-body position-relative">
+      <div class="ag-theme-balham" style="width: 100%; height:500px;">
+        <app-ag-grid *ngIf="AgLoad"
+                     [ColumnDefs]="this.ColumnDefs"
+                     [RowData]="this.RowData"
+                     [IsSearch]="true"
+                     [IsColumnsToFit]="false"
+                     [IsExport]="true"
+                     [Currentpage]="this.Currentpage"
+                     (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                     [paginationPageSize]="this.PageSize"
+                     (OnPageSizeChange)="OnPageSizeChange($event)"
+                     (OnActionClick)="OnActionClick($event)">
+        </app-ag-grid>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Frequency"}' data-toggle="tab"
+           (click)="AccessTab='Frequency'" role="tab">Frequency</a>
+
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Frequency'">
+      <div class="card-header">
+        {{Mode}} Frequency
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Frequency Type <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.FrequencyType.errors?.notEqual}" formControlName="FrequencyType">
+                      <option value="-1">--Select Frequency Type--</option>
+                      <option *ngFor="let  frequencydetail of Frequencydetail" [value]="frequencydetail.id">
+                        {{frequencydetail.name}}
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.FrequencyType.errors?.notEqual">
+                      Please select frequency type
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Name.errors}"
+                           placeholder=" " formControlName="Name" type="text" maxlength="255">
+
+                    <div class="errorlbl" *ngIf="submitted && f.Name.errors">Please enter name</div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label ">Frequency <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control  text-right" type="text" appTwoDigitDecimaNumber
+                           [ngClass]="{ 'is-invalid': this.submitted && f.Frequency.errors}" formControlName="Frequency" maxlength="50">
+                    <div class="errorlbl" *ngIf="submitted && f.Frequency.errors">Please enter frequency</div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label "> Start Date</label>
+                    <!--<input class="form-control"
+                           #datepickerFull="bsDatepicker"
+                           bsDatepicker
+                           [value]="FrequencyForm.get('StartDate').value | date:'dd-MM-yyyy, h:mm:ss a'"
+                           formControlName="StartDate"
+                           [bsConfig]="datePickerConfig">-->
+                    <app-date-time-picker formControlName="StartDate"></app-date-time-picker>
+                  </div>
+                </div>
+
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label "> End Date</label>
+                    <!--<input class="form-control"
+                    #datepickerFull="bsDatepicker"
+                    bsDatepicker
+                    formControlName="EndDate"
+                    [value]="FrequencyForm.get('EndDate').value | date:'dd-MM-yyyy, h:mm:ss a'"
+                    [bsConfig]="datePickerConfig">-->
+                    <app-date-time-picker formControlName="EndDate"></app-date-time-picker>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedFrequencyId" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedFrequencyId"
+                            [HeaderNames]="this.HeaderNames" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

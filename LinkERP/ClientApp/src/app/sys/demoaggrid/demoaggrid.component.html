@@ -1,0 +1,65 @@
+<h1>AG Grid Demo</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">System Settings</li>
+    <li class="breadcrumb-item active" aria-current="page">Organisation</li>
+  </ol>
+</nav>
+<div class="card">
+  <div>
+    <div class="add-row">
+      <button (click)="addnew()" type="button" class="btn add-btn mb-1"  >Add
+       </button>
+    </div>
+    <div class="table-responsive table-padd">
+      <table class="table table-bordered table-striped" *ngIf="this.AgLoad">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>UOM</th>
+            <th>Quantity</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+           <tr *ngFor="let detailslist of RowData; let i = index" >
+            <td>
+              <!-- <select class="form-control" [(ngModel)]="detailslist.productID" (change)="onProductChange($event.target.value,i)">
+                <option value="-1">--Select Product--</option>
+                <option *ngFor="let product of inventoryList" [value]="product.id">
+                  {{product.productName}}
+                </option>
+              </select>   -->
+              <product-search [ModuleName]="'sys'" [(ngModel)]="detailslist.productID" (change)="onProductChange($event,i)" >
+              </product-search>
+            </td>
+
+            <td>
+              <select class="form-control"  [(ngModel)]="detailslist.uom">
+                <option value="-1">--Select Unit of Measure--</option>
+                <option *ngFor="let UOM of UOMList" [value]="UOM.id">
+                  {{UOM.dataName}}
+                </option>
+              </select>
+
+            </td>
+            <td><input class="form-control" placeholder="Quantity" [(ngModel)]="detailslist.quantity"type="text"></td>
+            <td><input class="form-control" placeholder="Cost" [(ngModel)]="detailslist.cost"type="text"></td>
+            <td   width="50" class="text-center">
+              <input type="checkbox"
+                [checked]="detailslist.inOut"
+               /></td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="form-group text-center">
+      <button class="btn add-btn mr-1" type="button"
+        (click)="UpdateChanges()">Save Changes</button>
+
+    </div>
+  </div>
+
+  </div>

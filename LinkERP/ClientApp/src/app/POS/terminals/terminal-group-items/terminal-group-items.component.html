@@ -1,0 +1,68 @@
+<form [formGroup]="TerminalGroupItemForm" name="TerminalGroupItemForm" (ngSubmit)="OnSubmit('Save')"
+  class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='Add'|| Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Terminal Group Items
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-8 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product<span class="mandatoryFieldColor">*</span></label>
+                  <!-- <select class="form-control" formControlName="Product"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.Product.errors?.notEqual}">
+                    <option value="-1">--Select Product--</option>
+                    <option *ngFor="let product of productList" [value]="product.productID">
+                     {{product.productName}}
+                    </option>
+                  </select> -->
+                  <product-search [ModuleName]="'TerminalGroupItem'" formControlName="Product" (change)="onProductChange($event, i)">
+                  </product-search>
+                  <!-- <div class="errorlbl" *ngIf="submitted && f.Product.errors">Please enter Prodcut</div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit" [disabled]="this.submitted || !IsActive">Save</button>
+            <button class="btn add-btn mr-1" type="button" (click)="OnSubmit('SaveNClose')" [disabled]="this.submitted || !IsActive">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+
+      <div class="col-md-12">
+
+        <div class="card-header">
+          Terminal Group Items
+          <div class="add-row">
+            <button (click)="AddNew()" class="btn add-btn mr-1" type="button"
+            [disabled]="!this.IsActive || Mode=='Add'">Add Terminal Group Item</button>
+            <!-- <button (click)="Back()" class="btn btn-danger" type="button">Back</button> -->
+          </div>
+        </div>
+        <div *ngIf="!this.IsActive" style="text-align: right;">
+          <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+        </div>
+        <div class="card-body position-relative">
+          <div class="ag-theme-balham" style="width: 100%; height:500px;">
+            <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+              [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [IsExport]="true"
+              [paginationPageSize]="10" (OnActionClick)="OnActionClick($event)">
+            </app-ag-grid>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

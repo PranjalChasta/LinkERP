@@ -1,0 +1,61 @@
+<form [formGroup]="UserRolesForm" name="UserRolesForm" class="Form-Horizontal">
+  <div class="card">
+    <div class="card-header">
+      User Role
+    </div>
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-12 col-md-6">
+          <div class="form-group">
+            <label class="col-form-label">Role</label>
+            <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Roles.errors?.notEqual}" formControlName="Roles">
+              <option value="-1">--Select Role--</option>
+              <option *ngFor="let role of Roles" [value]="role.id">{{role.roleCode}} - {{role.roleName}}</option>
+            </select>
+            <div class="errorlbl" *ngIf="this.submitted && f.Roles.errors?.notEqual">
+              Please select role
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="form-group">
+            <label class="w-100"></label>
+            <button class="btn add-btn sml-btn" type="button" [disabled]="!this.write_Access || !this.IsActive" (click)="AddRoleModuleAccess()">Add</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card-body position-relative">
+          <div class="ag-theme-balham" style="width: 100%; height:500px;">
+            <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true" [Currentpage]="this.Currentpage"
+                         (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                         [IsExport]="true" [paginationPageSize]="10" (OnActionClick)="OnActionClick($event)">
+            </app-ag-grid>
+          </div>
+        </div>
+      </div>
+      <!--<div class="tab-content pt-2 pb-1" id="nav-tabContent">
+        <div class="table-responsive table-padd">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Role</th>
+
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="RoleModuleAccess">
+              <tr *ngFor="let roleModuleAccess of RoleModuleAccessForm.get('RoleModuleAccess').controls; let i = index" [formGroupName]="i">
+                <td width="100">{{roleModuleAccess.get('ModuleID').value}}</td>
+                <td class="action-tools" width="50">
+                  <a (click)="DeleteRoleModule(i, roleModuleAccess.get('ModuleID').value)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>-->
+    </div>
+  </div>
+</form>

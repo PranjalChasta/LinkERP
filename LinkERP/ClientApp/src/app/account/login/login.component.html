@@ -1,0 +1,62 @@
+<!--<div class="loading" *ngIf="Loading">Loading&#8230;</div>-->
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="LoginForm" name="LoginForm" (ngSubmit)="Login()" class="Form-Horizontal" style="width:100%">
+
+  <!--<div class="dent-app-login">
+    <div class="left-side text-center">
+      <img src="assets/images/crsproject/logo-login.jpg" alt="Link ERP" />
+    </div>
+
+    <div class="login-side">
+      <div class="login-form">
+        <h1 class="mb-4" style="color:#00beff;">Please, login to your account</h1>
+        <h4 class="mb-4" *ngIf="IsInvalidLogin" style="color:red;">Invalid User name (or) Password...!!!</h4>
+        <div class="form-group">
+          <label class="col-form-label">Username</label>
+          <input class="form-control" type="text" formControlName="UserName">
+        </div>
+        <div class="form-group">
+          <label class="col-form-label">Password</label>
+          <input class="form-control" type="password" formControlName="Password">
+        </div>
+        <div class="form-group mt-3">
+          <button type="submit" class="btn add-btn">Login</button>
+          <a href="#" class="float-right mt-2 forot-link">Forgot password?</a>
+        </div>
+      </div>
+    </div>
+  </div>-->
+
+  <div class="login-page">
+    <div class="container">
+      <figure class="float-left w-100 text-center pt-3 pb-3"><img src="assets/images/LinkLogoLogin.jpg" alt="Link Business Solutions - ERP" /></figure>
+
+      <div class="login-form">
+        <h1>Login to Link ERP account</h1>
+
+        <!--<div class="alert alert-success" role="alert">
+          A simple success alert—check it out!
+        </div>-->
+        <div class="alert alert-danger" *ngIf="IsInvalidLogin" role="alert">
+          Invalid User name (or) Password...!!!<br />
+          Please provide valid Username and Password
+        </div>
+        <div class="form-group">
+          <label>User name</label>
+          <input type="text" class="form-control" placeholder="Enter your User name" formControlName="UserName">          
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-control" placeholder="Password" formControlName="Password">
+          <div class="invalid-feedback">
+            Please choose a username.
+          </div>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn add-btn">Login</button>
+          <a [routerLink]='["/forgot-password"]' class="float-right pt-1">Forgot Password?</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,154 @@
+<form [formGroup]="LandedCostImportCostForm" name="LandedCostImportCostForm" (ngSubmit)="onSave()"
+  class="Form-Horizontal">
+  <div class="card-header">Taxable Imports Form</div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <button [disabled]="this.Status =='Finalise'" class="btn add-btn"
+        style="float: right;margin-right: 10px; margin-bottom: 5px;" type="button"
+        (click)="AddNewImportCost()">Add</button>
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Vendor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <th>Cost Type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <th>Vendor Ledger</th>
+                  <th>Cost Ledger</th>
+                  <th>Fx Amount</th>
+                  <th>Tax Rate <br> Description</th>
+                  <th>Tax Rate</th>
+                  <th>LineTotal<br>ForeignExchangeCost<br>TaxExclusive</th>
+                  <th>LineTotalTaxAmount</th>
+                  <th>LineTotal<br>ForeignExchangeCost<br>TaxInclusive</th>
+                  <th>TotalExcludingTaxHome</th>
+                  <th>TotalLineTaxAmountHome</th>
+                  <th>LineTotal<br>HomeAmountTaxInclusive</th>
+                  <th>Apportioned</th>
+                  <th>Apportion Method</th>
+                  <th>Invoice No</th>
+                  <th>Invoiced</th>
+                  <th>Invoiced Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <th>Due
+                    Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  </th>
+                  <th width="50px"></th>
+                </tr>
+              </thead>
+              <tbody formArrayName="ImportCost">
+                <tr *ngFor="let importCost of LandedCostImportCostForm.get('ImportCost').controls; let i = index;"
+                  [formGroupName]="i">
+                  <td>
+                    <select class="form-control" formControlName="Creditor">
+                      <option value="-1">--Select Vendor--</option>
+                      <option *ngFor="let vendor of vendors" [value]="vendor.id">
+                        {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                      </option>
+                    </select>
+                  </td>
+                  <td>
+                    <input class="form-control" placeholder=" " formControlName="CostType" type="text">
+                  </td>
+                  <td>
+                    <select class="form-control" formControlName="VendorLedger">
+                      <option value="-1">--Select Vendor Ledger--</option>
+                      <option *ngFor="let ledger of ledger" [value]="ledger.id">
+                        {{ledger.name}}
+                      </option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="form-control" formControlName="CostLedger">
+                      <option value="-1">--Select Cost Ledger--</option>
+                      <option *ngFor="let ledger of ledger" [value]="ledger.id">
+                        {{ledger.name}}
+                      </option>
+                    </select>
+                  </td>
+                  <td>
+                    <input class="form-control" placeholder=" " formControlName="FxRate" type="text"
+                      appFourDigitDecimaNumber>
+                  </td>
+
+                  <td>
+                    <select class="form-control" (change)="onTaxDescriptionChange($event,i)"
+                      formControlName="TaxRateDescription">
+                      <option value="-1">Select TaxRate</option>
+                      <option *ngFor="let tax of taxcodes" [value]="tax.id">
+                        {{tax.taxCodeName}}
+                      </option>
+                    </select>
+                  </td>
+                  <td class="text-right">
+                    {{importCost.get('TaxRate').value | number:'1.4-4'}}
+                  </td>
+                  <td>
+                    <input class="form-control text-right" placeholder=" "
+                      (input)="onForeignExTaxAmountChange($event.target.value,i)"
+                      formControlName="LineTotalForeignExchangeCostTaxExclusive" type="text" appFourDigitDecimaNumber>
+                  </td>
+                  <td class="text-right">
+                    {{importCost.get('LineTotalTaxAmount').value  | number:'1.4-4'}}
+                  </td>
+                  <td class="text-right">
+                    {{importCost.get('LineTotalForeignExchangeCostTaxInclusive').value | number:'1.4-4'}}
+                  </td>
+                  <td class="text-right">
+                    {{importCost.get('TotalExcludingTaxHome').value | number:'1.4-4'}}
+                  </td>
+                  <td class="text-right">
+                    {{importCost.get('TotalLineTaxAmountHome').value| number:'1.4-4'}}
+                  </td>
+                  <td class="text-right">
+                    {{importCost.get('LineTotalHomeAmountTaxInclusive').value | number:'1.4-4'}}
+                  </td>
+                  <td>
+                    <div class="form-group">
+                      <input type="checkbox" style="margin-left: 33px;margin-top: 8px;"
+                        (click)="onApportionedSelected(i,$event)" formControlName="Apportion" />
+                    </div>
+                  </td>
+                  <td>
+                    <select class="form-control" (change)="onApportionedChanged(i,$event)"
+                      formControlName="ApportionMethod">
+                      <option value="-1">--Select Apportion Method--</option>
+                      <option *ngFor="let apportionMethod of ApportionMethod" [ngValue]="apportionMethod">
+                        {{apportionMethod}}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input class="form-control" placeholder=" " formControlName="InvoiceNo" type="text">
+                  </td>
+                  <td>
+                    <div class="form-group">
+                      <input type="checkbox" style="margin-left: 17px;margin-top: 7px;" formControlName="Invoiced"
+                        disabled />
+                    </div>
+                  </td>
+                  <td>
+                    <app-date-time-picker formControlName="InvoiceDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </td>
+                  <td>
+                    <app-date-time-picker formControlName="DueDate" [showTimePicker]="false">
+                    </app-date-time-picker>
+                  </td>
+
+                  <td (click)="Remove(i,importCost)">
+                    <i class="re fa fa-trash-o"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top: 13px;" class="form-group text-center">
+            <button [disabled]="this.Status =='Finalise'" class="btn add-btn mr-1" type="submit">Submit Taxable
+              Imports</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

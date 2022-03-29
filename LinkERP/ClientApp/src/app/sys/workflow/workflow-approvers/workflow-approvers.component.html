@@ -1,0 +1,128 @@
+<form [formGroup]="WorkflowApproverForm" name="WorkflowApproverForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='Add'|| Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Workflow Approvers
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-8 col-md-4">
+                <div class="form-group" *ngIf="Mode=='Add'">
+                  <label class="col-form-label">Approver Name <span class="mandatoryFieldColor">*</span> </label>
+                  <select class="form-control"
+                          [ngClass]="{ 'is-invalid': this.Submitted && f.LoginID.errors?.notEqual }"
+                          formControlName="LoginID">
+                    <option value="-1">--Select Approver--</option>
+                    <option *ngFor="let login of UsersList" [value]="login.loginID">
+                      {{login.loginID}} - {{login.loginName}}
+                    </option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.Submitted && f.LoginID.errors?.notEqual">
+                    Please select login id
+                  </div>
+                </div>
+                <div class="form-group" *ngIf="Mode=='Edit'">
+                  <label class="col-form-label">Approver Name </label>
+                  <div>
+                    {{this.SelectedApproverName}}
+                  </div>
+                </div>
+              </div>
+              <div class="col-8 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Approver Sequence <span class="mandatoryFieldColor">*</span></label>
+                  <!--  <select class="form-control"
+                    [ngClass]="{ 'is-invalid': this.Submitted && f.ApproverSequence.errors?.notEqual }"
+                    formControlName="ApproverSequence">
+                    <option value="-1">--Select Approver Sequence--</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="16">15</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                  </select> -->
+                  <!--<input class="form-control text-right" min="0" step="0.00" type="number" formControlName="ApproverSequence">-->
+                  <input class="form-control  text-left" type="text"
+                         [ngClass]="{ 'is-invalid': this.Submitted && f.ApproverSequence.errors}" formControlName="ApproverSequence" maxlength="7">
+                  <div class="errorlbl" *ngIf="this.Submitted && f.ApproverSequence.errors">
+                    Please select approver sequence
+                  </div>
+                </div>
+              </div>
+              <!--<div class="col-8 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Approver Limit ($) </label>
+                  <input class="form-control text-right" min="0" step="0.00" type="number" [ngClass]="{ 'is-invalid': this.Submitted && f.ApproverLimit.errors}" formControlName="ApproverLimit">
+                  <div class="errorlbl" *ngIf="Submitted && f.ApproverLimit.errors">Please enter approver limit</div>
+                </div>
+              </div>-->
+              <div class="col-8 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Approver Limit ($) </label>
+                  <!--<input class="form-control text-right" min="0"  max="10" step="0.00" type="number" data-type="currency"
+                  onkeydown="javascript: return event.keyCode == 69 ? false : true" formControlName="ApproverLimit" >-->
+                  <input class="form-control text-left" type="text" appFourDigitDecimaNumber maxlength="7"
+                         formControlName="ApproverLimit">
+                </div>
+                <div class="errorlbl" *ngIf="Submitted && f.ApproverLimit.errors">Please enter valid field size</div>
+               
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access || !this.IsActive ||!IsActiveApproves">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='List' || Mode=='Add'">
+    <div class="card-body pb-0">
+      <!--<div class="row">-->
+      <div class="col-md-12">
+        <!--<div class="card">-->
+        <div class="card-header">
+          Workflow Approvers
+          <div class="add-row">
+            <button (click)="AddNew()" class="btn add-btn mr-1" type="button"
+                    [disabled]="!this.write_Access || !this.IsActive || Mode=='Add'">
+              Add Workflow Approvers
+            </button>
+            <button (click)="Back()" class="btn btn-danger" type="button">Back</button>
+          </div>
+        </div>
+        <div *ngIf="!this.IsActive" style="text-align: right;">
+          <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+        </div>
+        <div class="card-body position-relative">
+          <div class="ag-theme-balham" style="width: 100%; height:500px;">
+            <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true" [Currentpage]="this.Currentpage"
+                         (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                         [IsExport]="true" [paginationPageSize]="10" (OnActionClick)="OnActionClick($event)">
+            </app-ag-grid>
+          </div>
+        </div>
+        <!--</div>-->
+      </div>
+      <!--</div>-->
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

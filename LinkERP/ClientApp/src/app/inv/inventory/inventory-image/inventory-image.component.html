@@ -1,0 +1,75 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryImageForm" name="InventoryImageForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory Image
+
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1"  [disabled]="!this.write_Access || !this.IsInventoryActive">Add Image </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                            [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}}  Inventory Image
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label for="file" class="col-form-label">Upload Image </label>
+                  <input class="form-control" type='file' style="padding: 0px;" (change)="onSelectFile($event)"
+                         accept="image/*">
+                </div>
+              </div>
+              <!-- <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label class="col-form-label">Date Created</label>
+                  <input  *ngIf="!read" class="form-control" placeholder="Date" type="text" bsDatepicker
+                         [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',showWeekNumbers:false }"
+                         formControlName="DateCreated">
+                </div>
+
+              </div> -->
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit"  [disabled]="!this.write_Access || !this.IsInventoryActive">Save Image</button>
+            <button class="btn add-btn mr-1" type="button"
+            (click)="onSave('Close')"  [disabled]="!this.write_Access || !this.IsInventoryActive">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>
+

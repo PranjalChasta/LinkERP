@@ -1,0 +1,319 @@
+<h1>Purchase Goods Receive Note</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Purchase Goods Receive Note</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Purchase Goods Receive Note ({{this.PurchaseGoodsReceiveNoteForm.get('GRNNo').value}})</a></li>
+  </ol>
+</nav>
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="PurchaseGoodsReceiveNoteForm" name="PurchaseGoodsReceiveNoteForm" (ngSubmit)="onSave('Save')"
+      class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Purchase Goods Receive Note
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">
+                  Add
+                  Purchase Goods Receive Note
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData" [IsSearch]="true"
+                             [IsExport]="true"
+                             [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             [IsColumnsToFit]="false"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit' || Mode=='Add'"
+           [ngClass]='{"active": AccessTab=="PurchaseGRN"}' data-toggle="tab" (click)="AccessTab='PurchaseGRN'"
+           role="tab">PurchaseGRN</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit'&& AccessTab=='PurchaseGRN'">
+      <div class="card-header">
+        {{Mode}} Purchase Goods Receive Note
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">WareHouse <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="WareHouseID"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.WareHouseID.errors?.notEqual}">
+                      <option value="-1">--Select WareHouse--</option>
+                      <option *ngFor="let warehouse of WareHouse" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} -  {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.WareHouseID .errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control" formControlName="VendorID"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.VendorID.errors?.notEqual}">
+                      <option value="-1">--Select Unit of Vendor--</option>
+                      <option *ngFor="let vendor of Vendor" [value]="vendor.id">
+                        {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.VendorID.errors?.notEqual">
+                      Please select vendor
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Purchase Invoice <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="PurchaseInvoiceID" (change)="onPurchaseInvoiceChange($event.target.value)"
+                            [ngClass]="{ 'is-invalid': this.submitted && f.PurchaseInvoiceID.errors?.notEqual}">
+                      <option value="-1">--Select Purchase Invoice--</option>
+                      <option *ngFor="let invoice of PurchaseInvoice" [value]="invoice.id">
+                        {{invoice.invoiceNo}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.PurchaseInvoiceID .errors?.notEqual">
+                      Please select purchase invoice
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Supplier-Delivery </label>
+                    <input class="form-control" maxlength="255" placeholder="" formControlName="SupplierDeliveryReference" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Received-Date</label>
+                    <!--<input *ngIf="!addreadonly" class="form-control" type="text" bsDatepicker
+                           [bsConfig]="datePickerConfig"
+                           [value]="PurchaseGoodsReceiveNoteForm.get('ReceivedDate').value | date:'MM/dd/yyyy'"
+                           formControlName="ReceivedDate">
+                    <input *ngIf="addreadonly" class="form-control" type="text" bsDatepicker
+                           [bsConfig]="datePickerConfig"
+                           [value]="PurchaseGoodsReceiveNoteForm.get('ReceivedDate').value | date:'MM/dd/yyyy'"
+                           formControlName="ReceivedDate" readonly>-->
+                    <app-date-time-picker *ngIf="!read" formControlName="ReceivedDate" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Insurance </label>
+                    <input class="form-control text-right" placeholder="" formControlName="Insurance" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Insurance Tax </label>
+                    <input class="form-control" maxlength="255" placeholder="" formControlName="InsuranceTaxID" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Insurance TaxRate </label>
+                    <input class="form-control text-right" placeholder="" formControlName="InsuranceTaxRate" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Insurance TaxAmount </label>
+                    <input class="form-control text-right" placeholder="" formControlName="InsuranceTaxAmount" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Freight </label>
+                    <input class="form-control text-right" placeholder="" formControlName="Freight" min="0" step="0.00" type="text" appTwoDigitDecimaNumber>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Freight Tax </label>
+                    <input class="form-control" placeholder="" maxlength="20" formControlName="FreightTaxID" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Freight TaxRate </label>
+                    <input class="form-control text-right" placeholder="" formControlName="FreightTaxRate" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Freight TaxAmount </label>
+                    <input class="form-control text-right" placeholder="" formControlName="FreightTaxAmount" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Duty </label>
+                    <input class="form-control text-right" placeholder="" formControlName="Duty" min="0" step="0.00" type="text" appTwoDigitDecimaNumber>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Duty Tax </label>
+                    <input class="form-control" placeholder="" maxlength="20" formControlName="DutyTaxID" type="text">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Duty TaxRate </label>
+                    <input class="form-control text-right" placeholder="" formControlName="DutyTaxRate" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Duty TaxAmount </label>
+                    <input class="form-control text-right" placeholder="" formControlName="DutyTaxAmount" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Total ExclusiveofTax </label>
+                    <input class="form-control text-right" placeholder="" formControlName="TotalExclusiveofTax" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Tax Total </label>
+                    <input class="form-control text-right" placeholder="" formControlName="TaxTotal" min="0" step="0.00" type="text" appTwoDigitDecimaNumber>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label ">Total InclusiveofTax </label>
+                    <input class="form-control text-right" placeholder="" formControlName="TotalInclusiveofTax" min="0" step="0.00"
+                           type="number">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="onoffswitchPerFlag" *ngIf="Status">
+                      <input type="checkbox" name="onoffswitchPerFlag" class="onoffswitchPerFlag-checkbox"
+                             id="myonoffswitchPerFlag" formControlName="Status">
+                      <label class="onoffswitchPerFlag-label" for="myonoffswitchPerFlag">
+                        <span class="onoffswitchPerFlag-inner"></span>
+                        <span class="onoffswitchPerFlag-switch"></span>
+                      </label>
+                      <div class="errorlbl" *ngIf="submitted && f.Status.errors">Please enter Status</div>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="onoffswitchIncFlag">
+                      <input type="checkbox" name="onoffswitchIncFlag" class="onoffswitchIncFlag-checkbox"
+                             id="onoffswitchIncFlag" formControlName="Invoiced" (click)="switch($event)">
+                      <label class="onoffswitchIncFlag-label" for="onoffswitchIncFlag">
+                        <span class="onoffswitchIncFlag-inner"></span>
+                        <span class="onoffswitchIncFlag-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+
+                <!-- <div class="form-border" >
+                  <h3 class="form-heading">Invoiced</h3>
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                    </div>
+                    <div class="onoffswitchIncFlag">
+                      <input type="checkbox" name="onoffswitchIncFlag" class="onoffswitchIncFlag-checkbox"
+                             id="onoffswitchIncFlag" formControlName="Invoiced" (click)="switch($event)">
+                      <label class="onoffswitchIncFlag-label" for="onoffswitchIncFlag">
+                        <span class="onoffswitchIncFlag-inner"></span>
+                        <span class="onoffswitchIncFlag-switch"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div> -->
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch"
+                      [class.disabled]="!this.PurchaseGoodsReceiveNoteForm.get('Invoiced').value">
+                      <input type="checkbox" class="custom-control-input" formControlName="Invoiced" id="Invoiced">
+                      <label class="custom-control-label" for="Invoiced">Invoiced</label>
+                    </div>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+        <app-purchase-grndetails *ngIf="Mode=='Edit'" [GRNID]="this.SelectedPurchaseGRNID">
+        </app-purchase-grndetails>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedPurchaseGRNID"
+                         [write_Access]="this.write_Access"
+                         [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedPurchaseGRNID"
+                            [HeaderNames]="this.HeaderNames"
+                            [write_Access]="this.write_Access"
+                            [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

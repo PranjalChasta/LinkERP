@@ -1,0 +1,57 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<h1>
+  Configuration
+</h1>
+<nav aria-label="breadcrumb" *ngIf="Mode != 'State'">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Configuration</a></li>
+    
+  </ol>
+</nav>
+<form [formGroup]="ConfigurationForm" name="ConfigurationForm" (ngSubmit)="OnSaveConfigurations()" class="Form-Horizontal">
+  <div class="card">
+    <div class="card-header">
+      Configuration List
+    </div>
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="col-12 col-md-4" *ngIf="Mode=='List' ">
+              <div class="form-group">
+                <label class="col-form-label">Module</label>
+                <select class="form-control" formControlName="Module" (change)="onConfigurationChange($event.target.value)">
+                  <option value="-1">--Select Module Name--</option>
+                  <option *ngFor="let module of Modules" [value]="module.id">
+                    {{module.moduleName}}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true"
+                             [IsEditable]="true"
+                             [paginationPageSize]="10"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+              <div class="form-group text-center" *ngIf="AgLoad">
+                <button class="btn add-btn mr-1" type="submit"  [disabled]="!this.write_Access">Save</button>
+                <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+

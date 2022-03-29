@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="SYS\Interfaces\ITableDataService.cs" />
+    <Compile Remove="SYS\Interfaces\ITablesService.cs" />
+    <Compile Remove="SYS\TableDataService.cs" />
+    <Compile Remove="SYS\TablesService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LinkERP.DAL\LinkERP.DAL.csproj" />
+    <ProjectReference Include="..\LinkERP.Entity\LinkERP.Entity.csproj" />
+  </ItemGroup>
+
+</Project>

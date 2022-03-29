@@ -1,0 +1,485 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+<div class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Purchase Order Detail
+
+              <div class="add-row">
+                <button class="btn add-btn mb-1" *ngIf="this.IsCreatedBY && this.PurchaseStatus=='New'"
+                        (click)="AddNewPurchaseDetail()" [disabled]="!IsParentIsactive" type="button">
+                  Add
+                  Order Detail
+                </button>
+
+
+              </div>
+            </div>
+            <!-- <div class="card-body position-relative"> [disabled]="!this.write_Access"
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="5" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div> -->
+            <div>
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Product Type</th>
+                      <th>Product &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;</th>
+                      <th>Product Description</th>
+                      <th>UOM</th>
+                      <th>Classification</th>
+                      <th>Tax </th>
+                      <th>Tax Rate</th>
+                      <th>Currency</th>
+                      <th>Requisition</th>
+                      <th>VendorPriceScheme</th>
+                      <th class="col1">Ordered Quantity</th>
+                      <th>Conv Ordered Quantity</th>
+                      <th>Foreign Exchange Rate</th>
+                      <th>UnitCost</th>
+                      <th>Home UnitCost</th>
+                      <th>Home Conv UnitCost</th>
+                      <th>Discount Type</th>
+                      <th>Discount Amount</th>
+                      <!-- <th>Discounted UnitCost </th> -->
+                      <th>LineTotalCost TaxEclusive </th>
+                      <th>LineTotal TaxAmount</th>
+                      <th>LineTotalCost TaxInclusive</th>
+                      <th>Foreign Exc Cost Tax Exluv</th>
+                      <th>Discounted UnitCostHome</th>
+                      <th>Discounted UnitCost Foreign</th>
+                      <th>TotalForeignExchange TaxAmount</th>
+                      <th>Exchange Cost Tax Inclusive</th>
+                      <th>Supplier SKU</th>
+                      <!-- <th>Foreign Exchange Unit Cost</th>
+                      <th>Line Total Home Amount</th>
+                      <th>Line Total Foreign Amount</th>
+                      <th>Total CostTaxExc Home</th> -->
+                      <!-- <th>TotalTax AmountHome</th>
+                      <th>Total CostTaxInc Home</th> -->
+                      <th>AllowPartialReceiving</th>
+                      <th>Details</th>
+                      <th class="text-center" *ngIf="this.isApprover">
+                        Approve<input type="checkbox" [checked]="IsAllApproved"
+                                      (change)="checkAll($event,'Approved')" />
+                      </th>
+                      <th class="text-center" *ngIf="this.isApprover">
+                        Reject<input type="checkbox" [checked]="IsAllRejected" (change)="checkAll($event,'Rejected')" />
+                      </th>
+                      <!-- <th class="text-center">Remove<input type="checkbox" [checked]="IsAllNew"
+                          (change)="checkAll($event,'New')" /></th> -->
+                      <!-- <th
+                        *ngIf="this.IsCreatedBY && (this.PurchaseStatus=='New' ||  this.IsAllReject) && this.PurchaseStatus!='Closed'">
+                        Edit</th> -->
+                      <th *ngIf="this.IsCreatedBY && this.PurchaseStatus=='New'">Delete</th>
+                      <th>Cost View</th>
+                      <!-- <th class="text-center">None <input type="checkbox" (change)="checkAll($event,'NoAccess')" /></th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let detailslist of RowData; let i = index"
+                        [ngStyle]="detailslist.checkStatus=='Rejected' && PurchaseStatus!='New'?{'background-color':'red'} : {'background-color': 'white'}">
+                      <td width="100">
+                        <select class="form-control" [(ngModel)]="detailslist.productType" maxlength="50"
+                                [ngStyle]="detailslist.checkStatus=='Rejected' && PurchaseStatus!='New'?{'background-color':'red'} : {'background-color': 'white'}"
+                                style="border: 0;" id="select1" name="select1"
+                                (change)="productTypeStatus($event.target.value,i)">
+                          <option *ngFor="let productStatus of purproductList" [value]="productStatus.value">
+                            {{productStatus.name}}
+                          </option>
+                        </select>
+                      </td>
+                      <td width="100">
+                        <!-- <select class="form-control" (change)="onProductChange($event.target.value,i)"
+                          [(ngModel)]="detailslist.productID" [ngModelOptions]="{standalone: true}"
+                          [disabled]="detailslist.productType =='Com' || detailslist.productType !='INV'"  [ngStyle]="detailslist.checkStatus=='Rejected' && PurchaseStatus!='New'?{'background-color':'red'} : {'background-color': 'white'}" style="border: 0;">
+                          <option value="00000000-0000-0000-0000-000000000000">--Select Product--</option>
+                          <option *ngFor="let InventoryList of inventoryList" [value]="InventoryList.id">
+                            {{InventoryList.productCode}} - {{InventoryList.productName}}
+                          </option>
+                        </select> -->
+                        <!--   [SearchID1]="this.PurchaseOrderID"  -->
+                        <div data-toggle="tooltip" *ngIf="detailslist.productType =='INV'" data-placement="bottom"
+                             [title]="detailslist.productDescription">
+                          <product-search [ModuleName]="'PurchaseOrderDetail'" [(ngModel)]="detailslist.productID"
+                                          (change)="onProductChange($event,i)" [Action]="'PurchaseOrderDetail'"
+                                          [disabled]="detailslist.productType =='Com' || detailslist.productType !='INV'"
+                                          [ngStyle]="detailslist.checkStatus=='Rejected' && PurchaseStatus!='New'?{'background-color':'red'} : {'background-color': 'white'}"
+                                          style="border: 0;">
+                          </product-search>
+                        </div>
+                      </td>
+
+
+                      <td width="100">
+                        <input class="form-control textarea" type="text" maxlength="255"
+                               [ngStyle]="detailslist.checkStatus=='Rejected' && PurchaseStatus!='New'?{'background-color':'red'} : {'background-color': 'white'}"
+                               style="border: 0;font-style: italic;" [(ngModel)]="detailslist.productDescription"
+                               [disabled]="PurchaseStatus!='New'">
+                      </td>
+                      <td *ngIf="detailslist.productType=='INV'" width="100px">
+                        <select class="form-control col2"
+                                [(ngModel)]="detailslist.unitOfMeasure" (change)="onUOMChange(i,$event.target.value)"
+                                [ngModelOptions]="{standalone: true}">
+                          <option value="00000000-0000-0000-0000-000000000000">--Select Unit of Measure--</option>
+                          <option *ngFor="let UOM of detailslist.uomlist" [value]="UOM.uomidFrom">
+                            {{UOM.uomFromName}}
+                          </option>
+                        </select>
+                      </td>
+                      <td *ngIf="detailslist.productType=='Non'" width="100px">
+                        <select class="form-control col2"
+                                [(ngModel)]="detailslist.unitOfMeasure" (change)="onUOMChange(i,$event.target.value)"
+                                [ngModelOptions]="{standalone: true}">
+                          <option value="00000000-0000-0000-0000-000000000000">--Select Unit of Measure--</option>
+                          <option *ngFor="let uom of UOMList" [value]="uom.id">
+                            {{uom.dataCode}} - {{uom.dataName}}
+                          </option>
+                        </select>
+                      </td>
+                      <td *ngIf="detailslist.productType=='Com'"></td>
+                      <td width="100px">
+                        <select class="form-control" [(ngModel)]="detailslist.classificationID" maxlength="50"
+                                [disabled]="detailslist.productType =='Com'">
+                          <option value="null">--Select Classification--</option>
+                          <option *ngFor="let classifications of classification" [value]="classifications.id">
+                            {{classifications.classificationName}}
+                          </option>
+                        </select>
+                      </td>
+                      <td width="100px">
+                        <select class="form-control col2" maxlength="50"
+                                [(ngModel)]="detailslist.taxID" style="width: 100px;"
+                                [disabled]="detailslist.productType =='Com'" (change)="OnTaxChange($event.target.value,i)">
+                          <option value="null">--Select tax--</option>
+                          <option *ngFor="let tax of TaxCode" [value]="tax.id">
+                            {{tax.taxCode}} - {{tax.taxCodeName}}
+                          </option>
+                        </select>
+                      </td>
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder="" [(ngModel)]="detailslist.taxRate"
+                               appFourDigitDecimaNumber type="text" (input)="ForLineTotalTaxAmount(i)"
+                               (keypress)="onlyNumberKey($event)" readonly [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col2">
+
+                        <select class="form-control" [(ngModel)]="detailslist.currencyID" [disabled]="true">
+                          <option value="-1">--Select Currency--</option>
+                          <option *ngFor="let currencylist of Currency" [value]="currencylist.id">
+                            {{currencylist.currencyCode}} - {{currencylist.currecnyName}}
+                          </option>
+                        </select>
+                      </td>
+                      <td class="col2">
+
+                        <select class="form-control" style="width: 150px;" [(ngModel)]="detailslist.requisitionID"
+                                [ngModelOptions]="{standalone: true}" [disabled]="desablevenderpriceANDRequisition">
+                          <option value="-1">--Select Requisition--</option>
+                          <option *ngFor="let requisitions of Requisitions" [value]="requisitions.id">
+                            {{requisitions.requisitionNumber}}
+                          </option>
+                        </select>
+                      </td>
+                      <td class="col2">
+                        <select class="form-control" maxlength="50" [(ngModel)]="detailslist.vendorPriceSchemeID"
+                                [disabled]="desablevenderpriceANDRequisition" [ngModelOptions]="{standalone: true}">
+                          <option value="-1">--Select tax--</option>
+                          <option *ngFor="let vendorPriceScheme of VendorPriceSchemeList"
+                                  [value]="vendorPriceScheme.id">
+                            {{vendorPriceScheme.productDescription}} - {{vendorPriceScheme.dealsType}}
+                          </option>
+                        </select>
+
+                      </td>
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder="" [(ngModel)]="detailslist.orderedQuantity"
+                               type="text" (input)="OnquantityChange(i)" appTwoDigitDecimaNumber
+                               [disabled]="detailslist.productType =='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder=""
+                               [(ngModel)]="detailslist.convertedOrderedQuantity" appTwoDigitDecimaNumber type="text"
+                               readonly [disabled]="detailslist.productType =='Com'">
+
+                      </td>
+
+                      <td class="col1">
+
+                        <input class="form-control textarea text-right" type="text" appFourDigitDecimaNumber
+                               [(ngModel)]="detailslist.fxRate" (input)="OnfxRateChange(i)"
+                               (keypress)="onlyNumberKey($event)" [disabled]="detailslist.productType =='Com'">
+                      </td>
+                      <td class="col1">
+
+                        <input class="form-control text-right" placeholder="" [(ngModel)]="detailslist.unitCost"
+                               (input)="OnfxRateChange(i)"
+                               (change)="OnChangeUnitCost($event.target.value,detailslist.vendorPriceSchemeID,detailslist.unitOfMeasure,i)"
+                               appFourDigitDecimaNumber type="text" [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+
+                        <input class="form-control text-right" placeholder="" [(ngModel)]="detailslist.homeUnitCost"
+                               type="text" appFourDigitDecimaNumber readonly [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+
+                        <input class="form-control text-right" placeholder=""
+                               [(ngModel)]="detailslist.homeConvertedUnitCost" type="text" appFourDigitDecimaNumber readonly
+                               [disabled]="detailslist.productType=='Com'">
+
+                      </td>
+                      <td class="col1">
+                        <select class="form-control" [(ngModel)]="detailslist.discountType" (change)="OnfxRateChange(i)"
+                                [ngModelOptions]="{standalone: true}" [disabled]="detailslist.productType =='Com' ">
+                          <option value=true>Percent</option>
+                          <option value=false>Value</option>
+                        </select>
+                      </td>
+
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder="" [(ngModel)]="detailslist.discountAmount"
+                               appTwoDigitDecimaNumber type="text" (keypress)="onlyNumberKey($event)"
+                               (input)="OndiscountAmountChange(i)" [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <!-- <td class="col1">
+                        <input class="form-control" placeholder="" [(ngModel)]="detailslist.discountedUnitCostHome"
+                          appTwoDigitDecimaNumber type="text" readonly [disabled]="detailslist.productType=='Com'">
+                      </td> -->
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder=""
+                               [(ngModel)]="detailslist.lineTotalCostTaxEclusive" appFourDigitDecimaNumber type="text"
+                               readonly [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder=""
+                               [(ngModel)]="detailslist.lineTotalTaxAmount" appTwoDigitDecimaNumber type="text" readonly
+                               [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder=""
+                               [(ngModel)]="detailslist.lineTotalCostTaxInclusive" appTwoDigitDecimaNumber type="text"
+                               readonly [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control textarea text-right" type="text" appTwoDigitDecimaNumber
+                               [(ngModel)]="detailslist.lineTotalForeignExchangeCostTaxExclusive" readonly
+                               [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder=""
+                               [(ngModel)]="detailslist.discountedUnitCostHome" type="text" appTwoDigitDecimaNumber readonly
+                               [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder=""
+                               [(ngModel)]="detailslist.discountedUnitCostForeign" type="text" appTwoDigitDecimaNumber
+                               readonly [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control text-right" placeholder=""
+                               [(ngModel)]="detailslist.lineTotalForeignExchangeTaxAmount" type="text"
+                               appTwoDigitDecimaNumber readonly [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+
+                        <input class="form-control textarea text-right" type="text" appTwoDigitDecimaNumber
+                               [(ngModel)]="detailslist.lineTotalForeignExchangeCostTaxInclusive" readonly
+                               [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control textarea" type="text" placeholder="SKU"
+                               [(ngModel)]="detailslist.supplierSKU" maxlength="50"
+                               [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <!--  <td class="col1">
+                        <input class="form-control textarea" type="text" appTwoDigitDecimaNumber
+                          [(ngModel)]="detailslist.foreignExchangeUnitCost" placeholder="foreignExchangeUnitCost"
+                          [disabled]="detailslist.productType=='Com'">
+                      </td> -->
+                      <!-- <td class="col1">
+                        <input class="form-control text-right" appFourDigitDecimaNumber type="text"
+                          [(ngModel)]="detailslist.lineTotalHomeAmount" placeholder="lineTotalHomeAmount"
+                          [disabled]="detailslist.productType=='Com'">
+                      </td> -->
+                      <!--  <td class="col1">
+                        <input class="form-control textarea" type="text" appTwoDigitDecimaNumber
+                          [(ngModel)]="detailslist.lineTotalForeignAmount" placeholder="lineTotalForeignAmount"
+                          [disabled]="detailslist.productType=='Com'">
+                      </td> -->
+                      <!-- <td class="col1">
+                        <input class="form-control" placeholder=""
+                          [(ngModel)]="detailslist.lineTotalCostTaxExclusiveHome" type="text" appTwoDigitDecimaNumber
+                          [disabled]="detailslist.productType=='Com'">
+                      </td> -->
+                      <!--  <td class="col1">
+                        <input class="form-control" placeholder="lineTotalTaxAmountHome"
+                          [(ngModel)]="detailslist.lineTotalTaxAmountHome" type="text" appTwoDigitDecimaNumber
+                          [disabled]="detailslist.productType=='Com'">
+                      </td>
+                      <td class="col1">
+                        <input class="form-control" placeholder="0"
+                          [(ngModel)]="detailslist.lineTotalCostTaxInclusiveHome" type="text" appTwoDigitDecimaNumber
+                          [disabled]="detailslist.productType=='Com'">
+                      </td> -->
+                      <td>
+                        <div class="custom-control custom-switch swtch">
+                          <input type="checkbox" class="custom-control-input"
+                                 [(ngModel)]="detailslist.allowPartialReceiving" [ngModelOptions]="{standalone: true}"
+                                 id="AllowPartialReceiving{{i}}"
+                                 [disabled]="detailslist.productType=='Com' ||  this.PurchaseStatus =='Approved' ">
+                          <label class="custom-control-label" for="AllowPartialReceiving{{i}}" [attr.readonly]="true">
+                          </label>
+                        </div>
+                      </td>
+                      <td>
+                        <div *ngIf="detailslist.productStyleMatrixEnabled">
+
+                          <a *ngIf="IsParentIsactive" (click)="ProductMatrix(matrix,i)">
+                            <i class="bi fa fa-align-justify"
+                               aria-hidden="true"></i>
+                          </a>
+
+                        </div>
+                      </td>
+
+                      <td width="50" class="text-center"
+                          *ngIf="!detailslist.id && this.IsCreatedBY &&  this.PurchaseStatus=='New'">
+                        <button class="btn add-btn mr-1" type="button" (click)="Deleteindex(i)">Remove</button>
+                      </td>
+                      <td *ngIf="detailslist.id && this.IsCreatedBY &&  this.PurchaseStatus=='New' && !detailslist.deleted">
+                        <a (click)="DeletepurchaseOrderDetail(detailslist.id)">
+                          <i class="fa fa-trash-o"
+                             aria-hidden="true"></i>
+                        </a>
+                      </td>
+                      <td *ngIf="detailslist.id && this.IsCreatedBY &&  this.PurchaseStatus=='New' && detailslist.deleted ">
+                        <a (click)="DeletepurchaseOrderDetail(detailslist.id)">
+                          <i class="bi fa fa-undo"
+                             aria-hidden="true"></i>
+                        </a>
+                      </td>
+                      <td *ngIf="this.isApprover" width="50" class="text-center">
+                        <input type="checkbox" [checked]="detailslist.purchaseLineStatus=='Approved'"
+                               (change)="onOptionSelected(i, $event, 'Approved')" />
+                      </td>
+                      <!-- [disabled]="detailslist.checkStatus=='Rejected' && purchaseLineStatus!='New' " -->
+                      <td *ngIf="this.isApprover" width="50" class="text-center">
+                        <input type="checkbox" [checked]="detailslist.purchaseLineStatus=='Rejected'"
+                               (change)="onOptionSelected(i, $event,'Rejected')" />
+                      </td>
+                      <td>
+                        <div>
+
+                          <a (click)="CostView(costview,i)">
+                            <i class="bi fa fa-align-justify"
+                               aria-hidden="true"></i>
+                          </a>
+
+                        </div>
+                      </td>
+                      <!--   [disabled]="detailslist.checkStatus=='Rejected' && purchaseLineStatus!='New' "
+                          <div *ngIf="detailslist.productStyleMatrixEnabled">
+
+                          <a (click)="ProductMatrix(matrix,i)"><i class="bi fa fa-align-justify"
+                              aria-hidden="true"></i></a>
+
+                        </div>
+
+
+                        <td class="action-tools" width="50"
+                          *ngIf="this.IsCreatedBY && (this.PurchaseStatus=='New' ||  this.IsAllReject) && this.PurchaseStatus!='Closed'">
+                          <a (click)="EditRoleModule(i)"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                        </td>
+                        <td class="action-tools" width="50" *ngIf="this.IsCreatedBY &&  this.PurchaseStatus=='New'">
+                          <a (click)="DeleteRoleModule(i)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                        </td>
+                      </tr> -->
+                  </tbody>
+                </table>
+              </div>
+              <div class="form-group text-center" *ngIf="this.PurchaseStatus=='New'">
+                <button [disabled]="!IsParentIsactive" class="btn add-btn mr-1" type="button" (click)="UpdateStatus()">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group text-center"
+                 *ngIf="this.isApprover && this.RowData && this.RowData.length>0 && this.PurchaseStatus!='Closed'">
+              <!-- <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" (click)="UpdateStatus()">
+                Save Changes
+              </button> -->
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access  || !IsParentIsactive"
+                      *ngIf="this.isApprover && this.IsNextApprover" (click)="UpdatePurchaseStatus('3')">
+                Delegate
+              </button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access || !IsParentIsactive"
+                      *ngIf="this.isApprover && this.PurchaseStatus=='Approval In Progress'"
+                      (click)="UpdateStatusChanges()">
+                Save Changes
+              </button>
+              <!-- <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access"
+                *ngIf="this.isApprover && this.PurchaseStatus=='Approval In Progress'"
+                (click)="UpdatePurchaseStatus('5')">Approve</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access"
+                *ngIf="this.isApprover  && this.PurchaseStatus=='Approval In Progress'"
+                (click)="UpdatePurchaseStatus('6')">Reject</button> -->
+              <!-- <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access"
+                *ngIf="this.isApprover  && this.PurchaseStatus=='Approved'"
+                (click)="UpdatePurchaseStatus('7')">Partially Received</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #matrix>
+    <div class="modal-content">
+      <div class="modal-body">
+        <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+
+        <app-purchase-product-matrix [ProductID]="ProductID" [SelectedPurchaseDetail_ID]="SelectedPurchaseDetail_ID"
+                                     [PurchaseStatus]="PurchaseStatus" [SelectedQuantity]="SelectedQuantity" (OnCancel)="Closenote()">
+        </app-purchase-product-matrix>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #costview>
+    <div class="modal-content">
+      <div class="modal-body">
+        <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+        <table class="table table-bordered table-striped" style="width: 500px;">
+          <thead>
+            <tr>
+              <th>supplierName</th>
+              <th>Unit Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ccostView of CostViewData">
+              <td>
+                {{ccostView.supplierName}}
+              </td>
+              <td>
+                {{ccostView.suppliersUnitCost}}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-template>
+</div>
+
+
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event,i)">
+</confirmation-dialog-popup>

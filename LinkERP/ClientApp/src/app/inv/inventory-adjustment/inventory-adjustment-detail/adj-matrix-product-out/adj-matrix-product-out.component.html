@@ -1,0 +1,77 @@
+<div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+  <div style="float: right;">
+    <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+      <label style="width: 70px;">Sort By</label>
+      <select class="form-control" (change)="onColumnNameSelected($event.target.value)" [(ngModel)]="colName">
+        <option value="-1" style="text-align: center;">---Select Column---</option>
+        <option value="Color">Color</option>
+        <option value="Size">Size</option>
+        <option value="TransactionDateIn">Purchase Date</option>
+        <option value="QuantityOnHand">Available Qty</option>
+      </select>
+    </div>
+    <br />
+  </div>
+
+  <table class="table table-bordered table-striped" *ngIf="SerialListOut && SerialListOut.length>0">
+    <thead>
+      <tr>
+        <!--   <th>Bulk no</th> -->
+        <th>{{this.ColumnName}}</th>
+        <th>{{this.RowName}}</th>
+        <th>Product Code</th>
+        <th>Description</th>
+        <th>Purchase Date</th>
+        <th>Available Quantity</th>
+        <th>Adj.Qty</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let detailslist of SerialListOut; let i = index">
+        <!--  <td>
+          <select class="form-control" [(ngModel)]="detailslist.binID">
+            <option value="-1">--Select Bin--</option>
+            <option *ngFor="let binlist of BinList" [value]="binlist.id">
+              {{binlist.binName}}
+            </option>
+          </select>
+          <label>{{detailslist.binName}}</label>
+        </td>  -->
+        <td>
+          <label>{{detailslist.productMatrixColumnname}}</label>
+
+        </td>
+        <td>
+          <label>{{detailslist.productMatrixRowname}}</label>
+        </td>
+        <td>{{this.SelectedProductCode}}</td>
+        <td>{{this.SelectedProductDescription}}</td>
+        <td>
+          <label>{{detailslist.transactionDateIn | date:'dd-MM-yyyy'}}</label>
+          <!-- <input class="form-control" type="text" placeholder="Date" [(ngModel)]="detailslist.transactionDateIn" [value]="detailslist.transactionDateIn | date:'YYYY-MM-DD'"> -->
+        </td>
+        <td>
+          <label>{{detailslist.quantityOnHand}}</label>
+          <!-- <input class="form-control" placeholder="quantity" [(ngModel)]="detailslist.quantity" type="text" OnlyNumber="true"></td>  -->
+        </td>
+        <td>
+          <input class="form-control" (input)="onSearchChange($event.target.value,i)" [(ngModel)]="detailslist.adjQty"
+            type="text" appTwoDigitDecimaNumber>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div *ngIf="SerialListOut && SerialListOut.length==0" style="text-align:center;padding-right: 80px;">
+  <label class="col-form-label">No out stock available </label>
+</div>
+<div *ngIf="SerialListOut && SerialListOut.length>0" style="text-align: right;padding-right: 80px;">
+  <label class="col-form-label">Total Adj Quantity: </label> {{this.totalAdjQty}}
+</div>
+<div class="form-group text-center" *ngIf="SerialListOut && SerialListOut.length>0">
+  <button class="btn add-btn mr-1" type="button" (click)="SaveOutStock('Save')"
+    [disabled]="this.CurrentStatus!='New'">Save Changes</button>
+  <button class="btn add-btn mr-1" type="button" (click)="SaveOutStock('Close')"
+    [disabled]="this.CurrentStatus!='New'">Save & Close</button>
+  <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+</div>

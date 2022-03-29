@@ -1,0 +1,98 @@
+<div class="card" *ngIf="Menuaccess=='paymentcloseshift'">
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="col-12 col-md-12">
+          <div class="form-group">
+            <label class="col-form-label">Cashier</label><br />
+            <label class="col-form-label"><b>{{cashier}}</b></label>
+          </div>
+        </div>
+        <div class="col-12 col-md-12">
+          <div class="form-group">
+            <label class="col-form-label">Shift ID</label><br />
+            <label class="col-form-label"><b>{{shiftNumber}}</b></label>
+          </div>
+        </div>
+        <div class="col-12 col-md-12">
+          <div class="form-group">
+            <label class="col-form-label">Date</label><br />
+            <label class="col-form-label"><b>{{currentDate}}</b></label>
+          </div>
+        </div>
+        <div>
+          <div class="card-body position-relative">
+            <div class="ag-theme-balham" style="width: 100%;">
+              <div class="table-responsive table-padd">
+                <h1>Payment Method Being Closed</h1>
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th style="display: none;"></th>
+                      <th>Payment Type</th>
+                      <th>Details</th>
+                      <th>System Amount</th>
+                      <th>Till Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let data of paymentValues">
+                      <td style="display: none;">{{data.paymentID}}</td>
+                      <td>{{data.paymentType}}</td>
+                      <td></td>
+                      <td>{{data.amount}}</td>
+                      <td>{{data.tillAmount}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="form-group text-left">
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">System Amount</label>
+                  <input class="form-control" [(ngModel)]='systemAmount' type="number">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Till Amount</label>
+                  <input class="form-control" [(ngModel)]='tillAmount' type="number">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Variance</label>
+                  <input class="form-control" [(ngModel)]='varianceAmount' type="number">
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <input type="checkbox" name="chkbxacceptvaramt" (change)="onCheckboxChange($event.target.value)">Accept
+                Variance Amount
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-12">
+            <div class="form-group text-right">
+              <button class="btn add-btn mr-1" type="button" (click)="ClosePartial()">Partial Close</button>
+              <button class="btn add-btn mr-1" type="button" (click)="CloseFull()">Full Close</button>
+              <button class="btn add-btn mr-1" type="button" (click)="Back()">Back</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Exit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="Menuaccess=='closeshift' ">
+  <app-close-shift [ShiftID]="this.shiftID"></app-close-shift>
+</div>
+<div *ngIf="Menuaccess=='ShiftList' ">
+  <app-shift-list>
+  </app-shift-list>
+</div>

@@ -1,0 +1,135 @@
+<!-- <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> -->
+<form [formGroup]="TemplateDetailForm" name="TemplateDetailForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+</form>
+<h1>Purchase Template Detail<span *ngIf="Mode == 'Edit'">({{TemplateDetailForm.get('ProductType').value}})</span></h1>
+<form [formGroup]="TemplateDetailForm" name="TemplateDetailForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Purchase Template Detail
+
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1" [disabled]="!this.write_Access || !IsParentActive">Add Template
+                  Detail</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  [paginationPageSize]="this.PageSize" (OnPageSizeChange)="OnPageSizeChange($event)"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Purchase Template Detail
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Product Type<span class="mandatoryFieldColor">*</span> </label>
+                  <select class="form-control" formControlName="ProductType"
+                    (change)="productTypeStatus($event.target.value)" id="select1" name="select1">
+
+                    <option *ngFor="let productStatus of purproductList;let i=index" [value]="productStatus.value">
+
+                      {{productStatus.name}}
+                    </option>
+                  </select>
+
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Product<span class="mandatoryFieldColor">*</span></label>
+                  <!-- <select class="form-control" formControlName="Product"
+                    [ngClass]="{ 'is-invalid': submitted && f.Product.errors}"
+                    (change)="onProductChange($event.target.value)">
+                    <option value="00000000-0000-0000-0000-000000000000">--Select Product--</option>
+                    <option *ngFor="let InventoryList of inventoryList" [value]="InventoryList.id">
+                      {{InventoryList.productCode}} - {{InventoryList.productName}}
+                    </option>
+                  </select> -->
+                  <div data-toggle="tooltip"
+                  data-placement="bottom" 
+                  [title]= "this.ProductDescription" >
+                  <product-search [ModuleName]="'PurchaseTemplate'" [Action]="'PurchaseTemplate'" formControlName="Product" [WarehouseID]="this.WareHouseId" (change)="onProductChange($event)" [ngClass]="{ 'is-invalid': submitted && f.Product.errors}">
+                  </product-search>
+                  </div>
+                  <div class="errorlbl" *ngIf="this.submitted && f.Product.errors?.notEqual">
+                    Please select Product
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Product Description </label>
+                  <input class="form-control textarea" type="text" formControlName="ProductDescription" maxlength="255">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Classification</label>
+                  <select class="form-control" formControlName="Classification">
+                    <option value="-1">--Select Classification--</option>
+                    <option *ngFor="let classifications of classification" [value]="classifications.id">
+                      {{classifications.classificationName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> UOM</label>
+                  <select class="form-control" formControlName="PurchaseUOM">
+                    <option value="00000000-0000-0000-0000-000000000000">--Select Unit of Measure--</option>
+                    <option *ngFor="let UOM of UOMList" [value]="UOM.id">
+                      {{UOM.dataCode}} -  {{UOM.dataName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Quantity</label>
+                  <input class="form-control text-right" min="0" step="0.00" appTwoDigitDecimaNumber type="text"
+                    formControlName="Quantity">
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit"
+              [disabled]="!this.write_Access ||  !this.IsActive ||!IsParentActive">Save</button>
+            <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive ||!IsParentActive"
+              (click)="onSave('Close')">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!this.IsActive ||!IsParentActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

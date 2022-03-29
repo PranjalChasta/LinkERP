@@ -1,0 +1,740 @@
+<h1>Purchase Order <span *ngIf="Mode == 'Edit'"> ({{this.PurOrderForm.get('PurOrderNumber').value}})</span>
+</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Purchase Order</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Purchase
+        Order</a></li>
+  </ol>
+</nav>
+ <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div> 
+<div *ngIf="Mode!='Templete'">
+  <form [formGroup]="PurOrderForm" name="PurOrderForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+    <div #sectionNeedToScroll></div>
+    <div class="card" *ngIf="Mode=='List'">
+
+      <div class="card-body pb-0">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                Purchase Order Form
+
+                <div class="add-row">
+
+                  <button (click)="AddPOFromTemplete()" class="btn add-btn mb-1" type="button">
+                    Add PO From
+                    Template
+                  </button>
+                  <span style="padding-left: 10px;"></span>
+                  <button (click)="AddNewPurchaseOrder()" class="btn add-btn mb-1" type="button">
+                    Add Purchase
+                    Order
+                  </button>
+                </div>
+              </div>
+
+              <div class="card-body position-relative">
+                <div class="ag-theme-balham" style="width: 100%; height:550px;">
+                  <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                               [IsColumnsToFit]="false" [IsExport]="true" [Currentpage]="this.Currentpage"
+                               (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="this.PageSize"
+                               (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+                  </app-ag-grid>
+                </div>
+                <!-- <div style="padding-left: 50px;font-size: larger;"> <b>Total: Tax Exclusive: {{this.taxExclTotal}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tax: {{this.totalTax}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              Tax Inclusive: {{this.taxInclTotal}}</b> </div> -->
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+
+      <nav>
+
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+          <a class="nav-item nav-link" *ngIf="Mode=='Edit' || Mode=='Add'"
+             [ngClass]='{"active": AccessTab=="PurchaseOrder"}' data-toggle="tab" (click)="AccessTab='PurchaseOrder'"
+             role="tab">Purchase</a>
+
+
+          <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="PurchaseApprovalLogic"}'
+             data-toggle="tab" (click)="AccessTab='PurchaseApprovalLogic'" role="tab">Approval Logs</a>
+
+
+          <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Purchaseaudit"}'
+             data-toggle="tab" (click)="AccessTab='Purchaseaudit'" role="tab">Purchase Order Audit</a>
+
+        </div>
+      </nav>
+      <div *ngIf="(Mode=='Add' || Mode=='Edit') && AccessTab=='PurchaseOrder'">
+
+        <div class="card-header">
+
+          {{Mode}} Purchase Order
+        </div>
+        <div class="card-body pb-0">
+          <div class="tab-content pt-2 pb-1">
+            <div class="tab-pane fade show active">
+              <div class="form-border mt-0">
+                <div class="row">
+                  <!--Po number -->
+                  <div *ngIf="Mode=='Edit'" class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">PO Number</label><br>
+                      <label style="font-size: 14px;"
+                             class="col-form-label"><b>{{this.PurOrderForm.get('PurOrderNumber').value}}</b></label>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <!-- Vendor ID -->
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Vendor<span class="mandatoryFieldColor">*</span> </label>
+                      <select [ngClass]="{ 'is-invalid': this.submitted && f.PurOrderVendorID.errors?.notEqual}"
+                              class="form-control" formControlName="PurOrderVendorID" (change)="onVendorChange($event)">
+                        <option value="-1">--Select Vendor--</option>
+                        <option *ngFor="let vendor of Vendors" [value]="vendor.id">
+                          {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                        </option>
+                      </select>
+                      <div class="errorlbl" *ngIf="submitted && f.PurOrderVendorID.errors">
+                        Please select vendor name
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Vendor WareHouse Id -->
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Vendor WareHouse<span class="mandatoryFieldColor">*</span> </label>
+                      <select class="form-control" formControlName="VendorWareHouseDD"
+                              [ngClass]="{ 'is-invalid': this.submitted && f.VendorWareHouseDD.errors?.notEqual}">
+                        <option value="-1">--Select Vendor WareHouse--</option>
+                        <option *ngFor="let vendorWarehouse of VendorWareHouse" [value]="vendorWarehouse.id">
+                          {{vendorWarehouse.description}}
+                        </option>
+                      </select>
+                      <div class="errorlbl" *ngIf="this.submitted && f.VendorWareHouseDD.errors?.notEqual">
+                        Please select vendor warehouse
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="col-12 col-md-3"></div> -->
+                  <!-- Attention To -->
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Attention to</label>
+                      <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Attentionto.errors}"
+                             type="text" formControlName="Attentionto" maxlength="50">
+                      <div class="errorlbl" *ngIf="this.submitted && f.Attentionto.errors">
+                        Please enter attention to
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Attention Phone -->
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Attention Phone</label>
+                      <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.AttentionPhone.errors}"
+                             type="text" formControlName="AttentionPhone" maxlength="50">
+                      <div class="errorlbl" *ngIf="this.submitted && f.AttentionPhone.errors">
+                        Please enter attention
+                        phone
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Ship to Warehouse -->
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">ShiptoWarehouse <span class="mandatoryFieldColor">*</span></label>
+                      <select class="form-control" formControlName="ShiptoWarehouseDD"
+                              [ngClass]="{ 'is-invalid': this.submitted && f.ShiptoWarehouseDD.errors?.notEqual}">
+                        <option value="-1">--Select Warehouse--</option>
+                        <option *ngFor="let warehouse of Warehouse" [value]="warehouse.id">
+                          {{warehouse.wareHouseCode}} - {{warehouse.wareHouseName}}
+                        </option>
+                      </select>
+                      <div class="errorlbl" *ngIf="this.submitted && f.ShiptoWarehouseDD.errors?.notEqual">
+                        Please select warehouse
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Expected Delivery Date -->
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+
+                      <label class="col-form-label">
+                        Expected Delivery Date<span class="mandatoryFieldColor">*</span>
+                      </label>
+                      <!--<input class="form-control" type="text"  bsDatepicker
+                  [bsConfig]="datePickerConfig" formControlName="ExpDeliveryDate"
+                  [value]="PurOrderForm.get('ExpDeliveryDate').value | date:'MM/dd/yyyy'"
+                  [ngClass]="{ 'is-invalid': this.submitted && f.ExpDeliveryDate.errors}">-->
+                      <app-date-time-picker formControlName="ExpDeliveryDate" [showTimePicker]="false"
+                                            [isInvalid]="(submitted && f.ExpDeliveryDate.errors)"></app-date-time-picker>
+                      <div class="errorlbl" *ngIf="submitted && f.ExpDeliveryDate.errors">
+                        Please select expected delivery date
+                      </div>
+                    </div>
+                  </div>
+                  <!--Purchased Ordered Date -->
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Purchase order validity days</label>
+                      <input class="form-control" type="text" maxlength="50" formControlName="PurOrderValDays">
+                    </div>
+                  </div>
+                  <!-- Purchase Order Workflow -->
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">
+                        Purchase Order Workflow <span class="mandatoryFieldColor">*</span>
+                      </label>
+                      <select class="form-control" formControlName="PurOrderWorkflowDD"
+                              [ngClass]="{ 'is-invalid': this.submitted && f.PurOrderWorkflowDD.errors?.notEqual}">
+                        <option value="00000000-0000-0000-0000-000000000000">--Select Workflow--</option>
+                        <option *ngFor="let poWorkFlow of poWorkFlow" [value]="poWorkFlow.id">
+                          {{poWorkFlow.workFlowCode}} - {{poWorkFlow.workFlowName}}
+                        </option>
+
+                      </select>
+
+                      <div class="errorlbl" *ngIf="this.submitted && f.PurOrderWorkflowDD.errors?.notEqual">
+                        Please select purchase order workflow
+                      </div>
+                    </div>
+                  </div>
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Freight Tax</label>-->
+                      <!-- <input class="form-control" placeholder="TaxID" type="text" formControlName="Tax"> -->
+                      <!--<select class="form-control" formControlName="FreightTaxID"
+                              (change)="OnTaxChange($event.target.value,'FreightTaxID')">
+                        <option value="00000000-0000-0000-0000-000000000000">--Select Freight Tax--</option>
+                        <option *ngFor="let tax of TaxcodeList" [value]="tax.id">
+                          {{tax.taxCode}} - {{tax.taxCodeName}} - {{tax.taxLabel}}
+                        </option>
+                      </select>
+
+                    </div>
+                  </div>-->
+                  <!-- <div class="col-12 col-md-3"></div> -->
+                  <!-- Freight -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Freight Tax Exclusive</label>
+                      <input class="form-control text-right" (keypress)="onlyNumberKey($event)"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.Freight.errors}" appFourDigitDecimaNumber
+                             type="text" formControlName="Freight">
+                      <div class="errorlbl" *ngIf="this.submitted && f.Freight.errors"> Please enter freight</div>
+                    </div>
+                  </div>-->
+
+
+                  <!-- FreightTaxId -->
+                  <!-- <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Freight Tax ID</label>
+                  <input class="form-control" maxlength="50"  type="text" formControlName="FreightTaxID">
+
+                </div>
+              </div> -->
+                  <!-- FreightTaxRate -->
+                  <!--  <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Freight Tax Rate</label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.FreightTaxRate.errors}" appFourDigitDecimaNumber (keypress)="onlyNumberKey($event)" readonly
+                    type="text" formControlName="FreightTaxRate">
+                  <div class="errorlbl" *ngIf="this.submitted && f.FreightTaxRate.errors"> Please enter freight tax
+                    Rate</div>
+                </div>
+              </div> -->
+                  <!-- FreightTaxAmount -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Freight Tax Amount</label>
+                      <input class="form-control text-right"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.FreightTaxAmount.errors}" readonly
+                             appFourDigitDecimaNumber type="text" formControlName="FreightTaxAmount">
+                      <div class="errorlbl" *ngIf="this.submitted && f.FreightTaxAmount.errors">
+                        Please enter freight
+                        tax amount
+                        Amount
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Freight Tax Inclusive</label>
+                      <input class="form-control text-right" (change)="OnFreightTaxInclusiveChange()"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.FreightTaxInclusive.errors}"
+                             appFourDigitDecimaNumber type="text" formControlName="FreightTaxInclusive">
+                      <div class="errorlbl" *ngIf="this.submitted && f.FreightTaxInclusive.errors">
+                        Please enter freight
+                        tax amount
+                        Amount
+                      </div>
+                    </div>
+                  </div>-->
+                  <!-- DutyTaxId -->
+                  <!--<div class="col-12 col-md-3">-->
+                    <!-- <div class="form-group">
+                  <label class="col-form-label">Duty Tax ID</label>
+                  <input class="form-control" maxlength="50"  type="text" formControlName="DutyTaxID">
+
+                </div> -->
+                    <!--<div class="form-group">
+                      <label class="col-form-label">Duty Tax</label>-->
+                      <!-- <input class="form-control" placeholder="TaxID" type="text" formControlName="Tax"> -->
+                      <!--<select class="form-control" formControlName="DutyTaxID"
+                              (change)="OnTaxChange($event.target.value,'DutyTaxID')">
+                        <option value="00000000-0000-0000-0000-000000000000">--Select Duty Tax --</option>
+                        <option *ngFor="let tax of TaxcodeList" [value]="tax.id">
+                          {{tax.taxCode}} - {{tax.taxCodeName}} - {{tax.taxLabel}}
+                        </option>
+                      </select>
+
+                    </div>
+                  </div>-->
+                  <!-- Duty -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">
+                        Duty Tax Exclusive
+                      </label>
+                      <input class="form-control text-right"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.Duty.errors}" appFourDigitDecimaNumber
+                             type="text" (keypress)="onlyNumberKey($event)" formControlName="Duty">
+                      <div class="errorlbl" *ngIf="this.submitted && f.Duty.errors"> Please enter duty</div>
+                    </div>
+                  </div>-->
+
+
+                  <!-- DutyTaxRate -->
+                  <!-- <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Duty Tax Rate</label>
+                  <input class="form-control text-right"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.DutyTaxRate.errors}" appFourDigitDecimaNumber (keypress)="onlyNumberKey($event)"  readonly
+                    type="text" formControlName="DutyTaxRate">
+                  <div class="errorlbl" *ngIf="this.submitted && f.DutyTaxRate.errors"> Please enter duty tax rate
+                  </div>
+                </div>
+              </div> -->
+                  <!-- DutyTaxAmount -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Duty Tax Amount</label>
+                      <input class="form-control text-right"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.DutyTaxAmount.errors}" readonly
+                             appFourDigitDecimaNumber type="text" formControlName="DutyTaxAmount">
+                      <div class="errorlbl" *ngIf="this.submitted && f.DutyTaxAmount.errors">
+                        Please enter duty tax
+                        amount
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Duty Tax Inclusive</label>
+                      <input class="form-control text-right" (change)="OnDutyTaxInclusiveChange()"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.DutyTaxInclusive.errors}"
+                             appFourDigitDecimaNumber type="text" formControlName="DutyTaxInclusive">
+                      <div class="errorlbl" *ngIf="this.submitted && f.DutyTaxInclusive.errors">
+                        Please enter Duty Tax
+                        Inclusive
+                      </div>
+                    </div>
+                  </div>-->
+                  <!--InsuranceTaxId -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Insurance Tax ID</label>-->
+                      <!-- <input class="form-control"  type="text" maxlength="50"
+                  formControlName="InsuranceTaxID"> -->
+                      <!--<select class="form-control" formControlName="InsuranceTaxID"
+                              (change)="OnTaxChange($event.target.value,'InsuranceTaxID')">
+                        <option value="00000000-0000-0000-0000-000000000000">--Select Insurance Tax --</option>
+                        <option *ngFor="let tax of TaxcodeList" [value]="tax.id">
+                          {{tax.taxCode}} - {{tax.taxCodeName}} - {{tax.taxLabel}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>-->
+                  <!-- Insurance -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Insurance Tax Exclusive</label>
+                      <input class="form-control text-right" (keypress)="onlyNumberKey($event)" appFourDigitDecimaNumber
+                             type="text" [ngClass]="{ 'is-invalid': this.submitted && f.Insurance.errors}"
+                             formControlName="Insurance">
+                      <div class="errorlbl" *ngIf="this.submitted && f.Insurance.errors"> Please enter insurance</div>
+                    </div>
+                  </div>-->
+
+
+                  <!-- InsuranceTaxRate -->
+                  <!-- <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label class="col-form-label">Insurance Tax Rate</label>
+                  <input class="form-control text-right" (keypress)="onlyNumberKey($event)"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.InsuranceTaxRate.errors}"  readonly
+                    appFourDigitDecimaNumber type="text" formControlName="InsuranceTaxRate">
+                  <div class="errorlbl" *ngIf="this.submitted && f.InsuranceTaxRate.errors"> Please enter Insurance
+                    tax rate</div>
+                </div>
+              </div> -->
+                  <!-- InsuranceTaxAmount -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Insurance Tax Amount</label>
+                      <input class="form-control text-right" readonly
+                             [ngClass]="{ 'is-invalid': this.submitted && f.InsuranceTaxAmount.errors}"
+                             appFourDigitDecimaNumber type="text" formControlName="InsuranceTaxAmount">
+                      <div class="errorlbl" *ngIf="this.submitted && f.InsuranceTaxAmount.errors">
+                        Please enter
+                        insurance
+                        tax amount
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">Insurance Tax Inclusive</label>
+                      <input class="form-control text-right" (change)="OnInsuranceTaxInclusiveChange()"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.InsuranceTaxInclusive.errors}"
+                             appFourDigitDecimaNumber type="text" formControlName="InsuranceTaxInclusive">
+                      <div class="errorlbl" *ngIf="this.submitted && f.InsuranceTaxInclusive.errors">
+                        Please enter Duty
+                        Tax Inclusive
+                      </div>
+                    </div>
+                  </div>-->
+
+                  <!--POTaxExclusiveTotal -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">PO Tax Exclusive Total</label>
+                      <input class="form-control text-right" appFourDigitDecimaNumber type="text"
+                             formControlName="POTaxExclusiveTotal" readonly>
+                    </div>
+                  </div>-->
+                  <!-- POTotalTax -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">PO Total Tax</label>
+                      <input class="form-control text-right" appFourDigitDecimaNumber type="text"
+                             formControlName="POTotalTax" readonly>
+                    </div>
+                  </div>-->
+                  <!--POTaxInclusiveTotal -->
+                  <!--<div class="col-12 col-md-3">
+                    <div class="form-group">
+                      <label class="col-form-label">PO Tax Inclusive Total</label>
+                      <input class="form-control text-right" appFourDigitDecimaNumber type="text" readonly
+                             formControlName="POTaxInclusiveTotal">
+                    </div>
+                  </div>-->
+
+
+                </div>
+              </div>
+              <!--<div class="form-group text-center">
+                <button class="btn add-btn mr-1"
+                        [disabled]="!this.write_Access || !this.IsActive || this.PurchaseStatus =='Approved'"
+                        *ngIf="this.PurchaseStatus !='Approval In Progress' " type="submit">
+                  Save
+                </button>
+                <button class="btn add-btn mr-1" type="button"
+                        [disabled]="!this.write_Access || !this.IsActive || this.PurchaseStatus =='Approved'"
+                        *ngIf="this.PurchaseStatus !='Approval In Progress'  " (click)="onSave('Close')">
+                  Save & Close
+                </button>
+                <button *ngIf="this.IsCreatedBY && this.PurchaseStatus=='New'"
+                        [disabled]="!this.write_Access || !this.IsActive" class="btn add-btn mr-1"
+                        (click)="UpdatePurchaseStatus(2)" type="button">
+                  Submit Purchase Order
+                </button>
+                <button class="btn add-btn mr-1" [disabled]="!this.write_Access || !this.IsActive"
+                        *ngIf="this.PurchaseStatus =='Approved' || this.PurchaseStatus =='Partially Received' " type="button"
+                        type="submit" (click)="CreateGRN()">
+                  Create GRN
+                </button>-->
+
+                <!--  <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover && this.IsNextApprover" (click)="UpdatePurchaseStatus('3')">Delegate</button>
+            <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover && this.PurchaseStatus=='Approval In Progress'" (click)="UpdatePurchaseStatus('5')">Approve</button>
+            <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover  && this.PurchaseStatus=='Approval In Progress'" (click)="UpdatePurchaseStatus('6')" >Reject</button>
+            <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access" *ngIf="this.isApprover  && this.PurchaseStatus=='Approval In Progress'" (click)="UpdatePurchaseStatus('7')" >Partially Received</button> -->
+                <!--<button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+              </div>
+              <div *ngIf="!this.IsActive" style="text-align: center;">
+                <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+              </div>-->
+            </div>
+          </div>
+          <!-- <app-purchase-order-detail *ngIf="Mode=='Edit'" [VendorID]="this.VendorID"
+        [PurchaseOrderID]="this.SelectedPurchaseOrderID" [PurchaseStatus]="this.PurchaseStatus" [isApprover]="this.isApprover"  [IsCreatedBY]="this.IsCreatedBY"  (RefreshMaingrid)="RefreshMaingrid($event)"   (OnUpdatePurchaseStatus)="UpdatePurchaseStatus($event)" >
+
+      </app-purchase-order-detail> -->
+          <app-purchase-orderdetail-inline *ngIf="Mode=='Edit'" [VendorID]="this.VendorID"
+                                           [PurchaseOrderID]="this.SelectedPurchaseOrderID" [PurchaseStatus]="this.PurchaseStatus"
+                                           [isApprover]="this.isApprover" [IsCreatedBY]="this.IsCreatedBY" (RefreshMaingrid)="RefreshMaingrid($event)"
+                                           [SelectedCurrencyID]="this.SelectedCurrencyID" (OnUpdatePurchaseStatus)="UpdatePurchaseStatus($event)" [IsParentIsactive]="IsActive">
+          </app-purchase-orderdetail-inline>
+        </div>
+      </div>
+      <div *ngIf="Mode=='Edit' && AccessTab=='PurchaseApprovalLogic'">
+        <app-purchase-approval-logic [IsParentIsactive]="IsActive" [PurchaseOrderID]="this.SelectedPurchaseOrderID">
+        </app-purchase-approval-logic>
+      </div>
+      <div *ngIf="Mode=='Edit' && AccessTab=='Purchaseaudit'">
+        <app-purchase-order-audit [PurchaseOrderID]="this.SelectedPurchaseOrderID">
+
+        </app-purchase-order-audit>
+      </div>
+
+      <!--------------->
+      <div style="display:flex" *ngIf="(Mode=='Add' || Mode=='Edit') && AccessTab=='PurchaseOrder'">
+        <div class="col-12 col-md-6">
+          <div class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th style="width:20%"></th>
+                  <th style="width:20%">Ex. Amount</th>
+                  <th style="width:20%">Tax Rate</th>
+                  <th style="width:20%">Tax</th>
+                  <th style="width:20%">Inc Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td width="50">Freight</td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" (keypress)="onlyNumberKey($event)"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.Freight.errors}" appFourDigitDecimaNumber
+                             type="text" formControlName="Freight">
+                      <div class="errorlbl" *ngIf="this.submitted && f.Freight.errors"> Please enter freight</div>
+                    </div>
+                  </td>
+                  <td width="50">
+                    <div class="form-group">
+                      <select class="form-control" formControlName="FreightTaxID"
+                              (change)="OnTaxChange($event.target.value,'FreightTaxID')">
+                        <option value="00000000-0000-0000-0000-000000000000">--Select Freight Tax--</option>
+                        <option *ngFor="let tax of TaxcodeList" [value]="tax.id">
+                          {{tax.taxCode}} - {{tax.taxCodeName}} - {{tax.taxLabel}}
+                        </option>
+                      </select>
+                    </div>
+                  </td>
+
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.FreightTaxAmount.errors}" readonly
+                             appFourDigitDecimaNumber type="text" formControlName="FreightTaxAmount">
+                      <div class="errorlbl" *ngIf="this.submitted && f.FreightTaxAmount.errors">
+                        Please enter freight
+                        tax amount
+                        Amount
+                      </div>
+                    </div>
+                  </td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" (change)="OnFreightTaxInclusiveChange()"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.FreightTaxInclusive.errors}"
+                             appFourDigitDecimaNumber type="text" formControlName="FreightTaxInclusive">
+                      <div class="errorlbl" *ngIf="this.submitted && f.FreightTaxInclusive.errors">
+                        Please enter freight
+                        tax amount
+                        Amount
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50">Duty</td>
+
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.Duty.errors}" appFourDigitDecimaNumber
+                             type="text" (keypress)="onlyNumberKey($event)" formControlName="Duty">
+                      <div class="errorlbl" *ngIf="this.submitted && f.Duty.errors"> Please enter duty</div>
+                    </div>
+                  </td>
+                  <td width="50">
+                    <div class="form-group">
+                      <select class="form-control" formControlName="DutyTaxID"
+                              (change)="OnTaxChange($event.target.value,'DutyTaxID')">
+                        <option value="00000000-0000-0000-0000-000000000000">--Select Duty Tax --</option>
+                        <option *ngFor="let tax of TaxcodeList" [value]="tax.id">
+                          {{tax.taxCode}} - {{tax.taxCodeName}} - {{tax.taxLabel}}
+                        </option>
+                      </select>
+                    </div>
+                  </td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.DutyTaxAmount.errors}" readonly
+                             appFourDigitDecimaNumber type="text" formControlName="DutyTaxAmount">
+                      <div class="errorlbl" *ngIf="this.submitted && f.DutyTaxAmount.errors">
+                        Please enter duty tax
+                        amount
+                      </div>
+                    </div>
+                  </td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" (change)="OnDutyTaxInclusiveChange()"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.DutyTaxInclusive.errors}"
+                             appFourDigitDecimaNumber type="text" formControlName="DutyTaxInclusive">
+                      <div class="errorlbl" *ngIf="this.submitted && f.DutyTaxInclusive.errors">
+                        Please enter Duty Tax
+                        Inclusive
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50">Insurance</td>
+
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" (keypress)="onlyNumberKey($event)" appFourDigitDecimaNumber
+                             type="text" [ngClass]="{ 'is-invalid': this.submitted && f.Insurance.errors}"
+                             formControlName="Insurance">
+                      <div class="errorlbl" *ngIf="this.submitted && f.Insurance.errors"> Please enter insurance</div>
+                    </div>
+                  </td>
+                  <td width="50">
+                    <div class="form-group">
+                      <select class="form-control" formControlName="InsuranceTaxID"
+                              (change)="OnTaxChange($event.target.value,'InsuranceTaxID')">
+                        <option value="00000000-0000-0000-0000-000000000000">--Select Insurance Tax --</option>
+                        <option *ngFor="let tax of TaxcodeList" [value]="tax.id">
+                          {{tax.taxCode}} - {{tax.taxCodeName}} - {{tax.taxLabel}}
+                        </option>
+                      </select>
+                    </div>
+                  </td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" readonly
+                             [ngClass]="{ 'is-invalid': this.submitted && f.InsuranceTaxAmount.errors}"
+                             appFourDigitDecimaNumber type="text" formControlName="InsuranceTaxAmount">
+                      <div class="errorlbl" *ngIf="this.submitted && f.InsuranceTaxAmount.errors">
+                        Please enter
+                        insurance
+                        tax amount
+                      </div>
+                    </div>
+                  </td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" (change)="OnInsuranceTaxInclusiveChange()"
+                             [ngClass]="{ 'is-invalid': this.submitted && f.InsuranceTaxInclusive.errors}"
+                             appFourDigitDecimaNumber type="text" formControlName="InsuranceTaxInclusive">
+                      <div class="errorlbl" *ngIf="this.submitted && f.InsuranceTaxInclusive.errors">
+                        Please enter insurance
+                        Tax Inclusive
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th style="width:20%"></th>
+                  <th style="width:20%">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td width="50">Sub Total</td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" appFourDigitDecimaNumber type="text"
+                             formControlName="POTaxExclusiveTotal" readonly>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50">Tax</td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" appFourDigitDecimaNumber type="text"
+                             formControlName="POTotalTax" readonly>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50">Total</td>
+                  <td width="50">
+                    <div class="form-group">
+                      <input class="form-control text-right" appFourDigitDecimaNumber type="text" readonly
+                             formControlName="POTaxInclusiveTotal">
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="form-group text-center">
+        <button class="btn add-btn mr-1"
+                [disabled]="!this.write_Access || !this.IsActive || this.PurchaseStatus =='Approved'"
+                *ngIf="this.PurchaseStatus !='Approval In Progress' " type="submit">
+          Save
+        </button>
+        <button class="btn add-btn mr-1" type="button"
+                [disabled]="!this.write_Access || !this.IsActive || this.PurchaseStatus =='Approved'"
+                *ngIf="this.PurchaseStatus !='Approval In Progress'  " (click)="onSave('Close')">
+          Save & Close
+        </button>
+        <button *ngIf="this.IsCreatedBY && this.PurchaseStatus=='New'"
+                [disabled]="!this.write_Access || !this.IsActive" class="btn add-btn mr-1"
+                (click)="UpdatePurchaseStatus(2)" type="button">
+          Submit Purchase Order
+        </button>
+        <button class="btn add-btn mr-1" [disabled]="!this.write_Access || !this.IsActive"
+                *ngIf="this.PurchaseStatus =='Approved' || this.PurchaseStatus =='Partially Received' " type="button"
+                type="submit" (click)="CreateGRN()">
+          Create GRN
+        </button>
+        <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+      </div>
+      <div *ngIf="!this.IsActive" style="text-align: center;">
+        <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+      </div>
+      <!--------------->
+    </div>
+   
+  </form>
+</div>
+<div *ngIf="Mode=='Templete'">
+  <app-create-po-from-templete (OnBackClick)="OnBackClick($event)">
+
+  </app-create-po-from-templete>
+</div>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

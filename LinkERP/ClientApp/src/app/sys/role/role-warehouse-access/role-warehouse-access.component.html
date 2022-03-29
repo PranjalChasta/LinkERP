@@ -1,0 +1,62 @@
+<form [formGroup]="RoleWarehouseAccessForm" name="RoleWarehouseAccessForm" (ngSubmit)="onSave()"  class="Form-Horizontal">
+  <div class="row">
+    <div class="col-12 col-md-5">
+      <div class="form-group">
+        <label class="col-form-label">Organisation</label>
+        <select class="form-control" formControlName="Organisation" (change)="onChangeCompany($event.target.value)">
+          <option value="-1">--Select Organisation--</option>
+          <option *ngFor="let company of RoleCompanyAccess" [value]="company.companyID">{{company.name}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-12 col-md-5">
+      <div class="form-group">
+        <label class="col-form-label">Warehouse</label>
+        <select class="form-control" formControlName="Warehouse">
+          <option value="-1">--Select Warehouse--</option>
+          <option *ngFor="let war of Warehouse" [value]="war.id">{{war.wareHouseName}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-12 col-md-2">
+      <div class="form-group">
+        <label class="w-100"></label>
+        <button class="btn add-btn sml-btn" type="button"  [disabled]="!IsActive" (click)="AddWarehouseAccess()">Add</button>
+      </div>
+    </div>
+  </div>
+  <!--<div>
+    <ol>  
+      <li  *ngFor="let company of Companies">{{company.name}}</li>
+    </ol>
+  </div>-->
+  <div class="tab-content pt-2 pb-1" id="nav-tabContent">
+    <div class="table-responsive table-padd">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th > Organisation Code</th>
+            <th >Organisation Name</th>
+            <th >Warehouse Code</th>
+            <th>Warehouse Name</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody formArrayName="RoleWarehouseAccess">
+          <tr *ngFor="let roleWarehouseAccess of RoleWarehouseAccessForm.get('RoleWarehouseAccess').controls; let i = index" [formGroupName]="i" >
+            <td width="60" >{{roleWarehouseAccess.get('OrganisationCode').value}}</td>
+            <td width="150" >{{roleWarehouseAccess.get('OrganisationName').value}}</td>
+           
+            <td width="60">{{roleWarehouseAccess.get('WarehouseCode').value}}</td>
+            <td width="150">{{roleWarehouseAccess.get('WarehouseName').value}}</td>
+            
+            <td class="action-tools" width="50">
+              <a *ngIf ="delete_Access" (click)="DeleteRoleWarehouse(i, roleWarehouseAccess.get('warehouse').value)"><i class="fa fa-trash-o"
+                  aria-hidden="true"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>

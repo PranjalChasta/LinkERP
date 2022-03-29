@@ -1,0 +1,41 @@
+<div class="input-group mr-2">
+    <input [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'" class="form-control" (blur)="inputBlur($event)"
+        [ngModel]="dateString | date:inputDatetimeFormat" (change)="onInputChange($event)" [disabled]='disabled' />
+
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" [ngbPopover]="calendarContent" [disabled]='disabled' type="button" 
+        style="border-radius: 0px 2px 4px 0px; padding: .3rem .5rem; min-width: 42px;"> 
+            <!-- <fa-icon [icon]="['far', 'calendar']"></fa-icon> -->
+            <i class="fa fa-calendar"></i>
+        </button>
+    </div>
+</div>
+
+<ng-template #calendarContent>
+    <div>
+        <div *ngIf="!showTimePickerToggle">
+            <button class="btn btn-block btn-outline-secondary" type="button" (click)="Today($event)">
+                Today
+            </button>
+            <ngb-datepicker #dp name="datepicker" [ngModel]="datetime" (ngModelChange)="onDateChange($event)">
+            </ngb-datepicker>
+            <button class="btn btn-block btn-outline-secondary" [disabled]="!datetime?.day"
+                [ngbPopover]="timePickerContent" type="button" (click)="toggleDateTimeState($event)">
+                <!-- <fa-icon [icon]="['far', 'clock']"></fa-icon> -->
+                <i class="fa fa-clock-o"></i>
+            </button>
+        </div>
+        <div *ngIf="showTimePickerToggle">
+            <button class="btn btn-block btn-outline-secondary" [ngbPopover]="calendarContent" type="button"
+                (click)="toggleDateTimeState($event)">
+                <!-- <fa-icon [icon]="['far', 'calendar']"></fa-icon> -->
+                <a><i class="fa fa-calendar"></i></a>
+            </button>
+            <div class="mt-auto">
+                <ngb-timepicker #tp name="timepicker" [ngModel]="datetime" (ngModelChange)="onTimeChange($event)"
+                    [seconds]="seconds" [hourStep]="hourStep" [minuteStep]="minuteStep" [secondStep]="secondStep">
+                </ngb-timepicker>
+            </div>
+        </div>
+    </div>
+</ng-template>

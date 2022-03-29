@@ -1,0 +1,490 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="QuotationDetailsForm" name="QuotationDetailsForm" class="Form-Horizontal">
+  <div class="card-header">Quotation Details Form</div>
+  <div class="card-body pb-0" ng-class="{'my-disable':true}">
+    <div class="tab-content pt-2 pb-1">
+      <!-- <button class="btn add-btn" style="float: right;margin-right: 10px; margin-bottom: 5px;" type="button"
+        (click)="AddNewQuotationDetail()">Add</button> -->
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="table-responsive table-padd">
+            <!-- <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Line Num</th>
+                  <th>Inventory Type</th>
+                  <th>Product</th>
+                  <th>Description</th>
+                  <ng-container *ngIf="!CommentLine">
+                    <th>Product<br> Weight</th>
+                    <th>Product<br> Cubic</th>
+                    <th>Decimal<br> Places</th>
+                    <th>Inventory GL <br> Classification</th>
+                    <th>Inventory<br> Cost</th>
+                    <th>Transaction <br> quantity</th>
+                  </ng-container>
+                  <th>UOM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <th>UnitPrice</th>
+                  <th>Discount <br> Type</th>
+                  <th>Discount <br> Amount</th>
+                  <th>TaxID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <th>TaxRate</th>
+                  <th>TaxLabel</th>
+                  <th>LineTotal <br>ExcludingTax</th>
+                  <th>LineTotal <br>TaxAmount</th>
+                  <th>LineTotal <br>IncludingTax</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <input class="form-control" formControlName="LineNum" type="text"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.LineNum.errors}" appTwoDigitDecimaNumber>
+                  </td>
+                  <td>
+                    <select class="form-control" formControlName="InventoryType">
+                      <option *ngFor="let inventoryType of posInventoryType" [value]="inventoryType.value">
+                        {{inventoryType.name}}
+                      </option>
+                    </select>
+                  </td>
+                  <td *ngIf="!makeAsTextBox">
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.ProductID.errors}"
+                      formControlName="ProductID" (change)="onProductChange($event)">
+                      <option value="-1">--Select Product--</option>
+                      <option *ngFor="let inventory of inventoryList" [value]="inventory.productID">
+                        {{inventory.productCode}}-{{inventory.productName}}
+                      </option>
+                    </select>
+                    <product-search [ModuleName]="'QuotationDetails'" formControlName="ProductID" [ngClass]="{ 'is-invalid': this.submitted && f.ProductID.errors}">
+                    </product-search>
+                  </td>
+                  <td *ngIf="makeAsTextBox">
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.ProductID.errors}"
+                      formControlName="ProductID" type="text">
+                  </td>
+                  <td *ngIf="CommentLine">
+                    <input style="width: 247vh;" class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Description.errors}" formControlName="Description"
+                      type="text">
+                  </td>
+                  <ng-container *ngIf="!CommentLine">
+                    <td>
+                      <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.Description.errors}"
+                        formControlName="Description" type="text">
+                    </td>
+                    <td>
+                      <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.ProductWeight.errors}" -->
+            <!-- formControlName="ProductWeight" type="text" appFourDigitDecimaNumber>
+                      {{this.QuotationDetailsForm.get('ProductWeight').value.toString().indexOf(".") !== -1 ? this.QuotationDetailsForm.get('ProductWeight').value:this.QuotationDetailsForm.get('ProductWeight').value +".00"}}
+                    </td>
+                    <td>
+                      <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.ProductCubic.errors}"
+                      formControlName="ProductCubic" type="text" appFourDigitDecimaNumber>
+                      {{this.QuotationDetailsForm.get('ProductCubic').value.toString().indexOf(".") !== -1 ? this.QuotationDetailsForm.get('ProductCubic').value:this.QuotationDetailsForm.get('ProductCubic').value +".00"}}
+                    </td>
+                    <td>
+                       <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.DecimalPlaces.errors}" -->
+            <!-- formControlName="DecimalPlaces" type="text" appFourDigitDecimaNumber> 
+                      {{this.QuotationDetailsForm.get('DecimalPlaces').value}}
+                    </td>
+                    <td>
+                       <input class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.InventoryGLClassification.errors}"
+                      formControlName="InventoryGLClassification" type="text"> 
+                      {{this.QuotationDetailsForm.get('InventoryGLClassification').value}}
+                    </td>
+                    <td>
+                       <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.InventoryCost.errors}"
+                      formControlName="InventoryCost" type="text" appFourDigitDecimaNumber> 
+                      {{this.QuotationDetailsForm.get('InventoryCost').value.toString().indexOf(".") !== -1 ? this.QuotationDetailsForm.get('InventoryCost').value:this.QuotationDetailsForm.get('InventoryCost').value +".0000"}}
+                    </td>
+                    <td>
+                       <input class="form-control"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.TransactionQuantity.errors}"
+                      formControlName="TransactionQuantity" type="text" appFourDigitDecimaNumber> 
+                      {{this.QuotationDetailsForm.get('TransactionQuantity').value.toString().indexOf(".") !== -1 ? this.QuotationDetailsForm.get('TransactionQuantity').value:this.QuotationDetailsForm.get('TransactionQuantity').value +".0000"}}
+                    </td>
+                  </ng-container>
+                  <td>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.UOM.errors}"
+                      (change)="onUOMChanged(i,$event)" formControlName="UOM">
+                      <option value="-1">--Select UOM--</option>
+                      <option *ngFor="let uom of UOMList" [value]="uom.id">
+                        {{uom.dataCode}} - {{uom.dataName}}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input class="form-control text-right" [ngClass]="{ 'is-invalid': this.submitted && f.UnitPrice.errors}"
+                      formControlName="UnitPrice" [value]="0.0000" type="text" appFourDigitDecimaNumber>
+                  </td>
+                  <td>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.DiscountType.errors}"
+                      formControlName="DiscountType">
+                      <option value="-1">--Select Discount Type--</option>
+                      <option [value]="0">
+                        Value</option>
+                      <option [value]="1">
+                        Percent</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input class="form-control text-right" [ngClass]="{ 'is-invalid': this.submitted && f.DiscountAmount.errors}"
+                      formControlName="DiscountAmount" type="text" appFourDigitDecimaNumber>
+                  </td>
+                  <td>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.TaxID.errors}"
+                      (change)="onTaxIDChanged($event)" formControlName="TaxID">
+                      <option value="-1">--Select Tax--</option>
+                      <option *ngFor="let tax of taxcodes" [value]="tax.id">
+                        {{tax.taxCode}} - {{tax.taxCodeName}}</option>
+                    </select>
+                  </td>
+                  <td style="text-align: center;">
+                    <input class="form-control" readonly formControlName="TaxRate" type="text"> 
+                    {{this.QuotationDetailsForm.get('TaxRate').value != "" ? this.QuotationDetailsForm.get('TaxRate').value.toString().indexOf(".") !== -1 ? this.QuotationDetailsForm.get('TaxRate').value:this.QuotationDetailsForm.get('TaxRate').value+".0000" : "0.0000"}}
+                  </td>
+                  <td>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.submitted && f.TaxLabel.errors}"
+                      formControlName="TaxLabel" type="text">
+                  </td>
+                  <td style="text-align: center;">
+                    <input class="form-control text-right" formControlName="LineTotalExcludingTax" type="text" appFourDigitDecimaNumber>
+                     {{this.QuotationDetailsForm.get('LineTotalExcludingTax').value}} 
+                  </td>
+                  <td style="text-align: center;">
+                    <input class="form-control text-right" formControlName="LineTotalTaxAmount" type="text" appFourDigitDecimaNumber>
+                     {{this.QuotationDetailsForm.get('LineTotalTaxAmount').value}} 
+                  </td>
+                  <td style="text-align: center;">
+                    <input class="form-control text-right" formControlName="LineTotalIncludingTax" type="text" appFourDigitDecimaNumber>
+                    {{this.QuotationDetailsForm.get('LineTotalIncludingTax').value}} 
+                  </td>
+
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top: 13px;" class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit">{{this.submitName}}
+              </button>
+              <button class="btn btn-danger" type="button" (click)="Close()">Close</button>
+            </div> -->
+            <table *ngIf="QuotationDetailsData.length>0" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                <tr>
+                  <!-- <th>Line Num</th>
+                  <th>Inventory Type</th>
+                  <th>Product</th>
+                  <th>Description</th>
+                  <th>Product<br> Weight</th>
+                  <th>Product<br> Cubic</th>
+                  <th>Decimal<br> Places</th>
+                  <th>Inventory GL <br> Classification</th>
+                  <th>Inventory<br> Cost</th>
+                  <th>Transaction <br> quantity</th>
+                  <th>UOM</th>
+                  <th>UnitPrice</th>
+                  <th>Discount <br> Type</th>
+                  <th>Discount <br> Amount</th>
+                  <th>TaxID</th>
+                  <th>TaxRate</th>
+                  <th>TaxLabel</th>
+                  <th>LineTotal <br>ExcludingTax</th>
+                  <th>LineTotal <br>TaxAmount</th>
+                  <th>LineTotal <br>IncludingTax</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                  <th>Tax Details</th> -->
+                  <th>Product</th>
+                  <th>Description</th>
+                  <th>Product<br> Weight</th>
+                  <th>Product<br> Cubic</th>
+                  <th>Decimal<br> Places</th>
+                  <th>Inventory GL <br> Classification</th>
+                  <th>Inventory<br> Cost</th>
+                  <th>Quantity</th>
+                  <th>UOM</th>
+                  <th>Unit Price</th>
+                  <!-- <th>Tax Type</th> -->
+                  <th>Tax Amount</th>
+                  <th>Discount</th>
+                  <th>TaxID</th>
+                  <th>TaxRate</th>
+                  <th>TaxLabel</th>
+                  <th>Discounted Unit Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let quotationdetail of QuotationDetailsData; let i = index;">
+                  <td>
+                    <product-search [ModuleName]="'QuotationDetails'" [(ngModel)]="quotationdetail.productID"
+                      (changedetails)="changedetails($event,matrix,serial,Kit,i)" [ngModelOptions]="{standalone: true}"
+                      style="border: 0;">
+                    </product-search>
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.description" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.productWeight" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.productCubic" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.decimalPlaces" [ngModelOptions]="{standalone: true}" [disabled]="true">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.inventoryGLClassification" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.inventoryCost" [ngModelOptions]="{standalone: true}" [disabled]="true">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.transactionQuantity" (click)="OnquantityChange(quantity,i)"
+                      [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.uomDataName" [ngModelOptions]="{standalone: true}" [disabled]="true">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.unitPrice" (click)="OnunitpriceChange(unitprice,i)"
+                      [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.lineTotalTaxAmount" 
+                      [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.discountAmount" (click)="OndiscountChange(discount,i)" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.taxCodeName" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.taxRate" [disabled]="true" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.taxLabel" [disabled]="true" [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td>
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.lineTotalExcludingTax" [disabled]="true"
+                      [ngModelOptions]="{standalone: true}">
+                  </td>
+                  <td width="20">
+                    <input class="form-control textarea" type="text" maxlength="255" style="border: 0;"
+                      [(ngModel)]="quotationdetail.lineTotalIncludingTax" [ngModelOptions]="{standalone: true}"
+                      [disabled]="true">
+                  </td>
+                  <td *ngIf="quotationdetail.id" (click)="deleteQuotationDetailRow(quotationdetail.id)">
+                    <i class="re fa fa-trash-o"></i>
+                  </td>
+                  <td width="50" class="text-center" *ngIf="!quotationdetail.id">
+                    <button class="btn add-btn mr-1" type="button" (click)="Deleteindex(i)">Remove</button></td>
+                  <!-- <td colspan="20" *ngIf="quotationdetail.inventoryType =='Com'">{{quotationdetail.description}}</td> -->
+                  <!-- <ng-container *ngIf="quotationdetail.inventoryType !='Com'"> -->
+                  <!-- <td>
+                      {{quotationdetail.lineNum}}
+                    </td> -->
+                  <!-- <td>
+                      {{quotationdetail.inventoryType}}
+                    </td> -->
+                  <!-- <td>
+                      {{quotationdetail.productName}}
+                    </td>
+                    <td>
+                      {{quotationdetail.description}}
+                    </td> -->
+                  <!-- <td>
+                      {{quotationdetail.productWeight.toString().indexOf(".") !== -1 ? quotationdetail.productWeight:quotationdetail.productWeight +".00"}}
+                    </td> -->
+                  <!-- <td>
+                      {{quotationdetail.productCubic.toString().indexOf(".") !== -1 ? quotationdetail.productCubic:quotationdetail.productCubic +".00"}}
+                    </td> -->
+                  <!-- <td>
+                      {{quotationdetail.decimalPlaces}}
+                    </td>
+                    <td>
+                      {{quotationdetail.inventoryGLClassification}}
+                    </td> -->
+                  <!-- <td>
+                      {{quotationdetail.inventoryCost.toString().indexOf(".") !== -1 ? quotationdetail.inventoryCost:quotationdetail.inventoryCost +".0000"}}
+                    </td>
+                    <td>
+                      {{quotationdetail.transactionQuantity.toString().indexOf(".") !== -1 ? quotationdetail.inventoryCost:quotationdetail.inventoryCost +".0000"}}
+                    </td> -->
+                  <!-- <td>
+                      {{quotationdetail.uomDataName}}
+                    </td>
+                    <td>
+                      {{quotationdetail.unitPrice.toString().indexOf(".") !== -1 ? quotationdetail.unitPrice:quotationdetail.unitPrice +".0000"}}
+                    </td>
+                    <td>
+                      {{quotationdetail.discountTypeName}}
+                    </td>
+                    <td>
+                      {{quotationdetail.discountAmount.toString().indexOf(".") !== -1 ? quotationdetail.discountAmount:quotationdetail.discountAmount +".0000"}}
+                    </td>
+                    <td>
+                      {{quotationdetail.taxCodeName}}
+                    </td>
+                    <td>
+                      {{quotationdetail.taxRate.toString().indexOf(".") !== -1 ? quotationdetail.taxRate:quotationdetail.taxRate +".0000"}}
+                    </td>
+                    <td>
+                      {{quotationdetail.taxLabel}}
+                    </td>
+                    <td>
+                      {{quotationdetail.lineTotalExcludingTax.toString().indexOf(".") !== -1 ? quotationdetail.lineTotalExcludingTax:quotationdetail.lineTotalExcludingTax +".0000"}}
+                    </td>
+                    <td>
+                      {{quotationdetail.lineTotalTaxAmount.toString().indexOf(".") !== -1 ? quotationdetail.lineTotalTaxAmount:quotationdetail.lineTotalTaxAmount +".0000"}}
+                    </td>
+                    <td>
+                      {{quotationdetail.lineTotalIncludingTax.toString().indexOf(".") !== -1 ? quotationdetail.lineTotalIncludingTax:quotationdetail.lineTotalIncludingTax +".0000"}}
+                    </td> -->
+                  <!-- </ng-container> -->
+                  <!-- <td (click)="Edit(quotationdetail)">
+                    <i class="bi fa fa-pencil"></i>
+                  </td>
+                  <td (click)="deleteQuotationDetailRow(quotationdetail)">
+                    <i class="re fa fa-trash-o"></i>
+                  </td>
+                  <td *ngIf="quotationdetail.inventoryType !='Com'">
+                    <a (click)="TaxDetail(tax,quotationdetail.taxID)"><i class="bi fa fa-align-justify"
+                        aria-hidden="true"></i>
+                    </a>
+                  </td> -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <button class="btn add-btn mb-1" (click)="AddNewrow()" type="button" [disabled]="!this.IsActive">
+              Add Detail
+            </button>
+            <!-- <button class="btn add-btn mb-1" style="float: right;" (click)="CheckOut()" type="button">
+              Checkout
+            </button> -->
+          </div>
+          <div>
+            <button class="btn add-btn mb-1" (click)="onSave()" type="button" [disabled]="!this.IsActive">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- <ng-template #tax>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-quotation-detail-tax-labels [QuotationLineId]="this.QuotationMainID" [TaxId]="this.selectedTaxId"
+        (OnCancel)="closePopUp()">
+      </app-quotation-detail-tax-labels>
+    </div>
+  </div>
+</ng-template> -->
+<ng-template #quantity>
+  <div class="modal-content">
+    <div class="modal-body">
+      <app-change-quantity [SelectedproductID]="SelectedproductID" [SelectedQuantity]="SelectedQuantity"
+        [SelectedRow]="selectedRow" [selectedDebtorID]="SelctedDebtorID" [SelectedRowValue]="selectedRowValue"
+        (Cancel)="closePopUp()" (setQuantity)="setQuantity($event)">
+      </app-change-quantity>
+    </div>
+  </div>
+</ng-template>
+<ng-template #unitprice>
+  <div class="modal-content">
+    <div class="modal-body">
+      <app-change-unitprice [SelectedproductID]="SelectedproductID" [SelectedUnitprice]="SelectedUnitprice"
+        (Cancel)="closePopUp()" (setUnitprice)="setUnitprice($event)">
+      </app-change-unitprice>
+    </div>
+  </div>
+</ng-template>
+<ng-template #discount>
+  <div class="modal-content">
+    <div class="modal-body">
+      <app-change-discount [SelectedproductID]="SelectedproductID" [SelectedDiscount]="SelectedDiscount"
+        [SelectedTotal]="SelectedTotal" [LineBeforeDiscount]="LineBeforeDiscount" (Cancel)="closePopUp()"
+        (setDiscount)="setDiscount($event)" [SelectedQuantity]="SelectedQuantity"
+        [SelctedDebtorID]="this.SelectedQuotationID" [WarehouseID]="this.WarehouseID">
+      </app-change-discount>
+    </div>
+  </div>
+</ng-template>
+<ng-template #taxLabel>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-sop-order-detail-tax-label [SalesOrderDetailID]="this.selectedOrderDetailId" [TaxId]="this.selectedTaxId"
+        (OnCancel)="closePopUp()">
+      </app-sop-order-detail-tax-label>
+    </div>
+  </div>
+</ng-template>
+<!-- If the Product is Matrix  -->
+<ng-template #matrix>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-sop-order-detail-matrix [LineNum]="this.selectedLineNum" [SalesOrderDetailID]="this.selectedOrderDetailId"
+        [InventoryId]="this.selectedInventoryID" [WarehouseID]="this.WarehouseID" (Cancel)="closePopUp()"
+        (ProductMatrixSave)="ProductMatrixSave($event)">
+      </app-sop-order-detail-matrix>
+    </div>
+  </div>
+</ng-template>
+<!-- If the Product is Serialised -->
+<ng-template #serial>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-sop-order-detail-serialised [WarehouseID]="this.WarehouseID" [LineNum]="this.selectedLineNum"
+        [SalesOrderDetailID]="this.selectedOrderDetailId" [InventoryId]="this.selectedInventoryID"
+        (Cancel)="closePopUp()" (SerializedSave)="SerializedProductSave($event)">
+      </app-sop-order-detail-serialised>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #Kit>
+  <div class="modal-content">
+    <div class="modal-body">
+      <a style="float: right;" data-dismiss="modal" #closeBtn (click)="closePopUp()" class="close-modal">X</a>
+      <app-sop-order-detail-kit [WarehouseID]="this.WarehouseID" [LineNum]="this.selectedLineNum"
+        [SalesOrderDetailID]="this.selectedOrderDetailId" [InventoryId]="this.selectedInventoryID"
+        (Cancel)="closePopUp()">
+      </app-sop-order-detail-kit>
+    </div>
+  </div>
+</ng-template>
+<div *ngIf="this.Mode=='PaymentScreen'">
+  <app-paymentscreen [ProductDetails]="this.QuotationDetailsData" [selectedDebtorID]="SelectedQuotationID"
+    [WarehouseID]="this.WarehouseID" (Cancel)="CancelPayment()" (OnComplete)="OnComplete($event)"
+    [OrderMainID]="OrderMainID">
+
+  </app-paymentscreen>

@@ -1,0 +1,69 @@
+<form > 
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+           
+            <div class="card-body position-relative">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="ag-theme-balham" style="width: 80%; height:300px;">
+
+                    <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs"
+                                 [RowData]="this.NewOrders">
+                    </app-ag-grid>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="ag-theme-balham" style="width: 80%; height:300px;">
+                    <app-ag-grid *ngIf="AgLoad"
+                                 [ColumnDefs]="this.ColumnDefss"
+                                 [RowData]="this.ReadyOrders">
+                    </app-ag-grid>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="ag-theme-balham" style="width: 80%; height:300px;">
+                    <app-ag-grid *ngIf="AgLoad"
+                                 [ColumnDefs]="this.ColumnDefsss"
+                                 [RowData]="this.ProcessingOrders">
+                    </app-ag-grid>
+                  </div>
+                </div>
+              </div>
+                <div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Table'">
+      <div class="card-header">
+        {{Mode}} Table
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+              
+             
+              
+              </div>
+            </div>
+          </div>
+        </div>
+       
+      </div>
+    </div>
+   
+  </div>
+</form>
+

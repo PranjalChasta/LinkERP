@@ -1,0 +1,426 @@
+<form [formGroup]="OrganisationMaintenanceForm" name="OrganisationMaintenanceForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+  <h1>Organisation<span *ngIf="Mode == 'Edit'">({{OrganisationMaintenanceForm.get('CompanyCode').value}} - {{OrganisationMaintenanceForm.get('Name').value}})</span></h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>System Settings</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Organisation</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Organisation</a></li>
+    </ol>
+  </nav>
+  <div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+
+  <div class="card" *ngIf="Mode=='List'">
+    <!--<div class="card-header main-search">
+      <div class="row">
+        <div class="col-12 col-md-3">
+          <input class="form-control" placeholder="Search by Part Number" type="text">
+        </div>
+        <div class="col-12 col-md-3 mb-0">
+          <input type="submit" value="Search" class="btn add-btn">
+        </div>
+      </div>
+    </div>-->
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Organisations
+              <!--<div class="add-row">
+                <a href="#" class="btn add-btn mb-1" data-toggle="modal" data-target="#ssrs-report">SSRS Reports</a>
+                <a href="#" class="btn add-btn mb-1" data-toggle="modal" data-target="#reports">Reports</a>
+                <a href="inventory-details.html" class="btn add-btn mb-1">Add Inventory</a>
+              </div>-->
+              <div class="add-row">
+                <button (click)="AddNew()"  type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add Organisation</button>
+              </div>
+            </div>
+            <!--  <div class="card-body position-relative">
+               <div class="table-responsive table-padd">
+                 <table class="table table-bordered table-striped">
+                   <thead>
+                     <tr>
+                       <th>Code</th>
+                       <th>Name</th>
+                       <th>Trading Name</th>
+                       <th>Phone</th>
+                       <th width="70" class="text-center">Delete</th>
+                       <th width="70" class="text-center">Action</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     <tr *ngFor="let organisation of organisations; let i=index ">
+                       <td>{{organisation.companyCode}}</td>
+                       <td>{{organisation.name}}</td>
+                       <td>{{organisation.tradingName}}</td>
+                       <td>{{organisation.phone}}</td>
+                       <td class="text-center">{{organisation.deleted?'Inactive':'Active'}} </td>
+
+                       <td class="action-tools text-center">
+                         <a (click)="Edit(organisation.id)"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                         <a (click)="onDeleteChecked(organisation.id)"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                       </td>
+                     </tr>
+
+                   </tbody>
+                 </table>
+               </div>
+
+               <div class="pagination-main">
+
+                 <ul class="pagination pagination-md justify-content-end">
+                   <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                   <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                   <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                 </ul>
+               </div>
+             </div> -->
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad"
+                             [ColumnDefs]="this.ColumnDefs"
+                             [RowData]="this.RowData"
+                             [IsSearch]="true"
+                             [IsExport]="true" 
+                             [paginationPageSize]="this.PageSize"
+                             [Currentpage]="this.Currentpage"
+                             (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                             (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <!--<div class="card-header main-search">
+      <div class="row">
+        <div class="col-12 col-md-3">
+          <input class="form-control" placeholder="Search by Part Number" type="text">
+        </div>
+        <div class="col-12 col-md-3 mb-0">
+          <input type="submit" value="Search" class="btn add-btn">
+        </div>
+      </div>
+    </div>-->
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" [ngClass]='{"active": AccessTab=="Organisation"}' data-toggle="tab"
+           (click)="AccessTab='Organisation'" role="tab">Organisation</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='Organisation'">
+      <div class="card-header">
+        {{Mode}} Organisation
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <!--id="nav-tabContent"-->
+          <div class="tab-pane fade show active">
+            <!--id="tab1" role="tabpanel"-->
+            <div class="form-border mt-0">
+              <!--<h3 class="form-heading">Organisation Maintenance</h3>-->
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label ">Code <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.CompanyCode.errors}" placeholder="" type="text"
+                           formControlName="CompanyCode" maxlength="50">
+                    <div class="errorlbl" *ngIf="Submitted && f.CompanyCode.errors"> Please enter company code</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" placeholder="" [ngClass]="{ 'is-invalid': this.Submitted && f.Name.errors}" type="text" formControlName="Name" maxlength="255">
+                    <div class="errorlbl" *ngIf="Submitted && f.Name.errors"> Please enter name</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Trading Name <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" placeholder=" " [ngClass]="{ 'is-invalid': this.Submitted && f.TradingName.errors}" type="text" formControlName="TradingName" maxlength="255">
+                    <div class="errorlbl" *ngIf="Submitted && f.TradingName.errors"> Please enter trading name</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Tax ID</label>
+                    <input class="form-control" type="text" formControlName="TaxNumber" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Address</label>
+                    <input class="form-control" type="text" formControlName="Laddr1" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp;</label>
+                    <input class="form-control" type="text" formControlName="Laddr2" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp;</label>
+                    <input class="form-control" type="text" formControlName="Laddr3" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Postal Address</label>
+                    <input class="form-control" type="text" formControlName="Paddr1" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp;</label>
+                    <input class="form-control" type="text" formControlName="Paddr2" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp;</label>
+                    <input class="form-control" type="text" formControlName="Paddr3" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Country <span class="mandatoryFieldColor">*</span></label>
+
+                    <select class="form-control" formControlName="Country" [ngClass]="{ 'is-invalid': this.Submitted && f.Country.errors?.notEqual}" (change)="onCountrySelected($event.target.value)">
+                      <option value="-1">--Select Country--</option>
+                      <option *ngFor="let country of countries" [value]="country.countryID">{{country.countryCode}} - {{country.name}}</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Country.errors?.notEqual">
+                      Please select country
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">State <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="State" [ngClass]="{ 'is-invalid': this.Submitted && f.State.errors?.notEqual}" (change)="onStatesSelected($event.target.value)">
+                      <option value="-1">--Select State--</option>
+                      <option *ngFor="let state of states" [value]="state.stateID">{{state.stateCode}} - {{state.name}}</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.State.errors?.notEqual">
+                      Please select state
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">City <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.City.errors?.notEqual}" formControlName="City">
+                      <option value="-1">--Select City--</option>
+                      <option *ngFor="let city of cities" [value]="city.cityID">{{city.cityCode}} - {{city.name}}</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.City.errors?.notEqual">
+                      Please select city
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Post Code</label>
+                    <input class="form-control" placeholder="" type="text" formControlName="ZipCode" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Home Currency
+                    
+                    </label>
+                    <span class="mandatoryFieldColor">*</span>
+                    <select class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.DefaultCurrency.errors?.notEqual}" formControlName="DefaultCurrency">
+                      <option value="-1">--Select Currency--</option>
+                      <option *ngFor="let currency of Currencies" [value]="currency.id">{{currency.currencyCode}} - {{currency.currecnyName}}</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.DefaultCurrency.errors?.notEqual">
+                      Please select currency
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Superannuation Number</label>
+                    <input class="form-control" placeholder=" " type="text" formControlName="SuperannuationID" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Default Pay <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="DefaultPayrollRounding" [ngClass]="{ 'is-invalid': this.Submitted && f.DefaultPayrollRounding.errors?.notEqual}">
+                      <option value="-1">--Select Payroll Rounding--</option>
+                      <option value="5 Cents">5 Cents</option>
+                      <option value="10 Cents">10 Cents</option>
+                      <option value="20 Cents">20 Cents</option>
+                      <option value="50 Cents">50 Cents</option>
+                      <option value="1 Dollar">1 Dollar</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.DefaultPayrollRounding.errors?.notEqual">
+                      Please select default payroll rounding
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email</label>
+                    <input class="form-control" placeholder="Email" type="email" formControlName="EmailAddress" maxlength="255">
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Email </label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': this.Submitted && f.EmailAddress.errors}" formControlName="EmailAddress" type="text" maxlength="255">
+                    <div class="errorlbl" *ngIf="Submitted && f.EmailAddress.errors?.pattern">
+                      Please enter valid email (example: info@domain.com)
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Phone</label>
+                    <input class="form-control" type="text" formControlName="Phone" maxlength="50">
+                  </div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Fax</label>
+                    <input class="form-control" type="text" formControlName="Fax" maxlength="50">
+                  </div>
+                </div>
+
+                <!--<div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="w-100">Payroll Control</label>
+                    <label class="cust-check">
+                      Allow Duplicate Pay
+                      <input type="checkbox" checked="checked">
+                      <span class="checkmark"></span>
+                    </label>
+                  </div>
+                </div>-->
+                <!--<div> {{CompanyLogo}}</div>-->
+                <div class="col-6 col-md-12">
+                  <div class="form-border" style="min-height:310px">
+                    <h3 class="form-heading">Organisation Logo</h3>
+                    <div class="row">
+                      <div class="col-12 col-md-12">
+                        <div class="form-group float-left w-100 text-center">
+                          <div class="pro-pic">
+                            <!---->
+                            <a class="delete-pic" *ngIf="this.OrganisationMaintenanceForm.get('Logo').value!=null" (click)="DeleteCompanyLogo()"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                            <img [src]="Logo" alt="" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <div class="form-group  float-left w-100 text-center" style="margin:-15px 0px 0px 50px">
+                          <!--<label for="file" class="col-form-label">Upload Image</label>-->
+                          <input class="form-control border-5px" type='file' (change)="onSelectFile($event)" #CompanyLogo
+                                 accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access ||  !this.IsActive">Save</button>
+              <button class="btn add-btn mr-1" type="button" [disabled]="!this.write_Access ||  !this.IsActive" (click)="onSave('Close')">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.RecID" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.RecID"
+                            [HeaderNames]="this.HeaderNames" [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="IsActive">
+      </app-attachment-files>
+    </div>
+    <!--<div class="row">
+      <div>
+        <input type="text" placeholder="Global filter" (keyup)="quickSearch()" [(ngModel)]="searchValue">
+        <input type="submit" (click)="exportToExcel()" value="Export to Excel" style="float: right;" />
+        <table id="dynamic-table" class="table table-striped table-bordered table-hover">
+          <ag-grid-angular style="width:800px; height: 500px;"
+                           class="ag-theme-balham"
+                           [columnDefs]="columnDefs"
+                           rowSelection="multiple"
+                           [enableSorting]="true"
+                           [multiSortKey]="true"
+                           [animateRows]="true"
+                           [pagination]="true"
+                           [paginationPageSize]="2"
+                           [enableSorting]="true"
+                           [floatingFilter]="true"
+                           [suppressCsvExport]="false"
+                           [suppressExcelExport]="false"
+                           [animateRows]="true"
+                           (gridReady)="BindOrganisations($event)"
+                           (rowClicked)="onRowClicked($event)">
+          </ag-grid-angular>
+        </table>
+      </div>
+    </div>-->
+  </div>
+</form>
+
+
+<!--<ng-template #confirmation>
+  <div class="modal" tabindex="-1" role="dialog" style="display:block!important">
+    <div class="modal-dialog custom-alert" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <p class="text-center confirm-message">Are you sure to save reocord?</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <p class="confirm-button">
+                <a class="confirm-btn-yes" (click)="OnAccepted()">
+                  <button class="btn btn-yes">Yes</button>
+                </a>
+                <a (click)="OnCanceled()">
+                  <button class="btn btn-no">No</button>
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <confirmation-dialog-popup (OnCancel)="OnCancel()" (OnAccept)="OnAccept()" [Message]="'Are you sure to save record?'"></confirmation-dialog-popup>
+</ng-template>-->
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

@@ -1,0 +1,92 @@
+<div>
+  <div style="float: right;">
+    <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
+      <label style="width: 70px;">Sort By</label>
+      <select class="form-control" (change)="onColumnNameSelected($event.target.value)" [(ngModel)]="columnName">
+        <option value="-1" style="text-align: center;">---Select Column---</option>
+        <option value="ExpiryDate">Expiry Date</option>
+        <option value="PurchaseDate">Purchase Date</option>
+        <option value="RequestedQty">Requested Qty</option>
+        <option value="ShippedQty">Shipped Qty</option>
+        <option value="ReceivedQty">Received Qty</option>
+        <option value="PreviouslyReceviedQty">Pre Recev Qty</option>
+      </select>
+    </div>
+    <br />
+  </div>
+  <div class="table-responsive table-padd" style="overflow-y: scroll;max-height: 400px;">
+    <table class="table table-bordered table-striped" *ngIf="SerialList && SerialList.length>0">
+      <thead>
+        <tr>
+          <th>Bin</th> 
+          <th>Expiry Date</th>
+          <th>Purchase Date</th>
+          <th>Requested qty</th>
+          <th>Shipped qty</th>
+          <th>This Receiving Qty</th>
+          <th>Total Received</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let detailslist of SerialList; let i = index">
+          <td>
+             <select class="form-control" [(ngModel)]="detailslist.binID">
+               <option [ngValue]="null">--Select Bin--</option>
+               <option *ngFor="let binlist of BinList" [value]="binlist.id">
+                 {{binlist.binName}}
+               </option>
+             </select>   
+           </td>
+          <td>
+           <!--  <select class="form-control" [(ngModel)]="detailslist.binID">
+              <option [ngValue]="null" selected disabled>--Select Bin--</option>
+              <option *ngFor="let binlist of BinList" [value]="binlist.id">
+                {{binlist.binName}}
+              </option>
+            </select> -->
+            <label>{{detailslist.expiryDate | date:'dd-MM-yyyy'}}</label>
+          </td>
+         <!-- <td>
+             <input class="form-control" placeholder="" type="text" [(ngModel)]="detailslist.serialNo"> 
+            <label>{{detailslist.serialNo}}</label>
+          </td>-->
+          <td>
+            <!-- <input class="form-control" type="text" placeholder="Date" bsDatepicker [bsConfig]="datePickerConfig"
+              [(ngModel)]="detailslist.transactionDateIn" [value]="detailslist.transactionDateIn | date:'yyyy-MM-dd'"> -->
+            <label>{{detailslist.transactionDateIn | date:'dd-MM-yyyy'}}</label>
+          </td>
+          <td>
+            <input class="form-control" placeholder="quantity" [(ngModel)]="detailslist.requestedQty" type="text"
+              OnlyNumber="true" (input)="onSearchChange($event.target.value,detailslist.id)" readonly>
+            </td>
+            <td>
+              <input class="form-control" placeholder="quantity" [(ngModel)]="detailslist.shippedQty" type="text"
+              OnlyNumber="true" (input)="onSearchChange($event.target.value,detailslist.id)" readonly>
+            </td>
+            <td>
+              <input class="form-control" placeholder="Recv Qty" [(ngModel)]="detailslist.receivedQty" type="text" [readonly]="detailslist.previouslyReceviedQty>=detailslist.shippedQty" 
+              OnlyNumber="true" (input)="onSearchreceiveChange($event.target.value,detailslist.id,i)">
+              <!-- <input *ngIf="Status=='Receive'" class="form-control" placeholder="quantity" [(ngModel)]="detailslist.receivedQty" type="text"
+              OnlyNumber="true" (input)="onSearchChange($event.target.value,detailslist.id)" readonly> -->
+            </td>
+            <td>
+              {{detailslist.previouslyReceviedQty}}
+           </td>
+        </tr>
+      </tbody>
+    </table>
+ 
+  </div>
+  
+  <div *ngIf="SerialList && SerialList.length==0" style="text-align:center;padding-right: 80px;">
+    <label class="col-form-label">No stock available for IN </label>
+  </div>
+  <div *ngIf="SerialList && SerialList.length>0" style="text-align: right;padding-right: 80px;">
+    <label class="col-form-label">Total Quantity: </label> {{this.totalQuantity}}
+  </div>
+  <div class="form-group text-center" *ngIf="(SerialList && SerialList.length>0) || (this.Status !='Receive')">
+    <button class="btn add-btn mr-1" type="button" [disabled]="this.CurrentStatus =='Completed'" (click)="UpdateChanges('Save')">Save Changes</button>
+    <button class="btn add-btn mr-1" type="button" [disabled]="this.CurrentStatus =='Completed'" (click)="UpdateChanges('Close')">Save & Close</button>
+    <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+   <!-- <pre>{{Status}}</pre> -->
+  </div>

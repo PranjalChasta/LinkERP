@@ -1,0 +1,144 @@
+<div *ngIf="this.Mode=='PaymentMethod'" class="card" >
+  <div class="card-header">
+    <div style="text-align: center; color: #fff;
+    background-color: #006c61;
+    border-color: #006c61;">Payment Amount</div>
+  </div>
+  <div class="card-header">
+    <div style="text-align: center; color: #fff;
+    background-color: #006c61;
+    border-color: #006c61;">FJD Home</div>
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="row">
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">Amount Due</label>
+                <input class="form-control" type="text" [(ngModel)]="amountDue" [disabled]="true">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">Payment Amount</label>
+                <input class="form-control" type="text" [(ngModel)]="paymentAmount"
+                  (change)="onchangePayment(this.paymentAmount)" [disabled]="false">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">Surcharge</label>
+                <input class="form-control" type="text" [(ngModel)]="surcharge" [disabled]="true">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">Total Payment</label>
+                <input class="form-control" type="text" [(ngModel)]="totalPayment" [disabled]="true">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">Balance</label>
+                <input class="form-control" type="text" [(ngModel)]="balance" [disabled]="true">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">Rounding</label>
+                <input class="form-control" type="text" [(ngModel)]="rounding" [disabled]="true">
+              </div>
+            </div>
+            <br />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-header">
+    <div style="text-align: center; color: #fff;
+    background-color: #006c61;
+    border-color: #006c61;">Additional Details</div>
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="row"  >
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">{{this.additionalDetails[0].caption1 }}</label>
+                <input class="form-control" type="text" [(ngModel)]="Paymentdetail1">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">{{this.additionalDetails[0].caption2}}</label>
+                <input class="form-control" type="text" [(ngModel)]="Paymentdetail2">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">{{this.additionalDetails[0].caption3}}</label>
+                <input class="form-control" type="text" [(ngModel)]="Paymentdetail3">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">{{this.additionalDetails[0].caption4}}</label>
+                <input class="form-control" type="text" [(ngModel)]="Paymentdetail4">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">{{this.additionalDetails[0].caption5}}</label>
+                <input class="form-control" type="text" [(ngModel)]="Paymentdetail5">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">{{this.additionalDetails[0].caption6}}</label>
+                <input class="form-control" type="text" [(ngModel)]="Paymentdetail6">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">{{this.additionalDetails[0].caption7}}</label>
+                <input class="form-control" type="text" [(ngModel)]="Paymentdetail7">
+              </div>
+            </div>
+            <br />
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">{{this.additionalDetails[0].caption8}}</label>
+                <input class="form-control" type="text" [(ngModel)]="Paymentdetail8">
+              </div>
+            </div>
+            <br />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group text-center">
+    <button class="btn add-btn mr-1" type="button" (click)="GetPayment()">OK</button>
+    <button class="btn btn-danger" data-dismiss="modal" type="button" #closeBtn (click)="closePopUp()">Close</button>
+  </div>
+</div>
+<div *ngIf="this.Mode=='PaymentScreen'">
+  <app-paymentscreen [PaymentAmount]="paymentAmount">
+  </app-paymentscreen>
+</div>

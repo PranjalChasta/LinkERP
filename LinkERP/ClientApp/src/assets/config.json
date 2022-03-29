@@ -1,0 +1,10 @@
+{
+  "ServiceBase": "http://localhost:56541/" ,
+  "DateTimeFormat": {
+    "Date": "dd/MM/yyyy",
+    "Time": "hh:mm a",
+    "DateTime": "dd/MM/yyyy hh:mm a",
+    "GridDate": "DD/MM/yyyy",
+    "GridTime": "hh:mm A"
+  }
+}

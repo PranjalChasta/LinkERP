@@ -1,0 +1,57 @@
+
+<div class="card" *ngIf="Menuaccess=='ShiftList' ">
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            Shift List
+          </div>
+          <div class="card-body position-relative">
+            <div class="ag-theme-balham" style="width: 100%; height:500px;">
+              <!-- <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true" 
+                           [IsExport]="true" (OnActionClick)="OnActionClick($event)" [Currentpage]="this.Currentpage"
+                           (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="PageSize"
+                           (OnPageSizeChange)="OnPageSizeChange($event)">
+              </app-ag-grid> -->
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Shift</th>
+                      <th>Location</th>
+                      <th>Open Time</th>
+                      <th>Count</th>
+                      <th>Total Sales</th>
+                      <th>Till Total</th>
+                      <th>User</th>
+                      <th>Status</th>
+                      <th>Close</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let data of RowData; let i = index">
+                      <td>{{data.shift}}</td>
+                      <td>{{data.location}}</td>
+                      <td>{{data.opentime}}</td>
+                      <td>{{data.count}}</td>
+                      <td>{{data.totalsales}}</td>
+                      <td>{{data.tilltotal}}</td>
+                      <td>{{data.user}}</td>
+                      <td>{{status}}</td>
+                      <td><button class="btn add-btn mr-1" type="button" (click)="SelectedShift(data.id)">Close</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+<div *ngIf="Menuaccess=='closeshift' ">
+  <app-close-shift [ShiftID]="this.shiftID" [shiftDetailsData]="this.RowData"></app-close-shift>
+</div>

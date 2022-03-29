@@ -1,0 +1,507 @@
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryProductPriceForm" name="InventoryProductPriceForm" (ngSubmit)="onSave('Save')"
+      class="Form-Horizontal">
+  <div class="card-header" *ngIf="IsLocation">
+    Warehouse:  {{this.SelectedLocationName}}
+  </div>
+  <!--  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Inventory Detail
+
+              <div class="add-row">
+                <button (click)="AddNew()" class="btn add-btn mb-1">Add Inventory Product-Price</button>
+              </div>
+            </div>
+
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:400px;">
+                <app-ag-grid   [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="10" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <div class="card" style="padding: 10px;">
+    <!--  <div class="card-header">
+      {{Mode}} Inventory Product Price
+    </div> -->
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <div class="tab-pane fade show active">
+          <!-- <div class="form-border mt-0"> -->
+          <div class="row">
+            <div class="col-12 col-md-3">
+              <div class="form-group">
+                <label class="col-form-label"> Price Change Reason </label>
+                <select class="form-control" maxlength="255" formControlName="PriceChangeReason">
+                  <option value="00000000-0000-0000-0000-000000000000">--Select  Price Change Reason--</option>
+                  <option *ngFor="let reason of PriceChangeReasons" [value]="reason.id">
+                    {{reason.dataCode}} - {{reason.dataName}}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div *ngIf="!IsDebtor" class="row" style="width: 100%;">
+              <div class="col-12 col-md-4">
+                <!-- <div class="form-group">
+                  <label class="col-form-label"> Price Change Reason </label>
+                  <select class="form-control" maxlength="255" formControlName="PriceChangeReason">
+                    <option value="00000000-0000-0000-0000-000000000000">--Select  Price Change Reason--</option>
+                    <option *ngFor="let reason of PriceChangeReasons" [value]="reason.id">
+                      {{reason.dataCode}} - {{reason.dataName}}
+                    </option>
+                  </select>
+                </div> -->
+              </div>
+              <div class="col-12 col-md-4">
+
+              </div>
+              <div class="col-12 col-md-4">
+
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[0].description }} </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel1">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[1].description }} </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel2">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[2].description }}  </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel3">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[3].description }} </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel4">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[4].description }} </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel5">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[5].description }}  </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel6">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[6].description }}  </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel7">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[7].description }}  </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel8">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[8].description }}  </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel9">
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">{{ this.inventorylevel[9].description }} </label>
+                  <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber
+                         formControlName="PriceLevel10">
+                </div>
+              </div>
+            </div>
+     
+            <!-- <div class="col-12 col-md-4" *ngIf="IsDebtor">
+              <div class="form-group">
+                <label class="col-form-label">Customer Name </label>
+                <select class="form-control" formControlName="CustomerName"
+                        [ngClass]="{ 'is-invalid': this.Submitted && f.CustomerName.errors?.notEqual}">
+                  <option value="-1">--Select Customer Name --</option>
+                  <option *ngFor="let customernames of CustomerName" [value]="customernames.id">
+                    {{customernames.customerName}}
+                  </option>
+                </select>
+                <div class="errorlbl" *ngIf="this.Submitted && f.CustomerName.errors?.notEqual">
+                  Please select customer name
+                </div>
+              </div>
+            </div> -->
+            <div class="col-12 col-md-4" *ngIf="IsDebtor">
+              <div class="form-group">
+                <label class="col-form-label">Customer Name <span class="mandatoryFieldColor">*</span></label>
+                <select class="form-control" formControlName="CustomerName"
+                        [ngClass]="{ 'is-invalid': this.Submitted && f.CustomerName.errors?.notEqual}">
+                  <option value="-1">--Select Customer Name --</option>
+                  <option *ngFor="let customernames of Debtor" [value]="customernames.id">
+                    {{customernames.customerCode}}-{{customernames.customerName}}
+                  </option>
+                </select>
+                <div class="errorlbl" *ngIf="this.Submitted && f.CustomerName.errors?.notEqual">
+                  Please select customer name
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label class="col-form-label"> Markup Percentage </label>
+                <input class="form-control" placeholder="" type="text" appTwoDigitDecimaNumber formControlName="Percentage">
+              </div>
+            </div>
+            <div class="col-12 col-md-4" style="color: #007bff;">
+              <div class="form-group">
+                <div class="custom-control custom-switch swtch"
+                     [class.disabled]="!this.InventoryProductPriceForm.get('EnablCostPlusMarkup').value">
+                  <input type="checkbox" class="custom-control-input" formControlName="EnablCostPlusMarkup"
+                         id="EnablCostPlusMarkup">
+                  <label class="custom-control-label" for="EnablCostPlusMarkup">EnableCostPlus Markup</label>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+              </div>
+            </div>
+            <!--    <div class="col-12 col-md-4">
+                 <div class="form-group">
+                   <label class="col-form-label">Promotion Type</label>
+                   <select class="form-control" formControlName="PromotionType"  (change)="onPromotionChange($event.target.value)">
+                     <option value="-1">--Select Promotion Type--</option>
+                     <option *ngFor="let promotionTypes of PromotionTypeList" [value]="promotionTypes.id">
+                       {{promotionTypes.name}}
+                     </option>
+                   </select>
+
+                 </div>
+               </div>
+               <div class="col-12 col-md-4">
+
+                 <div class="form-group">
+                   <label class="col-form-label">Promotion Days </label>
+                   <select class="form-control" formControlName="Days">
+                     <option value="-1">--Select Promotion Days--</option>
+                     <option *ngFor="let promotiondays of PromotionDays" [value]="promotiondays.promotionID">
+                       {{promotiondays.promotionDays}}
+                     </option>
+                   </select>
+                 </div>
+               </div>
+
+
+
+               <div class="col-12 col-md-4">
+                 <div class="form-group">
+                   <label class="col-form-label"> Promotion Price </label>
+                   <input class="form-control text-right" placeholder=""  type="number" min="0" step="0.00" formControlName="Price">
+                 </div>
+               </div> -->
+
+
+            <div class="form-border">
+              <h3 class="form-heading">Promotion</h3>
+              <div class="row">
+                <!-- <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Promotion Type</label>
+                    <select class="form-control" formControlName="PromotionType"  (change)="onPromotionChange($event.target.value)">
+                      <option value="-1">--Select Promotion Type--</option>
+                      <option *ngFor="let promotionTypes of PromotionTypeList" [value]="promotionTypes.id">
+                        {{promotionTypes.name}}
+                      </option>
+                    </select>
+
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Days </label>
+                    <select class="form-control" formControlName="Days">
+                      <option value="-1">--Select Promotion Days--</option>
+                      <option *ngFor="let promotiondays of PromotionDays" [value]="promotiondays.promotionID">
+                        {{promotiondays.promotionDays}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">  Price </label>
+                    <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber formControlName="Price">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">PromotionType </label>
+                    <select class="form-control" maxlength="255" formControlName="PromotionType">
+                      <option value="false">None</option>
+                      <option value="true">Price</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" *ngIf=" 'IsProductPrice' || 'IsWareHousePrice' " >
+                  <div class="form-group">
+                    <label class="col-form-label">Quantity Limit </label>
+                    <input class="form-control text-right" placeholder="" type="text" appFourDigitDecimaNumber formControlName="PromotionQuantityLimit">
+                  </div>
+                </div>
+                <div class="col-12 col-md-3" *ngIf=" 'IsProductPrice' || 'IsWareHousePrice' ">
+                  <div class="form-group">
+                    <label class="col-form-label">Quantity Sold </label>
+                    <input class="form-control text-right" placeholder="" type="text" appTwoDigitDecimaNumber formControlName="PromotionQuantitySold" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Date from</label>
+                    <app-date-time-picker formControlName="PromotionDateFrom" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Time from</label>
+                    <!--<app-date-time-picker formControlName="PromotionTimeFrom" [showDatePicker]="false"></app-date-time-picker>-->
+                    <app-date-time-picker formControlName="PromotionTimeFrom"  [showDatePicker]="false"></app-date-time-picker>
+                    <!--<app-date-time-picker [(ngModel)]="dateModel" formControlName="PromotionTimeFrom" [showDatePicker]="false"></app-date-time-picker>-->
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Date to</label>
+                    <app-date-time-picker formControlName="PromotionDateTo" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label"> Time to</label>
+                    <!--<app-date-time-picker formControlName="PromotionTimeTo" [showDatePicker]="false"></app-date-time-picker>-->
+                    <app-date-time-picker formControlName="PromotionTimeTo" [showDatePicker]="false"></app-date-time-picker>
+                    <!--<app-date-time-picker [(ngModel)]="dateModal" formControlName="PromotionTimeTo" [showDatePicker]="false"></app-date-time-picker>-->
+                  </div>
+                </div>
+               
+              </div>
+            </div>
+            <div class="form-border">
+              <!--style="height:310px"-->
+              <h3 class="form-heading">Price Break</h3>
+              <div class="row">
+                <div class="col-2 col-md-2"></div>
+                <div class="col-8 col-md-8">
+                  <div class="table-responsive table-padd">
+                    <table class="table table-bordered table-striped">
+                      <tr>
+                        <th colspan="2" class="text-center">Quantity</th>
+                        <th colspan="2" class="text-center">Price Break</th>
+                      </tr>
+                      <tr>
+                        <td>Quantity 1</td>
+                        <td><input class="form-control text-right" type="text" formControlName="QuantityBreak1"></td>
+                        <td>Break 1</td>
+                        <td>
+                          <input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="PriceBreak1">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Quantity 2</td>
+                        <td> <input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="QuantityBreak2"></td>
+                        <td> Break 2</td>
+                        <td><input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="PriceBreak2"></td>
+                      </tr>
+                      <tr>
+                        <td>Quantity 3</td>
+                        <td><input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="QuantityBreak3"></td>
+                        <td>Break 3</td>
+                        <td><input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="PriceBreak3"></td>
+                      </tr>
+                      <tr>
+                        <td>Quantity 4</td>
+                        <td><input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="QuantityBreak4"></td>
+                        <td> Break 4</td>
+                        <td><input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="PriceBreak4"></td>
+                      </tr>
+                      <tr>
+                        <td>Quantity 5</td>
+                        <td><input class="form-control text-right" appTwoDigitDecimaNumber type="text" formControlName="QuantityBreak5"></td>
+                        <td>Break 5</td>
+                        <td><input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="PriceBreak5"></td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="col-2 col-md-2"></div>
+              </div>
+            </div>
+            <div class="col-6 col-md-6">
+            </div>
+            <!--  <div class="col-6 col-md-6">
+
+            <div class="form-border">
+              <h3 class="form-heading">Quantity Break</h3>
+              <div class="row">
+                <div class="col-6 col-md-6">
+                  <div class="row">
+                    <label class="col-form-label">1</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+
+                        <input class="form-control" placeholder="" OnlyNumber="true" type="text"
+                               formControlName="QuantityBreak1">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-form-label">2</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                               formControlName="QuantityBreak2">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-form-label">3</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                               formControlName="QuantityBreak3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-form-label">4</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                               formControlName="QuantityBreak4">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-form-label">5</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                               formControlName="QuantityBreak5">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+              <div class="col-6 col-md-6">
+
+
+              <div class="form-border">
+                <h3 class="form-heading">Price Break</h3>
+                <div class="col-6 col-md-6">
+                  <div class="row">
+                    <label class="col-form-label">1</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+
+                        <input class="form-control"   placeholder="" type="text" OnlyNumber="true"
+                               formControlName="PriceBreak1">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-form-label">2</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                               formControlName="PriceBreak2">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-form-label">3</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                               formControlName="PriceBreak3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-form-label">4</label>
+                    <div class="col-12 col-md-6">
+                      <div class="form-group">
+                        <input class="form-control"  placeholder="" type="text" OnlyNumber="true"
+                               formControlName="PriceBreak4">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-form-label">5</label>
+                    <div class="col-12 col-md-6" >
+                      <div class="form-group">
+                        <input class="form-control" placeholder="" type="text" OnlyNumber="true"
+                               formControlName="PriceBreak5">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+            <!-- <div class="col-12 col-md-4">
+                <div class="form-group">
+
+                  <div class="custom-control custom-switch swtch"
+                    [class.disabled]="!this.InventoryProductPriceForm.get('PromotionType').value">
+                    <input type="checkbox" class="custom-control-input" formControlName="PromotionType"
+                      id="PromotionType">
+                    <label class="custom-control-label" for="PromotionType">Promotion Type</label>
+                  </div>
+                </div>
+              </div> -->
+
+          </div>
+          <!-- </div> -->
+
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit"  [disabled]="!this.write_Access || !IsActiveDebtor">{{this.save}}</button>
+            <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')" [disabled]="!this.write_Access|| !IsActiveDebtor">Save & Close</button>
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!IsActiveDebtor" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)"></confirmation-dialog-popup>

@@ -1,0 +1,135 @@
+<form  name="OrganisationMaintenanceForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+
+       <div class="card" *ngIf="Mode=='List'">
+         <div class="card-body pb-0">
+           <div class="row">
+             <div class="col-md-12">
+               <div class="card">
+                 <div class="card-header"> 
+                   {{this.HeaderNames}} Documents
+                   <div class="add-row">
+                     <button (click)="AddNew()"  [disabled]="!this.write_Access || !this.IsActive"  class="btn add-btn mb-1" type="button">Add Documents</button>
+                   </div>
+                 </div>
+                  
+                 <div class="card-body position-relative">
+                   <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                       <app-ag-grid *ngIf="AgLoad"
+                          [ColumnDefs]="this.ColumnDefs"
+                          [RowData]="this.RowData"
+                          [IsSearch]="true"
+                          [IsExport]="true"  
+                         [paginationPageSize]="this.PageSize"
+                             (OnPageSizeChange)="OnPageSizeChange($event)"
+                          (OnActionClick)="OnActionClick($event)"
+                          >
+                       </app-ag-grid>
+                     </div>
+               </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+       <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'"> 
+               <div class="card-header">
+                  {{Mode}} Documents
+                </div>
+            <div class="card-body pb-0">
+              <div class="tab-content pt-2 pb-1">
+                <!--id="nav-tabContent"-->
+                <div class="tab-pane fade show active">
+                    <div class="form-border mt-0">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                              <div class="form-group"> 
+                                <label for="file" class="col-form-label">Upload File</label>
+                                   <div *ngIf="Mode=='Edit'">
+                                <label >File Name is: {{this.physicalFileName}} </label>
+                               </div>
+                               <input class="form-control" type='file' style="padding: 0px;"   (change)="onSelectFile($event)" multiple accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf">
+                              </div>
+                              <div>
+                                <label class="errorlbl">Max file size to be {{this.DefaultFileSize}} mb per file</label>
+                                <br>
+                               Note: <label class="label">Allowed file types : xlsx, xls, image, doc, docx,ppt, pptx, txt, pdf</label>
+                              </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                               
+                            </div>
+                            <div class="col-12 col-md-6">
+                              <div class="form-group">
+                                <label class="col-form-label">Description</label>
+                                <input class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}" placeholder="Description" type="text">
+                              </div>
+                            </div>
+                          </div> 
+                    </div>
+                    <div class="form-group text-center">
+                        <button class="btn add-btn mr-1"     type="submit" [disabled]="!this.write_Access || !this.SaveActive || !this.IsActive">Save</button>
+                        <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+                      </div>
+                      <div *ngIf="!this.IsActive" style="text-align: center;">
+                        <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+                      </div>
+                </div>
+              </div>
+            </div>
+      
+              </div>
+              <div *ngIf="Mode=='Price'">
+                
+                <div class="card-body pb-0">
+                  <div class="tab-content pt-2 pb-1">
+                    <!--id="nav-tabContent"-->
+                    <div class="tab-pane fade show active">
+                        <div class="form-border mt-0">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                  <div class="form-group"> 
+                                    <!-- <img id="blah" src="" alt="your image" />
+                                    <img [src]="url" height="200"> <br/>
+                                    <img *ngIf="imgURL" src="" height="100" alt="Image preview..."> -->
+                                    <label for="file" class="col-form-label">Upload File</label>
+                                   
+                                   <input class="form-control" type='file' style="padding: 0px;"   (change)="onSelectFile($event)" multiple accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf">
+                                  </div>
+                                  <!-- <div class="column">
+                                    <figure class="image is-128x128">
+                                      <img id="test123" [src]="imgURL" />
+                                    </figure>
+                                  </div> -->
+                                  <div>
+                                    <label class="errorlbl">Max file size to be {{this.DefaultFileSize}} mb per file</label>
+                                    <br>
+                                   Note: <label class="label">Allowed file types : xlsx, xls, image, doc, docx,ppt, pptx, txt, pdf</label>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                   
+                                </div>
+                                <div class="col-12 col-md-6">
+                                  <div class="form-group">
+                                    <label class="col-form-label">Description</label>
+                                    <input class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}" placeholder="Description" type="text">
+                                  </div>
+                                </div>
+                              </div> 
+                        </div>
+                        <div class="form-group text-center">
+                            <button class="btn add-btn mr-1"     type="submit" [disabled]="!this.write_Access || !this.SaveActive || !this.IsActive">Save</button>
+                            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+                          </div>
+                          <div *ngIf="!this.IsActive" style="text-align: center;">
+                            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+                          </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <app-make-model    [description]="this.description"   (onModeChange)="onModeChange($event)">
+                </app-make-model> -->
+              </div>
+   </form>
+   <confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event,i)">
+      </confirmation-dialog-popup>

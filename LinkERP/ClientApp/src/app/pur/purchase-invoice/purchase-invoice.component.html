@@ -1,0 +1,469 @@
+<form [formGroup]="PurchaseInvoiceForm" name="PurchaseInvoiceForm" (ngSubmit)="onSave('Save')" class="Form-Horizontal">
+</form>
+<h1>Purchase Invoice<span *ngIf="Mode == 'Edit'">({{PurchaseInvoiceForm.get('InvoiceNo').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Purchase Invoice</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <a>
+        {{Mode}} Purchase
+        Invoice
+      </a>
+    </li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="PurchaseInvoiceForm" name="PurchaseInvoiceForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Purchase Invoice
+              <div class="add-row">
+                <button (click)="CreatePO()" type="button" class="btn add-btn mb-1">
+                  Create Purchase Invoice
+                </button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                  [paginationPageSize]="this.PageSize" (OnPageSizeChange)="OnPageSizeChange($event)"
+                  (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="PurchaseInvoice"}'
+          data-toggle="tab" (click)="AccessTab='PurchaseInvoice'" role="tab">Purchase Invoice</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Inventory"}'
+          data-toggle="tab" (click)="ShowInventory()" role="tab">Inventory</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Non-Inventory"}'
+          data-toggle="tab" (click)="ShowNonInventory()" role="tab">Non-Inventory</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+          (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}'
+          data-toggle="tab" (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>
+    <div *ngIf="Mode=='Add' || Mode=='Edit' && AccessTab=='PurchaseInvoice'">
+      <div class="card-header">
+        {{Mode}} Purchase Invoice
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-8 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Vendor<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.VendorID.errors?.notEqual }"
+                      formControlName="VendorID">
+                      <option value="-1">--Select Vendor --</option>
+                      <option *ngFor="let vendors of VendorList" [value]="vendors.id">
+                        {{vendors.vendorCode}} - {{vendors.vendorAccountName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.VendorID.errors?.notEqual">
+                      Please select vendor
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Invoice No<span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control" maxlength="50" type="text" formControlName="InvoiceNo"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.InvoiceNo.errors }">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.InvoiceNo.errors">
+                      Please select Invoice No
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Invoice Date</label>
+                    <!--<input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+                    formControlName="InvoiceDate"
+                    [value]="PurchaseInvoiceForm.get('InvoiceDate').value | date:'MM/dd/yyyy'">-->
+                    <app-date-time-picker formControlName="InvoiceDate" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label"> Due Date</label>
+                    <!--<input class="form-control" type="text" bsDatepicker [bsConfig]="datePickerConfig"
+                    formControlName="DueDate"
+                    [value]="PurchaseInvoiceForm.get('DueDate').value | date:'MM/dd/yyyy'">-->
+                    <app-date-time-picker formControlName="DueDate" [showTimePicker]="false"></app-date-time-picker>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Freight <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control text-right" type="text" appTwoDigitDecimaNumber
+                      formControlName="Freight" [ngClass]="{ 'is-invalid': this.Submitted && f.Freight.errors }">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Freight.errors">
+                      Please select Freight
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <!-- <label class="col-form-label">Freight Tax </label>
+                    <input class="form-control" maxlength="50" type="text" formControlName="FreightTaxID"> -->
+                    <label class="col-form-label">Freight Tax<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control" (change)="onTaxDescriptionChange($event,'FreightTaxRate')"
+                      formControlName="FreightTaxID"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.FreightTaxID.errors?.notEqual }">
+                      <option value="-1">Select FreightRate</option>
+                      <option *ngFor="let tax of taxcodes" [value]="tax.id">
+                        {{tax.taxCodeName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.FreightTaxID.errors?.notEqual">
+                      Please select Freight Tax
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Freight TaxRate </label>
+                    <input class="form-control text-right" readonly formControlName="FreightTaxRate">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Freight TaxAmount<span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                      formControlName="FreightTaxAmount"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.FreightTaxAmount.errors }">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.FreightTaxAmount.errors">
+                      Please select Freight Tax Amount
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Duty </label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber formControlName="Duty"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.Duty.errors }">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Duty.errors">
+                      Please select Duty
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <!-- <label class="col-form-label">Duty Tax </label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="DutyTaxID"> -->
+                    <label class="col-form-label">Duty Tax<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control" (change)="onTaxDescriptionChange($event,'DutyTaxRate')"
+                      formControlName="DutyTaxID"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.DutyTaxID.errors?.notEqual }">
+                      <option value="-1">Select DutyTax</option>
+                      <option *ngFor="let tax of taxcodes" [value]="tax.id">
+                        {{tax.taxCodeName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.DutyTaxID.errors?.notEqual">
+                      Please select Duty Tax
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Duty TaxRate </label>
+                    <input class="form-control text-right" readonly formControlName="DutyTaxRate">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Duty TaxAmount<span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                      formControlName="DutyTaxAmount"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.DutyTaxAmount.errors }">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.DutyTaxAmount.errors">
+                      Please select Duty Tax Amount
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Insurance<span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                      formControlName="Insurance" [ngClass]="{ 'is-invalid': this.Submitted && f.Insurance.errors }">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.Insurance.errors">
+                      Please select Insurance
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <!-- <label class="col-form-label">Insurance Tax </label>
+                    <input class="form-control" type="text" maxlength="50" formControlName="InsuranceTaxID"> -->
+                    <label class="col-form-label">Insurance Tax<span class="mandatoryFieldColor">*</span> </label>
+                    <select class="form-control" (change)="onTaxDescriptionChange($event,'InsuranceTaxRate')"
+                      formControlName="InsuranceTaxID"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.InsuranceTaxID.errors?.notEqual }">
+                      <option value="-1">Select InsuranceTax</option>
+                      <option *ngFor="let tax of taxcodes" [value]="tax.id">
+                        {{tax.taxCodeName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.InsuranceTaxID.errors?.notEqual">
+                      Please select Insurance Tax
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Insurance TaxRate </label>
+                    <input class="form-control text-right" readonly formControlName="InsuranceTaxRate">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Insurance TaxAmount<span class="mandatoryFieldColor">*</span> </label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                      formControlName="InsuranceTaxAmount"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.InsuranceTaxAmount.errors }">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.InsuranceTaxAmount.errors">
+                      Please select Insurance Tax Amount
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Total Excluding Tax </label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber readonly
+                      formControlName="TotalExcludingTaxHome">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Total Tax Home</label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber readonly
+                      formControlName="TotalTaxHome">
+                  </div>
+                </div>
+
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Total Including Tax </label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                      formControlName="TotalIncludingTaxHome">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Tolerance Amount </label>
+                    <input class="form-control text-right" type="text" appFourDigitDecimaNumber
+                      formControlName="InvoiceToleranceAmount">
+                  </div>
+                </div>
+                <div class="col-8 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">&nbsp; Invoiced Home Amount</label>
+                    <input class="form-control text-right" readonly type="text" appFourDigitDecimaNumber
+                      formControlName="InvoicedHomeAmount">
+                  </div>
+                </div>
+
+                <div *ngIf="ShowGRNTable" class="card-body pb-0">
+                  <div class="tab-content pt-2 pb-1">
+                    <div class="tab-pane fade show active">
+                      <div class="form-border mt-0">
+                        <div class="table-responsive table-padd">
+                          <table class="table table-bordered table-striped">
+                            <thead>
+                              <tr>
+                                <th>GRN Number</th>
+                                <th>Date</th>
+                                <th *ngIf="Mode=='Add'">
+                                  Select All<input type="checkbox" (click)="checkAll($event)">
+                                </th>
+                                <th *ngIf="Mode=='Edit'">Delete</th>
+                              </tr>
+                            </thead>
+                            <tbody formArrayName="GRN">
+                              <tr *ngFor="let grn of PurchaseInvoiceForm.get('GRN').controls; let i = index"
+                                [formGroupName]="i">
+                                <td style="width: 100px;">
+                                  {{grn.get('GRNNumber').value }}
+                                </td>
+                                <td style="width: 100px;">
+                                  {{grn.get('Date').value | date:'dd/MM/yyyy'}}
+                                </td>
+                                <td *ngIf="Mode=='Add'" style="width: 100px;">
+                                  <div class="form-group">
+                                    <input type="checkbox" style="margin-left: 17px;margin-top: 7px;"
+                                      formControlName="isGRNSelected" />
+                                  </div>
+                                </td>
+                                <!-- <td *ngIf="Mode=='Add'" style="width: 100px;"></td> -->
+                                <td *ngIf="Mode=='Edit'" style="width: 100px;"
+                                  (click)="DeleteGRN(i,grn.get('GRNID').value)">
+                                  <i class="re fa fa-trash-o"></i>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <!-- <div class="form-group text-center">
+                          <button class="btn add-btn mr-1" type="submit">Submit Order</button>
+                          <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+                        </div> -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="IsClose">Save</button>
+              <button class="btn add-btn mr-1" type="button" (click)="onSave('Close')" [disabled]="IsClose">Save & Close</button>
+              <button class="btn add-btn mr-1" type="button" (click)="AcivateInvoice()" [disabled]="IsClose">Activate</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Mode=='Edit' && (AccessTab=='Inventory' || AccessTab=='Non-Inventory')">
+      <div class="card-header">
+        {{AccessTab}}
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>GRN No</th>
+                      <!-- <th>Order No</th> -->
+                      <!-- <th>Purchase Order<br>Line No</th> -->
+                      <th>Purchase Order No</th>
+                      <th>Description</th>
+                      <th>Qty on GRN</th>
+                      <th>GRN Unit Cost<br>Excluding Tax</th>
+                      <th>Qty</th>
+                      <th>Unit Cost Ex Tax</th>
+                      <th>Fx Rate</th>
+                      <th>Fx Unit Cost <br>Ex Tax</th>
+                      <th>Tax Rate Description</th>
+                      <th>Tax Rate</th>
+                      <th>Total Tax Amount</th>
+                      <th>Unit Cost<br>Including Tax</th>
+                      <th>Line Total Ex. Tax</th>
+                      <th>Line Total Inc. Tax</th>
+                      <th>Line Total Foreign Ex. Tax Excluding</th>
+                      <th>Line Total Foreign Ex. Tax Amount</th>
+                      <th>Line Total Foreign Ex. Tax Including</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let product of ProductList">
+                      <td style="width: 100px;">
+                        {{product.grnNo }}
+                      </td>
+                      <!-- <td style="width: 100px;">
+                        {{product.productDescription}}
+                      </td> -->
+                      <!-- <td style="width: 100px;">
+                        {{product.productDescription }}
+                      </td> -->
+                      <td style="width: 100px;text-align: right;">
+                        {{product.purchaseOrderNumber }}
+                      </td>
+                      <td style="width: 100px;">
+                        {{product.productDescription }}
+                      </td>
+                      <td style="width: 100px;text-align: right;" >
+                        {{product.invoicingQuantity != null ? product.invoicingQuantity.toString().indexOf(".") !== -1? product.quantityOnGRN : product.invoicingQuantity +".00" : "0.00" }}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.suppliersUnitCost != null ? product.suppliersUnitCost.toString().indexOf(".") !== -1? product.suppliersUnitCost : product.suppliersUnitCost +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.invoicingQuantity != null ? product.invoicingQuantity.toString().indexOf(".") !== -1? product.invoicingQuantity : product.invoicingQuantity +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;">
+                        {{product.suppliersUnitCost != null ? product.suppliersUnitCost.toString().indexOf(".") !== -1? product.suppliersUnitCost : product.suppliersUnitCost +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.fxRate != null ? product.fxRate.toString().indexOf(".") !== -1? product.fxRate : product.fxRate +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.fxUnitCost != null ? product.fxUnitCost.toString().indexOf(".") !== -1? product.fxUnitCost : product.fxUnitCost +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;">
+                        {{product.taxCodeName }}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.taxRate != null ? product.taxRate.toString().indexOf(".") !== -1? product.taxRate : product.taxRate +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.lineTotalTaxAmount != null ? product.lineTotalTaxAmount.toString().indexOf(".") !== -1? product.lineTotalTaxAmount : product.lineTotalTaxAmount +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;">
+                       
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.lineTotalCostTaxEclusiveHome != null ? product.lineTotalCostTaxEclusiveHome.toString().indexOf(".") !== -1? product.lineTotalCostTaxEclusiveHome : product.lineTotalCostTaxEclusiveHome +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.lineTotalCostTaxInclusiveHome != null ? product.lineTotalCostTaxInclusiveHome.toString().indexOf(".") !== -1? product.lineTotalCostTaxInclusiveHome : product.lineTotalCostTaxInclusiveHome +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.lineTotalForeignExchangeCostTaxExclusive != null ? product.lineTotalForeignExchangeCostTaxExclusive.toString().indexOf(".") !== -1? product.lineTotalForeignExchangeCostTaxExclusive : product.lineTotalForeignExchangeCostTaxExclusive +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.lineTotalForeignExchangeCostTaxInclusive != null ? product.lineTotalForeignExchangeCostTaxInclusive.toString().indexOf(".") !== -1? product.lineTotalForeignExchangeTaxAmount : product.lineTotalForeignExchangeCostTaxInclusive +".00" : "0.00"}}
+                      </td>
+                      <td style="width: 100px;text-align: right;">
+                        {{product.lineTotalForeignExchangeCostTaxInclusive != null ? product.lineTotalForeignExchangeCostTaxInclusive.toString().indexOf(".") !== -1? product.lineTotalForeignExchangeCostTaxInclusive : product.lineTotalForeignExchangeCostTaxInclusive +".00" : "0.00"}}
+                      </td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="Mode=='Edit' && AccessTab=='Notes'">
+      <app-general-notes [RecID]="this.SelectedInvoiceID" [write_Access]="this.write_Access"
+        [delete_Access]="this.delete_Access" [IsActive]="this.IsActive">
+      </app-general-notes>
+    </div>
+    <div *ngIf="Mode=='Edit' && AccessTab=='Attachments'">
+      <app-attachment-files [RecID]="this.SelectedInvoiceID" [HeaderNames]="this.HeaderNames"
+        [write_Access]="this.write_Access" [delete_Access]="this.delete_Access" [IsActive]="this.IsActive">
+      </app-attachment-files>
+    </div>
+  </div>
+</form>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept()"></confirmation-dialog-popup>

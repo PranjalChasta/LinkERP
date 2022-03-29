@@ -1,0 +1,250 @@
+<h1>Internal Transfer  {{Mode == 'Edit' ? '('+this.SelectedBatchNumber+')' : ''}} </h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Purchase</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Internal Transfer</a></li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="Mode=='Add' || Mode=='Edit'"><a>{{Mode}} Internal
+        Transfer</a></li>
+  </ol>
+</nav>
+<div class="card" *ngIf="Mode=='List'">
+  <div class="card-header">
+    Internal Transfer
+    <div class="add-row">
+      <button (click)="AddBatch()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">Add
+        Batch</button>
+    </div>
+  </div>
+  <div class="ag-theme-balham" style="width: 100%; height:500px;">
+    <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+      [IsExport]="true" [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+      [IsColumnsToFit]="true" [paginationPageSize]="this.PageSize" (OnPageSizeChange)="OnPageSizeChange($event)"
+      (OnActionClick)="OnActionClick($event)">
+    </app-ag-grid>
+  </div>
+  <!--  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+
+
+          <div class="card-body position-relative">
+            <div class="ag-theme-balham" style="width: 100%; height:500px;">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+</div>
+<div class="card" *ngIf="Mode=='AddBatch'">
+
+  <div class="card-header">
+    {{Mode}} Internal Transfer
+  </div>
+  <div class="add-row">
+
+    <button (click)="Back()" class="btn btn-danger" type="button">Back</button>
+  </div>
+  <div *ngIf="SubMode=='SelectReq'">
+    <div class="row" style="width:80%;padding: 20px;display: table; margin-right: auto;margin-left: auto;">
+      <div style="width:100%; ">
+        <div class="table-responsive table-padd" style="overflow-y: scroll;max-height:400px;">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Requisition Number</th>
+                <th class="text-center">Select All<input type="checkbox" [(ngModel)]="IsAllRequisitionSelected"
+                    [checked]="IsAllRequisitionSelected" (change)="checkAllRequisitions($event,'Approved')" /></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let detailslist of RequisitionList; let i = index">
+
+                <td style="width: 300px;"> {{detailslist.requisitionNumber}}</td>
+
+                <td width="50" class="text-center"><input type="checkbox" [checked]="detailslist.isSelect"
+                    [(ngModel)]="detailslist.isSelect" (change)="onOptionSelected(i, $event)" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="width: 100%;">
+          <!--  <button class="btn add-btn mr-1" type="button" (click)="SaveChanges()">Save Changes</button> -->
+          <button class="btn add-btn mr-1" type="button" (click)="SearchReq()">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="Mode=='List'">
+
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Internal Transfer
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" class="btn add-btn mb-1" [disabled]="!this.write_Access">
+                  Add
+                  Internal Transfer
+                </button>
+                <div class="card-body position-relative">
+
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body pb-0" *ngIf="SubMode=='Select2'">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+
+          <div class="row" style="width: 100%;">
+            <div style="width: 100%;">
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+
+                      <th>Product</th>
+                      <th>WareHouse</th>
+                      <th>Requisition No</th>
+                      <th>Requested Quantity</th>
+                      <th>Available Quantity</th>
+                      <th>Transfer Quantity</th>
+                      <th class="text-center">Select All<input type="checkbox" [(ngModel)]="IsAllSelected"
+                          [checked]="IsAllSelected" (change)="checkAll($event,'Approved')" /></th>
+
+                      <th
+                        *ngIf="this.IsCreatedBY && (this.RequisitionStatus=='New' ||  this.IsAllReject) && this.RequisitionStatus!='Closed'">
+                        Edit</th>
+                      <th *ngIf="this.IsCreatedBY && this.RequisitionStatus=='New'">Delete</th>
+
+                      <!--<th class="text-center">None <input type="checkbox" (change)="checkAll($event,'NoAccess')" /></th>-->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let detailslist of Requisitions; let i = index">
+                      <td> {{detailslist.productName}}</td>
+                      <td> {{detailslist.wareHouseName}}</td>
+                      <td> {{detailslist.transferNo}}</td>
+                      <td> {{detailslist.requestedQuantity | number: '1.2-2'}}</td>
+                      <td> {{detailslist.availableQuantity | number: '1.2-2'}}</td>
+                      <td style="width:100px;"><input class="form-control text-right"
+                          [(ngModel)]="detailslist.transferQuantity" (input)="onSearchChange($event.target.value,i)"
+                          type="text" appTwoDigitDecimaNumber></td>
+                      <td width="50" class="text-center"><input type="checkbox" [checked]="detailslist.isSelect"
+                          [(ngModel)]="detailslist.isSelect" (change)="onOptionSelected(i, $event)" /></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="width: 100%;">
+                <button class="btn add-btn mr-1" type="button" (click)="SaveChanges()">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+<div class="card" *ngIf="Mode=='Edit'">
+
+  <div class="card-header">
+    {{Mode}} Internal Transfer
+  </div>
+  <div class="add-row">
+
+    <button (click)="Back()" class="btn btn-danger" type="button">Back</button>
+  </div>
+
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+
+          <div class="row" style="width: 100%;">
+            <div style="width: 100%;">
+              <div class="table-responsive table-padd">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Batch Number</th>
+                      <th>Products</th>
+
+                      <!--  <th>WareHouse</th> -->
+                      <th>Requested Quantity</th>
+                      <th>Available Quantity</th>
+                      <th>Transfer Quantity</th>
+                      <th>Details</th>
+                      <th *ngIf="this.IsCreatedBY && this.RequisitionStatus=='New'">Delete</th>
+
+                      <!--<th class="text-center">None <input type="checkbox" (change)="checkAll($event,'NoAccess')" /></th>-->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let detailslist of InternalTransfers; let i = index">
+                      <td> {{detailslist.internalTransferBatchNumber}}</td>
+                      <td> {{detailslist.productName}}</td>
+
+                      <!--    <td> {{detailslist.wareHouseName}}</td> -->
+                      <td> {{detailslist.requestedQuantity| number: '1.2-2'}}</td>
+                      <td> {{detailslist.availableQuantity| number: '1.2-2'}}</td>
+                      <td style="width:100px;"><input class="form-control text-right"
+                          [(ngModel)]="detailslist.transferQuantity" (input)="onSearchChange($event.target.value,i)"
+                          type="text" appTwoDigitDecimaNumber></td>
+                      <td>
+
+                        <a (click)="PopupDetail(transfersdetails,i)"><i class="bi fa fa-align-justify"
+                            aria-hidden="true"></i></a>
+
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="width: 100%;">
+                <button class="btn add-btn mr-1" type="button" (click)="UpdateChanges()"
+                  [disabled]="this.SelectedBatchStstus!='New'">Save Changes</button>
+
+                <button class="btn add-btn mr-1" type="button" (click)="Changestatus()"
+                  [disabled]="this.SelectedBatchStstus!='New'">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <ng-template #transfersdetails>
+    <div class="modal-content">
+      <div class="modal-body">
+        <a style="float: right;" data-dismiss="modal" #closeBtn (click)="Closenote()" class="close-modal">X</a>
+        <!-- <p>Lot/Bin-Serial Tracking for {{productFor}}</p> -->
+        <app-initiate-internal-transfers-details [BatchID]="BatchID" [ProductID]="ProductID" (OnCancel)="Closenote()">
+        </app-initiate-internal-transfers-details>
+
+      </div>
+    </div>
+  </ng-template>
+
+</div>

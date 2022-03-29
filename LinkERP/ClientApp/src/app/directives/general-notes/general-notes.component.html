@@ -1,0 +1,136 @@
+<form [formGroup]="Notesform" name="Notesform" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Note
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" [disabled]="!this.write_Access || !this.IsActive"
+                  class="btn add-btn mb-1">Add Note</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" [paginationPageSize]="this.PageSize" (OnActionClick)="OnActionClick($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="Mode=='Subgrid'" class="card-body position-relative">
+    <div class="form-group" style="text-align: right;">
+      <button class="btn btn-danger" type="button" (click)="Back()">Back</button>
+    </div>
+    <div class="ag-theme-balham" style="width: 100%; height:500px;">
+      <app-ag-grid *ngIf="SubAgLoad" [ColumnDefs]="this.SubColumnDefs" [RowData]="this.SubRowData" [IsSearch]="true"
+        [IsExport]="true" [paginationPageSize]="this.PageSize" (OnPageSizeChange)="OnPageSizeChange($event)"
+        (OnActionClick)="OnSubActionClick($event)">
+      </app-ag-grid>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card-header">
+      {{Mode}} Note
+    </div>
+    <div class="card-body pb-0">
+      <div class="tab-content pt-2 pb-1">
+        <!--id="nav-tabContent"-->
+        <div class="tab-pane fade show active">
+          <div class="form-border mt-0">
+            <div class="row">
+              <div class="col-12 col-md-4">
+                <div class="form-group" *ngIf="Mode!='Edit'">
+                  <label class="col-form-label"> NoteType<span class="mandatoryFieldColor">*</span></label>
+                  <select class="form-control"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.NoteTypeName.errors?.notEqual}"
+                    formControlName="NoteTypeName">
+                    <option value="-1">--Select Note--</option>
+                    <option *ngFor="let type of NoteType" [value]="type.id">{{type.noteTypeName}}</option>
+                  </select>
+                  <div class="errorlbl" *ngIf="this.submitted && f.NoteTypeName.errors?.notEqual">
+                    Please select note
+                  </div>
+                </div>
+                <div class="form-group" *ngIf="Mode=='Edit'">
+                  <label class="col-form-label"> NoteType : </label>
+                  <br />
+                  <label class="col-form-label" style="font-weight: bold;"> {{this.NoteTypeName}}</label>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label"> Status</label>
+                  <select class="form-control" formControlName="Status"
+                    (change)="onNoteStatusChange($event.target.value)">
+                    <option value="-1">--Select Status--</option>
+                    <option *ngFor="let status of Status" [value]="status.name">{{status.name}}</option>
+
+                  </select>
+                </div>
+
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="col-form-label">Next Followup Date </label>
+                  <!--<input *ngIf="!read" class="form-control" placeholder="Date" type="text" bsDatepicker
+  [bsConfig]="datePickerConfig" [minDate]="minDate"
+  [value]="Notesform.get('NextFollowupDate').value | date:'MM/dd/yyyy'"
+  formControlName="NextFollowupDate">-->
+                  <app-date-time-picker formControlName="NextFollowupDate" [showTimePicker]="false">
+                  </app-date-time-picker>
+                  <!--<input *ngIf="read" class="form-control" placeholder="Date" type="text" bsDatepicker
+         [bsConfig]="datePickerConfig" [minDate]="minDate"
+         [value]="Notesform.get('NextFollowupDate').value | date:'MM/dd/yyyy'" formControlName="NextFollowupDate">-->
+                </div>
+              </div>
+              <div class="col-12 col-md-8">
+                <div class="form-group">
+                  <label class="col-form-label ">Note Subject<span class="mandatoryFieldColor">*</span></label>
+                  <!-- <input class="form-control"  type="text" formControlName="NoteText"> -->
+                  <input class="form-control" type="text"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.NoteSubject.errors}" formControlName="NoteSubject"
+                    placeholder="Note Subject">
+                  <div class="errorlbl" *ngIf="submitted && f.NoteSubject.errors"> Please enter note subject </div>
+                </div>
+
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group" *ngIf="Mode=='Edit'">
+                  <label class="col-form-label"> DateCreated : </label>
+
+                  <label class="col-form-label"> {{this.lbl_DateCreated | date: 'dd/MM/yyyy'}}</label>
+                </div>
+              </div>
+              <div class="col-12 col-md-12">
+                <div class="form-group">
+                  <label class="col-form-label ">NoteText<span class="mandatoryFieldColor">*</span></label>
+                  <!-- <input class="form-control"  type="text" formControlName="NoteText"> -->
+                  <textarea class="form-control txtarea" style="height: 300px;width: 100%;"
+                    [ngClass]="{ 'is-invalid': this.submitted && f.NoteText.errors}" formControlName="NoteText"
+                    name="NoteText"></textarea>
+                  <div class="errorlbl" *ngIf="submitted && f.NoteText.errors"> Please enter note text </div>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+          <div class="form-group text-center">
+            <button class="btn add-btn mr-1" [disabled]="!this.write_Access || !IsActive" type="submit">Save</button>
+
+            <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+          </div>
+          <div *ngIf="!this.IsActive" style="text-align: center;">
+            <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

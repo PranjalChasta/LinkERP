@@ -1,0 +1,67 @@
+<form [formGroup]="VendorQuotePriceForm" name="VendorQuotePriceForm" (ngSubmit)="onSave()" class="Form-Horizontal">
+  <div class="card-header">
+    Vendor Quote Price
+  </div>
+  <div class="card-body pb-0">
+    <div class="tab-content pt-2 pb-1">
+      <div class="tab-pane fade show active">
+        <div class="form-border mt-0">
+          <div class="row">
+
+            <div class="col-12 col-md-6">
+              <div class="form-group">
+                <label class="col-form-label">Vendor<span class="mandatoryFieldColor">*</span> </label>
+                <select class="form-control" (change)="onVendorChange($event)"
+                  [ngClass]="{ 'is-invalid': this.submitted && f.VendorID.errors?.notEqual}" formControlName="VendorID">
+                  <option value="-1">--Select Vendor--</option>
+                  <option *ngFor="let vendor of Vendor" [value]="vendor.vendorID">
+                    {{vendor.vendorCode}} - {{vendor.vendorAccountName}}
+                  </option>
+                </select>
+                <div class="errorlbl" *ngIf="this.submitted && f.VendorID.errors?.notEqual">
+                  Please select vendor id
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="displayProductList" class="table-responsive table-padd">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Product Description</th>
+                  <th>UOM</th>
+                  <th>UnitPrice</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="VendorQuotePrice">
+                <tr *ngFor="let product of VendorQuotePriceForm.get('VendorQuotePrice').controls; let i = index"
+                  [formGroupName]="i">
+                  <td style="width: 100px;">
+                    {{product.get('Product').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{product.get('ProductDescription').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    {{product.get('UOM').value}}
+                  </td>
+                  <td style="width: 100px;">
+                    <input class="form-control text-right" appFourDigitDecimaNumber type="text" formControlName="UnitPrice">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- <div *ngIf="totalrecords.length>0">
+            No Data Found
+          </div> -->
+          <div *ngIf="displayProductList" class="form-group text-center">
+            <button class="btn add-btn mr-1" type="submit">Submit Price</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form>

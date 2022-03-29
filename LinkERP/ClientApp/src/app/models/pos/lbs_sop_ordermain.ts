@@ -1,0 +1,44 @@
+import { BaseEntity } from "../base-entity";
+
+export class LbsSopOrderMain extends BaseEntity {
+    public ID: any;
+    public CompanyID: any;
+    public QuotationID: any;
+    public SalesOrderNo: any;
+    public DebtorID: any;
+    public DebtorContactName: any;
+    public TransactionDate: any;
+    public CustomerOrderNo: any;
+    public InvoiceNotes1: any;
+    public InvoiceNotes2: any;
+    public Status: any;
+    public SalesOrderType: any;
+    public WarehouseID: any;
+    public ExpectedDeliveryDate: any;
+    public PriceSchemeID: any;
+    public InvoiceTotal: any;
+    public Printed: any;
+    public Emailed: any;
+    public SalesPerson: any;
+    public Company: any;
+    public Address1: any;
+    public Address2: any;
+    public Address3: any;
+    public Address4: any;
+    public PostCode: any;
+    public Phone: any;
+    public Fax: any;
+    public Email: any;
+    public ContactName: any;
+    public CreditNote: any;
+    public CreditNoteSalesOrderID: any;
+    public CreditReasonID: any;
+    public CreditIntoStock: any;
+    public TaxIntegrationStatus: any;
+    public SDCInvoiceNumber: any;
+    public SDCReprintInvoiceNumber: any;
+    public SDCDateTime: any;
+    public SDCInvoiceCounter: any;
+    public SDCVerificationURL: any;
+    public ShiftID: any;
+}

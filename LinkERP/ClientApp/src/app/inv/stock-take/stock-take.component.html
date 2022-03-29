@@ -1,0 +1,26 @@
+<div class="card" *ngIf="Mode=='List'">
+
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+
+          <div class="card-header">
+            Stock Take Details
+          </div>
+
+          <div class="card-body position-relative">
+            <div class="ag-theme-balham" style="width: 100%; height:400px;">
+              <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                [IsExport]="true" [IsColumnsToFit]="false" [paginationPageSize]="this.PageSize"
+                [Currentpage]="this.Currentpage" (OnchangeCurrentpage)="OnchangeCurrentpage($event)"
+                (OnPageSizeChange)="OnPageSizeChange($event)" (OnActionClick)="OnActionClick($event)">
+              </app-ag-grid>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

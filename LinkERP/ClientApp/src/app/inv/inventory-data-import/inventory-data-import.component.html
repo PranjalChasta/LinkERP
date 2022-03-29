@@ -1,0 +1,82 @@
+<h1> Inventory Data Import</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Data Import</li>
+    <!--<li class="breadcrumb-item active" aria-current="page"></li>-->
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="InventoryDataImportForm" name="InventoryDataImportForm" (ngSubmit)="onDataUpload()"
+  class="Form-Horizontal">
+
+  <div class="card">
+    <!--<nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Price"}' data-toggle="tab"
+           (click)="AccessTab='Price'" role="tab">Inventory Price Level</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Notes"}' data-toggle="tab"
+           (click)="AccessTab='Notes'" role="tab">Notes</a>
+        <a class="nav-item nav-link" *ngIf="Mode=='Edit'" [ngClass]='{"active": AccessTab=="Attachments"}' data-toggle="tab"
+           (click)="AccessTab='Attachments'" role="tab">Documents</a>
+      </div>
+    </nav>-->
+    <div class="card">
+      <div class="card-header">
+        Inventory Data Import
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label">Import <span class="mandatoryFieldColor">*</span></label>
+                    <select class="form-control" formControlName="ImportType"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.ImportType.errors?.notEqual}">
+                      <option value="-1">--Select Type--</option>
+                      <option value="Category">Inventory Category</option>
+                      <option value="SubCategory">Inventory Sub Category</option>
+                      <option value="InventoryMaster">Inventory Master</option>
+                      <!-- <option value="InventorySuppliers">Inventory Suppliers</option> -->
+                      <option value="InventoryDetails">Inventory Details</option>
+                      <option value="InventoryBarcodes">Inventory Barcodes</option>
+                      <option value="ProductPrice">Product Price</option> 
+                      <option value="LocationPrice">Location Price</option>
+                      <option value="InventoryKitItems">Inventory Components Items</option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ImportType.errors?.notEqual">
+                      Please select import type
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="col-form-label ">File <span class="mandatoryFieldColor">*</span></label>
+                    <input class="form-control" type="file" #DataFile (change)="onFileChange($event)"
+                      [ngClass]="{ 'is-invalid': this.Submitted && f.ExcelFile.errors?.required}">
+                    <div class="errorlbl" *ngIf="this.Submitted && f.ExcelFile.errors?.required">
+                      Please choose file to import data.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" (click)="SubmitAction='Upload'">Upload</button>
+              <button class="btn add-btn mr-1" type="submit" (click)="SubmitAction='Download'">Download
+                Template</button>
+              <!--<button class="btn add-btn mr-1" type="button" (click)="onSave('Close')">Save & Close</button>-->
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+            <!--<div *ngIf="!this.IsActive" style="text-align: center;">
+              <label class="errorlbl">Please change the status of this record to Active to make changes</label>
+            </div>-->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>

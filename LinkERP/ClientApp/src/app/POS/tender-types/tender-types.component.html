@@ -1,0 +1,710 @@
+<h1>Tender Types <span *ngIf="Mode == 'Edit'">
+  ({{this.TenderTypeForm.get('Description').value}})</span></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Tender Types</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<form [formGroup]="TenderTypeForm" name="TenderTypeForm" (ngSubmit)="OnSubmit()" class="Form-Horizontal">
+  <div class="card-body p-0" *ngIf="Mode=='Add' || Mode=='Edit'">
+    <div class="card" *ngIf="Mode=='Add' || Mode=='Edit'">
+      <div class="card-header">
+        {{Mode}} Tender Types`
+      </div>
+      <div class="card-body pb-0">
+        <div class="tab-content pt-2 pb-1">
+          <div class="tab-pane fade show active">
+            <div class="form-border mt-0">
+              <div class="row">
+                <!-- <div class="col-12 col-md-12">
+                  <div class="form-group">
+                    <label class="col-form-label">Warehouse</label>
+                    <select class="form-control" formControlName="Warehouse"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Warehouse.errors?.notEqual}">
+                      <option value="-1">--Select Warehouse--</option>
+                      <option *ngFor="let warehouse of Warehouse" [value]="warehouse.id">
+                        {{warehouse.wareHouseCode}} - {{warehouse.wareHouseName}}
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Warehouse.errors?.notEqual">
+                      Please select warehouse
+                    </div>
+                  </div>
+                </div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Fast Key</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.FastKey.errors}" type="text"
+                      formControlName="FastKey" maxlength="50">
+                    <div class="errorlbl" *ngIf="submitted && f.FastKey.errors">Please enter Fast Key</div>
+                  </div>
+                </div>
+                <!-- <div class="col-12 col-md-4"></div>
+                <div class="col-12 col-md-4"></div> -->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Payment Method</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Description.errors}"
+                      type="text" formControlName="Description" maxlength="50">
+                    <div class="errorlbl" *ngIf="submitted && f.Description.errors">Please enter Payment Method
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4"></div>
+                <!-- <div class="col-12 col-md-4"></div> -->
+                <!-- Header 1 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Header 1</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Caption1.errors}" type="text"
+                      formControlName="Caption1">
+                    <div class="errorlbl" *ngIf="submitted && f.Caption1.errors">Please enter header 1</div>
+                  </div>
+                </div>
+                <!-- Caption1IsRequired -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption1IsRequired"
+                        id="Caption1IsRequired">
+                      <label class="custom-control-label" for="Caption1IsRequired" [attr.readonly]="true">
+                        Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption1FieldType -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption1FieldType"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption1FieldType.errors?.notEqual}">
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of fieldTypeEnumOption" [value]="key" [label]="fieldTypeEnum[key]">
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption1FieldType.errors?.notEqual">
+                      Please select Field Type
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption1List -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption1List"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption1List.errors?.notEqual}">
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of lookupListEnumOption" [value]="key" [label]="lookupListEnum[key]">
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption1List.errors?.notEqual">
+                      Please select lookup list
+                    </div>
+                  </div>
+                </div>
+                <!-- VerifyFromListCaption1 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption1"
+                        id="VerifyFromListCaption1">
+                      <label class="custom-control-label" for="VerifyFromListCaption1" [attr.readonly]="true">
+                        Verify from list
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Header 2 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Header 2</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Caption2.errors}" type="text"
+                      formControlName="Caption2">
+                    <div class="errorlbl" *ngIf="submitted && f.Caption2.errors">Please enter header 2</div>
+                  </div>
+                </div>
+                <!-- Caption2IsRequired -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption2IsRequired"
+                        id="Caption2IsRequired">
+                      <label class="custom-control-label" for="Caption2IsRequired" [attr.readonly]="true">
+                        Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption2FieldType -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption2FieldType"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption2FieldType.errors?.notEqual}">
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of fieldTypeEnumOption" [value]="key" [label]="fieldTypeEnum[key]">
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption2FieldType.errors?.notEqual">
+                      Please select Field Type
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption2List -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption2List"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption2List.errors?.notEqual}">
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of lookupListEnumOption" [value]="key" [label]="lookupListEnum[key]">
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption2List.errors?.notEqual">
+                      Please select lookup list
+                    </div>
+                  </div>
+                </div>
+                <!-- VerifyFromListCaption2 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption2"
+                        id="VerifyFromListCaption2">
+                      <label class="custom-control-label" for="VerifyFromListCaption1" [attr.readonly]="true">
+                        Verify from list
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Header 3 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Header 3</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Caption3.errors}" type="text"
+                      formControlName="Caption3">
+                    <div class="errorlbl" *ngIf="submitted && f.Caption3.errors">Please enter header 3</div>
+                  </div>
+                </div>
+                <!-- Caption3IsRequired -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption3IsRequired"
+                        id="Caption3IsRequired">
+                      <label class="custom-control-label" for="Caption3IsRequired" [attr.readonly]="true">
+                        Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption3FieldType -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption3FieldType"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption3FieldType.errors?.notEqual}">
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of fieldTypeEnumOption" [value]="key" [label]="fieldTypeEnum[key]">
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption3FieldType.errors?.notEqual">
+                      Please select Field Type
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption3List -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption3List"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption3List.errors?.notEqual}">
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of lookupListEnumOption" [value]="key" [label]="lookupListEnum[key]">
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption3List.errors?.notEqual">
+                      Please select lookup list
+                    </div>
+                  </div>
+                </div>
+                <!-- VerifyFromListCaption3 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption3"
+                        id="VerifyFromListCaption3">
+                      <label class="custom-control-label" for="VerifyFromListCaption3" [attr.readonly]="true">
+                        Verify from list
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Header 4 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Header 4</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Caption4.errors}" type="text"
+                      formControlName="Caption4">
+                    <div class="errorlbl" *ngIf="submitted && f.Caption4.errors">Please enter header 4</div>
+                  </div>
+                </div>
+                <!-- Caption4IsRequired -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption4IsRequired"
+                        id="Caption4IsRequired">
+                      <label class="custom-control-label" for="Caption4IsRequired" [attr.readonly]="true">
+                        Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption4FieldType -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption4FieldType"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption4FieldType.errors?.notEqual}">
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of fieldTypeEnumOption" [value]="key" [label]="fieldTypeEnum[key]">
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption4FieldType.errors?.notEqual">
+                      Please select Field Type
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption4List -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption4List"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption4List.errors?.notEqual}">
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of lookupListEnumOption" [value]="key" [label]="lookupListEnum[key]">
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption4List.errors?.notEqual">
+                      Please select lookup list
+                    </div>
+                  </div>
+                </div>
+                <!-- VerifyFromListCaption4 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption4"
+                        id="VerifyFromListCaption4">
+                      <label class="custom-control-label" for="VerifyFromListCaption4" [attr.readonly]="true">
+                        Verify from list
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Header 5-->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Header 5</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Caption5.errors}" type="text"
+                      formControlName="Caption5">
+                    <div class="errorlbl" *ngIf="submitted && f.Caption5.errors">Please enter header 5</div>
+                  </div>
+                </div>
+                <!-- Caption5IsRequired -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption5IsRequired"
+                        id="Caption5IsRequired">
+                      <label class="custom-control-label" for="Caption5IsRequired" [attr.readonly]="true">
+                        Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption5FieldType -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption5FieldType"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption5FieldType.errors?.notEqual}">
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of fieldTypeEnumOption" [value]="key" [label]="fieldTypeEnum[key]">
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption5FieldType.errors?.notEqual">
+                      Please select Field Type
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption5List -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption5List"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption5List.errors?.notEqual}">
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of lookupListEnumOption" [value]="key" [label]="lookupListEnum[key]">
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption5List.errors?.notEqual">
+                      Please select lookup list
+                    </div>
+                  </div>
+                </div>
+                <!-- VerifyFromListCaption5 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption5"
+                        id="VerifyFromListCaption5">
+                      <label class="custom-control-label" for="VerifyFromListCaption5" [attr.readonly]="true">
+                        Verify from list
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Header 6-->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Header 6</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Caption6.errors}" type="text"
+                      formControlName="Caption6">
+                    <div class="errorlbl" *ngIf="submitted && f.Caption6.errors">Please enter header 6</div>
+                  </div>
+                </div>
+                <!-- Caption6IsRequired -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption6IsRequired"
+                        id="Caption6IsRequired">
+                      <label class="custom-control-label" for="Caption6IsRequired" [attr.readonly]="true">
+                        Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption6FieldType -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption6FieldType"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption6FieldType.errors?.notEqual}">
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of fieldTypeEnumOption" [value]="key" [label]="fieldTypeEnum[key]">
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption6FieldType.errors?.notEqual">
+                      Please select Field Type
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption6List -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption6List"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption6List.errors?.notEqual}">
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of lookupListEnumOption" [value]="key" [label]="lookupListEnum[key]">
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption6List.errors?.notEqual">
+                      Please select lookup list
+                    </div>
+                  </div>
+                </div>
+                <!-- VerifyFromListCaption6 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption6"
+                        id="VerifyFromListCaption6">
+                      <label class="custom-control-label" for="VerifyFromListCaption6" [attr.readonly]="true">
+                        Verify from list
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Header 7-->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Header 7</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Caption7.errors}" type="text"
+                      formControlName="Caption7">
+                    <div class="errorlbl" *ngIf="submitted && f.Caption7.errors">Please enter header 7</div>
+                  </div>
+                </div>
+                <!-- Caption7IsRequired -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption7IsRequired"
+                        id="Caption7IsRequired">
+                      <label class="custom-control-label" for="Caption7IsRequired" [attr.readonly]="true">
+                        Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption7FieldType -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption7FieldType"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption7FieldType.errors?.notEqual}">
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of fieldTypeEnumOption" [value]="key" [label]="fieldTypeEnum[key]">
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption7FieldType.errors?.notEqual">
+                      Please select Field Type
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption7List -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption7List"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption7List.errors?.notEqual}">
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of lookupListEnumOption" [value]="key" [label]="lookupListEnum[key]">
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption7List.errors?.notEqual">
+                      Please select lookup list
+                    </div>
+                  </div>
+                </div>
+                <!-- VerifyFromListCaption7 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption7"
+                        id="VerifyFromListCaption7">
+                      <label class="custom-control-label" for="VerifyFromListCaption7" [attr.readonly]="true">
+                        Verify from list
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Header 8-->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <label class="col-form-label">Header 8</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Caption8.errors}" type="text"
+                      formControlName="Caption8">
+                    <div class="errorlbl" *ngIf="submitted && f.Caption8.errors">Please enter header 8</div>
+                  </div>
+                </div>
+                <!-- Caption8IsRequired -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="Caption8IsRequired"
+                        id="Caption8IsRequired">
+                      <label class="custom-control-label" for="Caption8IsRequired" [attr.readonly]="true">
+                        Required
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption8FieldType -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Field type</label>
+                    <select class="form-control" formControlName="Caption8FieldType"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption8FieldType.errors?.notEqual}">
+                      <option value="-1">--Select Field Type--</option>
+                      <option *ngFor="let key of fieldTypeEnumOption" [value]="key" [label]="fieldTypeEnum[key]">
+                      </option>
+                    </select>
+
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption8FieldType.errors?.notEqual">
+                      Please select Field Type
+                    </div>
+                  </div>
+                </div>
+                <!-- Caption8List -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Lookup List</label>
+                    <select class="form-control" formControlName="Caption8List"
+                      [ngClass]="{ 'is-invalid': this.submitted && f.Caption8List.errors?.notEqual}">
+                      <option value="-1">--Select Lookup List--</option>
+                      <option *ngFor="let key of lookupListEnumOption" [value]="key" [label]="lookupListEnum[key]">
+                      </option>
+                    </select>
+                    <div class="errorlbl" *ngIf="this.submitted && f.Caption8List.errors?.notEqual">
+                      Please select lookup list
+                    </div>
+                  </div>
+                </div>
+                <!-- VerifyFromListCaption8 -->
+                <div class="col-12 col-md-2">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="VerifyFromListCaption8"
+                        id="VerifyFromListCaption8">
+                      <label class="custom-control-label" for="VerifyFromListCaption8" [attr.readonly]="true">
+                        Verify from list
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Surcharge-->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Surchargeeeee</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.Surcharge.errors}" type="text"
+                      formControlName="Surcharge">
+                    <div class="errorlbl" *ngIf="submitted && f.Surcharge.errors">Please enter Surcharge</div>
+                  </div>
+                </div>
+                <!-- SurchargePercentValue -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="SurchargePercentValue"
+                        id="SurchargePercentValue">
+                      <label class="custom-control-label" for="SurchargePercentValue" [attr.readonly]="true">
+                        Is Percent
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Bank Account-->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <label class="col-form-label">Bank Account</label>
+                    <input class="form-control" [ngClass]="{ 'is-invalid': submitted && f.BankAccount.errors}"
+                      type="text" formControlName="BankAccount">
+                    <div class="errorlbl" *ngIf="submitted && f.BankAccount.errors">Please enter Bank Account</div>
+                  </div>
+                </div>
+                <!-- IncludeInBanking -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="IncludeInBanking"
+                        id="IncludeInBanking">
+                      <label class="custom-control-label" for="IncludeInBanking" [attr.readonly]="true">
+                        Include In Banking
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Shift Variance-->
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    <label class="col-form-label">Shift Variance</label>
+                    <input class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && f.ShiftVarianceAccountCode.errors}" type="text"
+                      formControlName="ShiftVarianceAccountCode">
+                    <div class="errorlbl" *ngIf="submitted && f.ShiftVarianceAccountCode.errors">Please enter Shift
+                      Variance</div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4"></div>
+                <div class="col-12 col-md-4"></div>
+                <!-- Is MultiCurrency -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="MultiCurrency"
+                        id="MultiCurrency">
+                      <label class="custom-control-label" for="MultiCurrency" [attr.readonly]="true">
+                        Is Multi Currency
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- IsActive -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="IsActive" id="IsActive">
+                      <label class="custom-control-label" for="IsActive" [attr.readonly]="true">
+                        Is Active
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- EFT -->
+                <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="EFT" id="EFT">
+                      <label class="custom-control-label" for="EFT" [attr.readonly]="true">
+                        Is EFT
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Is System ? -->
+                <!-- <div class="col-12 col-md-3">
+                  <div class="form-group">
+                    <div class="custom-control custom-switch swtch">
+                      <input type="checkbox" class="custom-control-input" formControlName="IsSystem" id="IsSystem">
+                      <label class="custom-control-label" for="IsSystem" [attr.readonly]="true">
+                        IsSystem
+                      </label>
+                    </div>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access"
+                (click)="SaveAction='Save'">Save</button>
+              <button class="btn add-btn mr-1" type="submit" [disabled]="!this.write_Access"
+                (click)="SaveAction='SaveNClose'">Save & Close</button>
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="Mode=='List'">
+    <div class="card-body pb-0">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              Tender Type
+              <div class="add-row">
+                <button (click)="AddNew()" type="button" [disabled]="!this.write_Access" class="btn add-btn mb-1">Add
+                  Tender Type</button>
+              </div>
+            </div>
+            <div class="card-body position-relative">
+              <div class="ag-theme-balham" style="width: 100%; height:500px;">
+                <app-ag-grid *ngIf="AgLoad" [ColumnDefs]="this.ColumnDefs" [RowData]="this.RowData" [IsSearch]="true"
+                  [IsExport]="true" (OnActionClick)="OnActionClick($event)" [Currentpage]="this.Currentpage"
+                  (OnchangeCurrentpage)="OnchangeCurrentpage($event)" [paginationPageSize]="PageSize"
+                  (OnPageSizeChange)="OnPageSizeChange($event)">
+                </app-ag-grid>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

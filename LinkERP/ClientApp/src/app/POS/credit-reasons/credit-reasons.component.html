@@ -1,0 +1,154 @@
+<h1> Credit Reasons</h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a [routerLink]='["/home"]'>Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a [routerLink]='["/home"]'>Point of Sales</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a (click)="Cancel()">Credit Reasons</a></li>
+  </ol>
+</nav>
+<div class="loading" *ngIf="Loading"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>
+<div class="card">
+  <div class="card-body pb-0">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            Credit Reasons
+          </div>
+          <div class="row" style="padding-left: 10px;padding-top: 10px;">
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <input class="form-control" placeholder="Search" type="text" [(ngModel)]="searchValue"
+                  (input)="Search()">
+              </div>
+            </div>
+          </div>
+          <div class="card-body position-relative">
+            <div class="table-responsive table-padd">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Credit Into Stock</th>
+                    <th>Default</th>
+                    <th>&nbsp;</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let cr of RowData; let i = index">
+                    <td><input class="form-control" [(ngModel)]="cr.creditReasonDescription" type="text"></td>
+                    <td><input name="cbxcreditIntoStock" class="form-check-inline" type="checkbox"
+                        [checked]="cr.creditIntoStock" (change)="cr.creditIntoStock = !cr.creditIntoStock"></td>
+                    <td><input name="cbxdafault" class="form-check-inline" type="checkbox" [checked]="cr.default"
+                        (click)="onDefaultSelected(i)"></td>
+                    <td><a *ngIf="cr.id && cr.deleteStatus == 'Active'" (click)="DeleteCreditReason(cr.id)"><i
+                          class="fa fa-trash-o" aria-hidden="true"></i></a>
+                    </td>
+                    <td><a *ngIf="cr.id && cr.deleteStatus == 'InActive'" (click)="DeleteCreditReason(cr.id)"><span
+                          class="fa-stack">
+                          <i class="fa fa-circle fa-stack-2x"></i>
+                          <i class="fa fa-undo fa-stack-1x fa-inverse"></i>
+                        </span></a>
+                    </td>
+                    <td width="50" class="text-center" *ngIf="!cr.id">
+                      <button class="btn add-btn mr-1" type="button" (click)="Deleteindex(i)">Remove</button></td>
+                  </tr>
+                  <!-- <tr *ngFor="let detailslist of RowData; let i = index">
+                    <td>
+                      <select class="form-control" [(ngModel)]="detailslist.productID"
+                        (change)="onProductChange($event.target.value,i)" [disabled]="this.CurrentStatus!='New'">
+                        <option value="-1">--Select Product--</option>
+                        <option *ngFor="let product of inventoryList" [value]="product.id">
+                          {{product.productCode}} - {{product.productName}}
+                        </option>
+                      </select>
+                    </td>
+            
+                    <td style="width: 150px;">
+                      <select class="form-control" [(ngModel)]="detailslist.uom" (change)="onUomChange($event.target.value,i)" [ngModelOptions]="{standalone: true}"  
+                        [disabled]="this.CurrentStatus!='New'">
+                        <option value="-1">--Select UOM--</option>
+                        <option *ngFor="let UOM of detailslist.uomlist" [value]="UOM.uomidFrom">
+                          {{UOM.uomFromName}}
+                        </option>
+                      </select>
+            
+                    </td>
+                    <td style="width: 100px;"><input class="form-control text-right" [(ngModel)]="detailslist.quantity_text" type="text"
+                        appTwoDigitDecimaNumber (input)="OnquantityChange($event.target.value,i)"
+                        [readonly]="this.CurrentStatus!='New'"></td>
+                    <td style="width: 100px;"><input class="form-control text-right" [(ngModel)]="detailslist.cost_text" type="text" (input)="OncostChange($event.target.value,i)"
+                        appFourDigitDecimaNumber [readonly]="this.CurrentStatus!='New'">
+                    </td>
+                    <td style="width: 150px;"><input class="form-control text-right" [(ngModel)]="detailslist.extendCost_text"  (input)="OnextendCostChange()"
+                        type="text" appFourDigitDecimaNumber [readonly]="this.CurrentStatus!='New'">
+                    </td>
+                    <td style="width: 50px;"><input class="form-control text-right" [(ngModel)]="detailslist.convertedQuantity_text"
+                        type="text" appTwoDigitDecimaNumber [attr.disabled]="true"></td>
+                    <td>
+                      <label class="form-check-inline">
+                        <input class="form-check-input" type="radio" name="mode{{i}}" [value]="detailslist.inOut"
+                          (change)="handleChange(true,i)" [checked]="detailslist.inOut">
+                        IN
+                      </label>
+                      <label class="form-check-inline">
+                        <input class="form-check-input" type="radio" name="mode{{i}}" [value]="!detailslist.inOut"
+                          (change)="handleChange(false,i)" [checked]="!detailslist.inOut">
+                        OUT
+                      </label>
+                    </td>
+            
+                    <td>
+                      <div *ngIf="detailslist.serialisedProduct && detailslist.id && this.CurrentStatus=='New'">
+                        <a *ngIf="detailslist.inOut" (click)="SerialiseDetail(serialise,i)"><i class="bi fa fa-align-justify"
+                            aria-hidden="true"></i></a>
+                        <a *ngIf="!detailslist.inOut" (click)="SerialiseDetail(InvAdjOut,i)"><i class="bi fa fa-align-justify"
+                            aria-hidden="true"></i></a>
+                      </div>
+                      <div *ngIf="detailslist.productStyleMatrixEnabled && detailslist.id && this.CurrentStatus=='New'">
+                        <a *ngIf="detailslist.inOut" (click)="SerialiseDetail(product,i)"><i class="bi fa fa-align-justify"
+                            aria-hidden="true"></i></a>
+                        <a *ngIf="!detailslist.inOut" (click)="SerialiseDetail(InvAdjOut,i)"><i class="bi fa fa-align-justify"
+                            aria-hidden="true"></i></a>
+                      </div>
+                        <div *ngIf="(!detailslist.productStyleMatrixEnabled && !detailslist.serialisedProduct) && detailslist.id && this.CurrentStatus=='New'">
+                        <a *ngIf="detailslist.inOut" (click)="SerialiseDetail(other,i)"><i class="bi fa fa-align-justify"
+                            aria-hidden="true"></i></a>
+                          
+                      </div> 
+                    </td>
+                    <td>
+                      {{detailslist.deleteStatus}}
+                    </td>
+                    <td width="50" class="text-center" *ngIf="!detailslist.id && this.CurrentStatus=='New'">
+                      <button class="btn add-btn mr-1" type="button" (click)="Deleteindex(i)">Remove</button></td>
+                    <td *ngIf="detailslist.id && this.CurrentStatus=='New'">
+                      <a (click)="DeleteInventoryAdjustmentDeatil(detailslist.id)"><i class="fa fa-trash-o"
+                          aria-hidden="true"></i></a>
+                    </td>
+            
+            
+                  </tr> -->
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div style="text-align: right;padding-right: 20px;">
+                <button (click)="addnew()" type="button" class="btn add-btn mb-1">Add
+                </button>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn add-btn mr-1" type="button" (click)="saveCreditReasons('Save')">Save</button>
+              <!-- <button class="btn add-btn mr-1" type="button" (click)="saveCreditReasons('Close')"
+               >Save & Close</button>              -->
+              <button class="btn btn-danger" type="button" (click)="Cancel()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<confirmation-dialog-popup #confirmation (OnCancel)="OnCancel()" (OnAccept)="OnAccept($event)">
+</confirmation-dialog-popup>
