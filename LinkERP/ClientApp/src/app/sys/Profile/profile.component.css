@@ -1,7 +1,11 @@
 body {font-family: Arial;}
+<<<<<<< HEAD
 div{
   margin-bottom: 10px;
 }
+=======
+
+>>>>>>> b3ebcfb5bf1c0892ebcf1f5a11fbed44ded58f86
 /* Style the tab */
 .tab {
   overflow: hidden;

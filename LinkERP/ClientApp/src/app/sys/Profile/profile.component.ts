@@ -79,9 +79,17 @@ CityDetails:any;
     // console.log("hii");
     debugger
     this.display = "none";
+<<<<<<< HEAD
     // this.newPrivatedatamodel.comment=f.value.comment;
     console.log(this.newPrivatedatamodel.comment);
     // this.display = "none";
+=======
+    this.newPrivatedatamodel.comment=f.value;
+    console.log(this.newPrivatedatamodel.comment);
+    this.display = "none";
+   
+
+>>>>>>> b3ebcfb5bf1c0892ebcf1f5a11fbed44ded58f86
   }
   
   resetform(){
