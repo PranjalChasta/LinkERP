@@ -431,5 +431,9 @@ namespace LinkERP.Service.Controllers.Account
                 return BadRequest(response);
             }
         }
+        public IActionResult Test()
+        {
+            return Ok();
+        }
         }
 }
