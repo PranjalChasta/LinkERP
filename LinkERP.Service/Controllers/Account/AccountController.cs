@@ -431,12 +431,10 @@ namespace LinkERP.Service.Controllers.Account
                 return BadRequest(response);
             }
         }
-<<<<<<< HEAD
-        public IActionResult Test()
+        public IActionResult Test2()
         {
             return Ok();
         }
-=======
->>>>>>> b3ebcfb5bf1c0892ebcf1f5a11fbed44ded58f86
+
         }
 }
