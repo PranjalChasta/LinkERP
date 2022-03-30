@@ -406,6 +406,10 @@ namespace LinkERP.Service.Controllers.Account
                 return BadRequest(response);
             }
         }
+        public IActionResult actionResult()
+        {
+            return Ok();
+        }
 
         [HttpGet("[action]/{Passwords}")]
         public IActionResult DecryptPassword(string Passwords)
@@ -431,7 +435,7 @@ namespace LinkERP.Service.Controllers.Account
                 return BadRequest(response);
             }
         }
-        public IActionResult Test2()
+        public IActionResult Test3()
         {
             return Ok();
         }
